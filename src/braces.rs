@@ -1,18 +1,9 @@
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::perf,
-    clippy::cargo
-)]
-
 use std::ops;
 
 use fancy_regex::Regex;
 use rust_decimal_macros::dec;
 
-use crate::math::Math;
+use crate::math::{BasicOperations, Math};
 use crate::parser::{Parsable, Parser};
 //use crate::polynom::Polynom;
 use crate::variable::Variable;
@@ -23,21 +14,26 @@ pub struct Braces {
     pub exponent: Option<Box<Math>>,
 }
 
-impl Braces {
-    pub fn addition(&self, other: Math) -> Math {
+impl BasicOperations for Braces {
+    #[must_use]
+    fn addition(&self, other: Braces) -> Math {
         self.simplify() + other.simplify()
     }
-    pub fn subtraction(&self, other: Math) -> Math {
+    #[must_use]
+    fn subtraction(&self, other: Braces) -> Math {
         self.simplify() - other.simplify()
     }
-    pub fn multiplication(&self, other: Math) -> Math {
+    #[must_use]
+    fn multiplication(&self, other: Braces) -> Math {
         self.simplify() * other.simplify()
     }
 
-    pub fn division(&self, other: Math) -> Math {
+    #[must_use]
+    fn division(&self, other: Braces) -> Math {
         self.simplify() / other.simplify()
     }
-    pub fn negative(&self) -> Math {
+    #[must_use]
+    fn negative(&self) -> Math {
         match &self.exponent {
             Some(_has_exp) => Math::Braces(Braces {
                 math: Box::new(self.math.negative()),
@@ -50,21 +46,20 @@ impl Braces {
         }
     }
 
-    pub fn simplify(&self) -> Math {
+    #[must_use]
+    fn simplify(&self) -> Math {
         //TODO apply exponent
         self.math.simplify()
     }
 }
 
 impl Braces {
-    pub fn new(tex: &str) -> Math {
-        Braces::from_tex(tex.to_string())
-    }
+    #[must_use]
     pub fn get_exponent(&self) -> Math {
         match &self.exponent {
             None => Math::Variable(Variable {
                 value: dec!(1.0),
-                suffix: "".to_string(),
+                suffix: String::new(),
                 exponent: None,
             }),
             Some(e) => *e.clone(),
@@ -73,6 +68,7 @@ impl Braces {
 }
 
 impl Parsable for Braces {
+    #[must_use]
     fn to_tex(&self) -> String {
         match &self.exponent {
             Some(has_exp) => match &has_exp.to_tex()[..] {
@@ -83,62 +79,62 @@ impl Parsable for Braces {
         }
     }
 
-    fn from_tex(tex: String) -> Math {
+    #[must_use]
+    fn from_tex(tex: &str) -> Result<Math, &'static str> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(?<!_)\((.+)").unwrap();
+            static ref RE: Regex = Regex::new(r"(?<!_)\((.+)").unwrap_or_else(|e| {
+                panic!("Failed to compile regex for braces: {e}");
+            });
         }
-        let result = RE.captures(&tex);
+        let result = RE.captures(tex);
         let captures = result
             .expect("Error running regex")
             .expect("No match found");
-        let math = Parser::extract_brace(
-            captures
-                .get(0)
-                .map(|m| m.as_str())
-                .unwrap_or("")
-                .to_string(),
-            '(',
-            ')',
-        );
+        let math = Parser::extract_brace(&captures.get(0).map_or("", |m| m.as_str()), '(', ')');
         let exponent_str = tex.split_at(math.len() + 2).1;
-        let exponent: Option<Box<Math>>;
-        if !exponent_str.is_empty()
-            && exponent_str.chars().nth(0) == Some('^')
+
+        let exponent: Option<Box<Math>> = if !exponent_str.is_empty()
+            && exponent_str.starts_with('^')
             && exponent_str.chars().nth(1) == Some('{')
         {
-            exponent = Some(Box::new(
-                Parser::new(&(Parser::extract_brace(exponent_str[1..].to_string(), '{', '}')))
-                    .parse(),
-            ));
+            Some(Box::new(
+                Parser::new(&(Parser::extract_brace(&exponent_str[1..], '{', '}'))).parse()?,
+            ))
         } else {
-            exponent = None;
-        }
+            None
+        };
 
-        Math::Braces(Braces {
-            math: Box::new(Parser::new(&math).parse()),
+        Ok(Math::Braces(Braces {
+            math: Box::new(Parser::new(&math).parse()?),
             exponent,
-        })
+        }))
     }
 
+    #[must_use]
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"^(?<!_)\((.+)").unwrap();
+            static ref RE: Regex = Regex::new(r"^(?<!_)\((.+)").unwrap_or_else(|e| {
+                panic!("Failed to compile regex for braces: {e}");
+            });
         }
-        let f = RE.find(&tex).unwrap()?.as_str();
-        if !f.is_empty() {
-            return Some(f.to_string());
+
+        if let Ok(Some(f)) = RE.find(&tex) {
+            let f_str = f.as_str().to_string();
+            if !f_str.is_empty() {
+                return Some(f_str);
+            }
         }
-        return None;
+        None
     }
 }
 
 impl ops::Add<Math> for Braces {
     type Output = Math;
-    fn add(self, _rhs: Math) -> Math {
-        match _rhs {
-            Math::Polynom(p) => self.addition(Math::Polynom(p)),
-            Math::Variable(v) => self.addition(Math::Variable(v)),
-            Math::Braces(b) => self.addition(Math::Braces(b)),
+    fn add(self, rhs: Math) -> Math {
+        match rhs {
+            Math::Polynom(p) => self.simplify() + Math::Polynom(p),
+            Math::Variable(v) => self.simplify() + (Math::Variable(v)),
+            Math::Braces(b) => self.simplify() + Math::Braces(b),
             Math::Undefined(u) => Math::Undefined(u),
             _ => todo!(),
         }
@@ -147,11 +143,11 @@ impl ops::Add<Math> for Braces {
 
 impl ops::Sub<Math> for Braces {
     type Output = Math;
-    fn sub(self, _rhs: Math) -> Math {
-        match _rhs {
-            Math::Polynom(p) => self.subtraction(Math::Polynom(p)),
-            Math::Variable(v) => self.subtraction(Math::Variable(v)),
-            Math::Braces(b) => self.subtraction(Math::Braces(b)),
+    fn sub(self, rhs: Math) -> Math {
+        match rhs {
+            Math::Polynom(p) => self.simplify() - Math::Polynom(p),
+            Math::Variable(v) => self.simplify() - Math::Variable(v),
+            Math::Braces(b) => self.simplify() - Math::Braces(b).simplify(),
             Math::Undefined(u) => Math::Undefined(u),
             _ => todo!(),
         }
@@ -160,11 +156,11 @@ impl ops::Sub<Math> for Braces {
 
 impl ops::Mul<Math> for Braces {
     type Output = Math;
-    fn mul(self, _rhs: Math) -> Math {
-        match _rhs {
-            Math::Polynom(p) => self.multiplication(Math::Polynom(p)),
-            Math::Variable(v) => self.multiplication(Math::Variable(v)),
-            Math::Braces(b) => self.multiplication(Math::Braces(b)),
+    fn mul(self, rhs: Math) -> Math {
+        match rhs {
+            Math::Polynom(p) => self.simplify() * Math::Polynom(p),
+            Math::Variable(v) => self.simplify() * Math::Variable(v),
+            Math::Braces(b) => self.simplify() * Math::Braces(b),
             Math::Undefined(u) => Math::Undefined(u),
             _ => todo!(),
         }
@@ -174,12 +170,6 @@ impl ops::Mul<Math> for Braces {
 impl ops::Div<Math> for Braces {
     type Output = Math;
     fn div(self, _rhs: Math) -> Math {
-        match _rhs {
-            //           Math::Polynom(p)  => self.mul_brace(Math::Polynom(p)),
-            //           Math::Variable(v) => self.mul_brace(Math::Variable(v)),
-            //           Math::Braces(b)   => self.mul_brace(Math::Braces(b)),
-            //           Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
-        }
+        todo!()
     }
 }

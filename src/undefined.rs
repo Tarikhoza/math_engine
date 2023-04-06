@@ -5,6 +5,7 @@ use std::ops;
 pub struct Undefined {}
 
 impl Undefined {
+    #[must_use]
     pub fn to_tex(&self) -> String {
         "undefined".to_string()
     }

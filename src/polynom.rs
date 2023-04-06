@@ -10,6 +10,7 @@ pub struct Polynom {
 }
 
 impl BasicOperations for Polynom {
+    #[must_use]
     fn addition(&self, other: Polynom) -> Math {
         Math::Polynom(Polynom {
             factors: {
@@ -25,6 +26,7 @@ impl BasicOperations for Polynom {
             },
         })
     }
+    #[must_use]
     fn subtraction(&self, other: Polynom) -> Math {
         Math::Polynom(Polynom {
             factors: {
@@ -41,6 +43,7 @@ impl BasicOperations for Polynom {
         })
     }
 
+    #[must_use]
     fn multiplication(&self, other: Polynom) -> Math {
         let mut factors: Vec<Math> = vec![];
         for i in self.factors.iter() {
@@ -48,17 +51,19 @@ impl BasicOperations for Polynom {
                 factors.push((i.clone()) * (j.clone()));
             }
         }
-        let len = factors.len();
+        let _len = factors.len();
         Math::Polynom(Polynom {
             factors,
             operators: vec![Operators::InvMulti],
         })
     }
 
-    fn division(&self, other: Polynom) -> Math {
+    #[must_use]
+    fn division(&self, _other: Polynom) -> Math {
         todo!()
     }
 
+    #[must_use]
     fn negative(&self) -> Math {
         let mut factors = vec![];
         for factor in self.factors.iter() {
@@ -71,14 +76,13 @@ impl BasicOperations for Polynom {
     }
 
     //  PEMDAS
+    #[must_use]
     fn simplify(&self) -> Math {
-        return self
-            .simplify_par()
+        self.simplify_par()
             .simplify_exp()
             .simplify_mul_div()
-            .sort()
             .simplify_add_sub()
-            .unpack();
+            .unpack()
     }
 }
 
@@ -86,6 +90,7 @@ impl BasicOperations for Polynom {
 //  PEMDAS
 impl Polynom {
     //  P - Parentheses first
+    #[must_use]
     pub fn simplify_par(&self) -> Polynom {
         if self.factors.len() <= 1 {
             return Polynom {
@@ -110,16 +115,18 @@ impl Polynom {
                 operators.push(self.operators[i].clone());
             }
         }
-        let p = Polynom { factors, operators };
-        p
+
+        Polynom { factors, operators }
     }
 
     //  E - Exponents (ie Powers and Square Roots, etc.)
+    #[must_use]
     pub fn simplify_exp(&self) -> Polynom {
         self.clone()
     }
 
     //  MD - Multiplication and Division (left-to-right)
+    #[must_use]
     pub fn simplify_mul_div(&self) -> Polynom {
         if self.factors.len() <= 1
             || (!self.operators.contains(&Operators::Multiplication)
@@ -185,21 +192,7 @@ impl Polynom {
 
     //  AS - Addition and Subtraction (left-to-right)
 
-    pub fn sort(&self) -> Polynom {
-        let mut old_factors = self.factors.clone();
-        let mut old_operators = self.operators.clone();
-        let first = old_factors.get(0).unwrap().split_operator();
-        old_operators.insert(1, first.0);
-        old_factors[0] = first.1;
-        let mut to_sort: Vec<(&Math, &Operators)> =
-            old_factors.iter().zip(old_operators.iter()).collect();
-        to_sort.sort_by(|a, b| a.0.sort_score().cmp(&b.0.sort_score()));
-        let factors = to_sort.iter().map(|x| x.0.clone()).collect();
-        let operators = to_sort.iter().map(|x| x.1.clone()).collect();
-
-        Polynom { factors, operators }
-    }
-
+    #[must_use]
     pub fn simplify_add_sub(&self) -> Polynom {
         if self.factors.len() <= 1
             || (!self.operators.contains(&Operators::Addition)
@@ -256,10 +249,11 @@ impl Polynom {
                 }
             }
         }
-        let p = Polynom { factors, operators };
-        p
+
+        Polynom { factors, operators }
     }
 
+    #[must_use]
     pub fn unpack(&self) -> Math {
         if self.factors.len() == 1 {
             return self.factors[0].clone();
@@ -268,15 +262,10 @@ impl Polynom {
     }
 }
 
-impl Polynom {
-    pub fn new(tex: &str) -> Math {
-        Polynom::from_tex(tex.to_string())
-    }
-}
-
 impl Parsable for Polynom {
+    #[must_use]
     fn to_tex(&self) -> String {
-        if self.factors.len() != 0 {
+        if !self.factors.is_empty() {
             if self.factors.len() <= 1 && self.factors.len() != self.operators.len() + 1 {
                 return self.factors[0].to_tex();
             }
@@ -285,59 +274,60 @@ impl Parsable for Polynom {
                 temp = format!(
                     "{}{}{}",
                     temp,
-                    Math::operators_to_string(self.operators[i].clone()),
+                    Math::operators_to_string(&self.operators[i]),
                     factor.to_tex()
-                )
+                );
             }
             return temp;
         }
-        "".to_string()
+        String::new()
     }
 
-    fn from_tex(tex: String) -> Math {
+    fn from_tex(tex: &str) -> Result<Math, &'static str> {
         Math::from_tex(tex)
     }
 
-    fn on_begining(tex: String) -> Option<String> {
+    #[must_use]
+    fn on_begining(_tex: String) -> Option<String> {
         None
     }
 }
 
 impl ops::Add<Math> for Polynom {
     type Output = Math;
-    fn add(self, _rhs: Math) -> Math {
-        match _rhs {
+    fn add(self, rhs: Math) -> Math {
+        match rhs {
             Math::Polynom(p) => self.addition(p),
             Math::Variable(v) => self.addition(v.as_polynom()),
             Math::Braces(b) => self + b.simplify(),
             Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
+            Math::Operators(_) => todo!(),
         }
     }
 }
 
 impl ops::Sub<Math> for Polynom {
     type Output = Math;
-    fn sub(self, _rhs: Math) -> Math {
-        match _rhs {
+    fn sub(self, rhs: Math) -> Math {
+        match rhs {
             Math::Polynom(p) => self.subtraction(p),
             Math::Variable(v) => self.subtraction(v.as_polynom()),
             Math::Braces(b) => self - b.simplify(),
             Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
+            Math::Operators(_) => todo!(),
         }
     }
 }
 
 impl ops::Mul<Math> for Polynom {
     type Output = Math;
-    fn mul(self, _rhs: Math) -> Math {
-        match _rhs {
+    fn mul(self, rhs: Math) -> Math {
+        match rhs {
             Math::Polynom(p) => self.multiplication(p),
             Math::Variable(v) => self.multiplication(v.as_polynom()),
             Math::Braces(b) => self * b.simplify(),
             Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
+            Math::Operators(_) => todo!(),
         }
     }
 }
@@ -345,12 +335,6 @@ impl ops::Mul<Math> for Polynom {
 impl ops::Div<Math> for Polynom {
     type Output = Math;
     fn div(self, _rhs: Math) -> Math {
-        match _rhs {
-            //           Math::Polynom(p)   => self.division(p),
-            //           Math::Variable(v)  => self.division(v.as_polynom()),
-            //           Math::Braces(b)    => self / b.simplify(),
-            //           Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
-        }
+        todo!()
     }
 }

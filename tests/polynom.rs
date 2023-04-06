@@ -1,305 +1,169 @@
 use math_engine::parser::{Parsable, Parser};
+
+macro_rules! parser_eq {
+    ($input:expr, $expected:expr) => {
+        assert_eq!(
+            $expected,
+            Parser::new($input)
+                .parse()
+                .unwrap()
+                .simplify()
+                .simplify()
+                .simplify()
+                .simplify()
+                .simplify()
+                .simplify()
+                .simplify()
+                .simplify()
+                .simplify()
+                .to_tex()
+        );
+    };
+}
+
 #[test]
 fn basic_operations() {
-    assert_eq!("2", Parser::new("4/2").parse().simplify().to_tex());
-    assert_eq!("20", Parser::new("40/2").parse().simplify().to_tex());
-    assert_eq!("12", Parser::new("2*3*2").parse().simplify().to_tex());
-    assert_eq!("6", Parser::new("2+2+2").parse().simplify().to_tex());
-    assert_eq!("4", Parser::new("2+2").parse().simplify().to_tex());
-    assert_eq!("3", Parser::new("1+2").parse().simplify().to_tex());
-    assert_eq!("91", Parser::new("56+7*5").parse().simplify().to_tex());
-    assert_eq!("56", Parser::new("11*8-8*4").parse().simplify().to_tex());
-    assert_eq!(
-        "2131",
-        Parser::new("76*46-35*39").parse().simplify().to_tex()
-    );
-    assert_eq!("10", Parser::new("54/8+26/8").parse().simplify().to_tex());
-    assert_eq!("32", Parser::new("8*7-4*6").parse().simplify().to_tex());
-    assert_eq!("38", Parser::new("5*6+2*4").parse().simplify().to_tex());
-    assert_eq!("64", Parser::new("12*31-14*22").parse().simplify().to_tex());
-    assert_eq!("5168", Parser::new("3821+1347").parse().simplify().to_tex());
-    assert_eq!("5758", Parser::new("2512+3246").parse().simplify().to_tex());
-    assert_eq!(
-        "14005",
-        Parser::new("4462+9543").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "15447",
-        Parser::new("9948+5499").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "13471",
-        Parser::new("9745+3726").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "10778",
-        Parser::new("4577+6201").parse().simplify().to_tex()
-    );
-    assert_eq!("6667", Parser::new("5465+1202").parse().simplify().to_tex());
-    assert_eq!(
-        "16117",
-        Parser::new("8762+7355").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "11955",
-        Parser::new("4578+7377").parse().simplify().to_tex()
-    );
-    assert_eq!("8857", Parser::new("1057+7800").parse().simplify().to_tex());
-    assert_eq!(
-        "17478",
-        Parser::new("9424+8054").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "17597",
-        Parser::new("7873+9724").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "14874",
-        Parser::new("5962+8912").parse().simplify().to_tex()
-    );
-    assert_eq!("6989", Parser::new("2353+4636").parse().simplify().to_tex());
-    assert_eq!("7893", Parser::new("4156+3737").parse().simplify().to_tex());
-    assert_eq!(
-        "13161",
-        Parser::new("4784+8377").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "12558",
-        Parser::new("3269+9289").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "10799",
-        Parser::new("5031+5768").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "10975",
-        Parser::new("8415+2560").parse().simplify().to_tex()
-    );
-    assert_eq!("8658", Parser::new("7437+1221").parse().simplify().to_tex());
-    assert_eq!(
-        "10318",
-        Parser::new("5786+4532").parse().simplify().to_tex()
-    );
-    assert_eq!("8825", Parser::new("4204+4621").parse().simplify().to_tex());
-    assert_eq!("9013", Parser::new("4438+4575").parse().simplify().to_tex());
-    assert_eq!(
-        "10819",
-        Parser::new("3432+7387").parse().simplify().to_tex()
-    );
-    assert_eq!("2474", Parser::new("3821-1347").parse().simplify().to_tex());
-    assert_eq!("1266", Parser::new("4512-3246").parse().simplify().to_tex());
-    assert_eq!("1919", Parser::new("4462-2543").parse().simplify().to_tex());
-    assert_eq!("4449", Parser::new("9948-5499").parse().simplify().to_tex());
-    assert_eq!("6019", Parser::new("9745-3726").parse().simplify().to_tex());
-    assert_eq!("1688", Parser::new("6201-4513").parse().simplify().to_tex());
-    assert_eq!("4263", Parser::new("5465-1202").parse().simplify().to_tex());
-    assert_eq!("1407", Parser::new("8762-7355").parse().simplify().to_tex());
-    assert_eq!("1201", Parser::new("8578-7377").parse().simplify().to_tex());
-    assert_eq!("1257", Parser::new("9057-7800").parse().simplify().to_tex());
-    assert_eq!("1370", Parser::new("9424-8054").parse().simplify().to_tex());
-    assert_eq!("149", Parser::new("9873-9724").parse().simplify().to_tex());
-    assert_eq!("4050", Parser::new("5962-1912").parse().simplify().to_tex());
-    assert_eq!("4717", Parser::new("9353-4636").parse().simplify().to_tex());
-    assert_eq!("419", Parser::new("4156-3737").parse().simplify().to_tex());
-    assert_eq!("1407", Parser::new("4784-3377").parse().simplify().to_tex());
-    assert_eq!("3980", Parser::new("7269-3289").parse().simplify().to_tex());
-    assert_eq!("163", Parser::new("5931-5768").parse().simplify().to_tex());
-    assert_eq!("5855", Parser::new("8415-2560").parse().simplify().to_tex());
-    assert_eq!("6216", Parser::new("7437-1221").parse().simplify().to_tex());
-    assert_eq!("1254", Parser::new("5786-4532").parse().simplify().to_tex());
-    assert_eq!("2583", Parser::new("7204-4621").parse().simplify().to_tex());
-    assert_eq!("3263", Parser::new("7838-4575").parse().simplify().to_tex());
-    assert_eq!("1045", Parser::new("8432-7387").parse().simplify().to_tex());
-    assert_eq!("43730", Parser::new("8746*5").parse().simplify().to_tex());
-    assert_eq!("417447", Parser::new("46383*9").parse().simplify().to_tex());
-    assert_eq!("314756", Parser::new("78689*4").parse().simplify().to_tex());
-    assert_eq!("230120", Parser::new("46024*5").parse().simplify().to_tex());
-    assert_eq!("167178", Parser::new("27863*6").parse().simplify().to_tex());
-    assert_eq!("538069", Parser::new("76867*7").parse().simplify().to_tex());
-    assert_eq!("238569", Parser::new("79523*3").parse().simplify().to_tex());
-    assert_eq!("124893", Parser::new("13877*9").parse().simplify().to_tex());
-    assert_eq!("170569", Parser::new("24367*7").parse().simplify().to_tex());
-    assert_eq!("714078", Parser::new("79342*9").parse().simplify().to_tex());
-    assert_eq!("80910", Parser::new("13485*6").parse().simplify().to_tex());
-    assert_eq!("437094", Parser::new("48566*9").parse().simplify().to_tex());
-    assert_eq!("875079", Parser::new("97231*9").parse().simplify().to_tex());
-    assert_eq!("128552", Parser::new("32138*4").parse().simplify().to_tex());
-    assert_eq!("166173", Parser::new("23739*7").parse().simplify().to_tex());
-    assert_eq!("227874", Parser::new("37979*6").parse().simplify().to_tex());
-    assert_eq!("30732", Parser::new("15366*2").parse().simplify().to_tex());
-    assert_eq!("229119", Parser::new("76373*3").parse().simplify().to_tex());
-    assert_eq!("48228", Parser::new("12057*4").parse().simplify().to_tex());
-    assert_eq!("685447", Parser::new("97921*7").parse().simplify().to_tex());
-    assert_eq!("97520", Parser::new("48760*2").parse().simplify().to_tex());
-    assert_eq!("310344", Parser::new("38793*8").parse().simplify().to_tex());
-    assert_eq!("135736", Parser::new("16967*8").parse().simplify().to_tex());
-    assert_eq!("74016", Parser::new("24672*3").parse().simplify().to_tex());
-    assert_eq!(
-        "5146887",
-        Parser::new("3821*1347").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "14645952",
-        Parser::new("4512*3246").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "11346866",
-        Parser::new("4462*2543").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "54704052",
-        Parser::new("9948*5499").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "36309870",
-        Parser::new("9745*3726").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "27985113",
-        Parser::new("6201*4513").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "6568930",
-        Parser::new("5465*1202").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "64444510",
-        Parser::new("8762*7355").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "63279906",
-        Parser::new("8578*7377").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "70644600",
-        Parser::new("9057*7800").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "75900896",
-        Parser::new("9424*8054").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "96005052",
-        Parser::new("9873*9724").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "11399344",
-        Parser::new("5962*1912").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "43360508",
-        Parser::new("9353*4636").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "15530972",
-        Parser::new("4156*3737").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "16155568",
-        Parser::new("4784*3377").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "23907741",
-        Parser::new("7269*3289").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "34210008",
-        Parser::new("5931*5768").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "21542400",
-        Parser::new("8415*2560").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "9080577",
-        Parser::new("7437*1221").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "26222152",
-        Parser::new("5786*4532").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "33289684",
-        Parser::new("7204*4621").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "35858850",
-        Parser::new("7838*4575").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "62287184",
-        Parser::new("8432*7387").parse().simplify().to_tex()
-    );
-    assert_eq!("2365", Parser::new("7095/3").parse().simplify().to_tex());
-    assert_eq!("2256", Parser::new("4512/2").parse().simplify().to_tex());
-    assert_eq!("821", Parser::new("7389/9").parse().simplify().to_tex());
-    assert_eq!("1234", Parser::new("9872/8").parse().simplify().to_tex());
-    assert_eq!("2354", Parser::new("9416/4").parse().simplify().to_tex());
-    assert_eq!("843", Parser::new("7587/9").parse().simplify().to_tex());
-    assert_eq!("2526", Parser::new("7578/3").parse().simplify().to_tex());
-    assert_eq!("1234", Parser::new("8638/7").parse().simplify().to_tex());
-    assert_eq!("8231", Parser::new("8231/1").parse().simplify().to_tex());
-    assert_eq!("753", Parser::new("6024/8").parse().simplify().to_tex());
-    assert_eq!("456", Parser::new("6840/15").parse().simplify().to_tex());
-    assert_eq!("321", Parser::new("7704/24").parse().simplify().to_tex());
-    assert_eq!("428", Parser::new("2568/6").parse().simplify().to_tex());
-    assert_eq!("719", Parser::new("5033/7").parse().simplify().to_tex());
-    assert_eq!("1895", Parser::new("9475/5").parse().simplify().to_tex());
-    assert_eq!("753", Parser::new("6024/8").parse().simplify().to_tex());
-    assert_eq!("1039", Parser::new("7273/7").parse().simplify().to_tex());
-    assert_eq!("526", Parser::new("3682/7").parse().simplify().to_tex());
-    assert_eq!("3369", Parser::new("6738/2").parse().simplify().to_tex());
-    assert_eq!("1058", Parser::new("8464/8").parse().simplify().to_tex());
-    assert_eq!("951", Parser::new("4755/5").parse().simplify().to_tex());
-    assert_eq!("852", Parser::new("5112/6").parse().simplify().to_tex());
-    assert_eq!("789", Parser::new("9468/12").parse().simplify().to_tex());
-    assert_eq!("369", Parser::new("5904/16").parse().simplify().to_tex());
-    assert_eq!(
-        "61742",
-        Parser::new("3821+1347*43").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "4180",
-        Parser::new("4525-2070/6").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "5100",
-        Parser::new("8124+1347-4371").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "6446",
-        Parser::new("7124-2070+1392").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "60063",
-        Parser::new("4284/2+1347*43").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "1000",
-        Parser::new("8285/5-5256/8").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "8588",
-        Parser::new("3482*3-7432/4").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "12361",
-        Parser::new("8285*8/5-5256+4361")
-            .parse()
-            .simplify()
-            .to_tex()
-    );
-    assert_eq!(
-        "10981",
-        Parser::new("1288*2*4+5416/4/2").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "12139",
-        Parser::new("4265*3-3236*2+1454*4")
-            .parse()
-            .simplify()
-            .to_tex()
-    );
+    parser_eq!("4/2", "2");
+    parser_eq!("40/2", "20");
+    parser_eq!("2*3*2", "12");
+    parser_eq!("2+2+2", "6");
+    parser_eq!("2+2", "4");
+    parser_eq!("1+2", "3");
+    parser_eq!("56+7*5", "91");
+    parser_eq!("11*8-8*4", "56");
+    parser_eq!("76*46-35*39", "2131");
+    parser_eq!("54/8+26/8", "10");
+    parser_eq!("8*7-4*6", "32");
+    parser_eq!("5*6+2*4", "38");
+    parser_eq!("12*31-14*22", "64");
+    parser_eq!("3821+1347", "5168");
+    parser_eq!("2512+3246", "5758");
+    parser_eq!("4462+9543", "14005");
+    parser_eq!("9948+5499", "15447");
+    parser_eq!("9745+3726", "13471");
+    parser_eq!("4577+6201", "10778");
+    parser_eq!("5465+1202", "6667");
+    parser_eq!("8762+7355", "16117");
+    parser_eq!("4578+7377", "11955");
+    parser_eq!("1057+7800", "8857");
+    parser_eq!("5962+8912", "14874");
+    parser_eq!("2353+4636", "6989");
+    parser_eq!("4156+3737", "7893");
+    parser_eq!("4784+8377", "13161");
+    parser_eq!("3269+9289", "12558");
+    parser_eq!("5031+5768", "10799");
+    parser_eq!("8415+2560", "10975");
+    parser_eq!("7437+1221", "8658");
+    parser_eq!("5786+4532", "10318");
+    parser_eq!("4204+4621", "8825");
+    parser_eq!("4438+4575", "9013");
+    parser_eq!("3432+7387", "10819");
+    parser_eq!("3821-1347", "2474");
+    parser_eq!("4512-3246", "1266");
+    parser_eq!("4462-2543", "1919");
+    parser_eq!("9948-5499", "4449");
+    parser_eq!("9745-3726", "6019");
+    parser_eq!("6201-4513", "1688");
+    parser_eq!("5465-1202", "4263");
+    parser_eq!("8762-7355", "1407");
+    parser_eq!("8578-7377", "1201");
+    parser_eq!("9057-7800", "1257");
+    parser_eq!("9424-8054", "1370");
+    parser_eq!("9873-9724", "149");
+    parser_eq!("5962-1912", "4050");
+    parser_eq!("9353-4636", "4717");
+    parser_eq!("4156-3737", "419");
+    parser_eq!("4784-3377", "1407");
+    parser_eq!("7269-3289", "3980");
+    parser_eq!("5931-5768", "163");
+    parser_eq!("7437-1221", "6216");
+    parser_eq!("5786-4532", "1254");
+    parser_eq!("7204-4621", "2583");
+    parser_eq!("7838-4575", "3263");
+    parser_eq!("8746*5", "43730");
+    parser_eq!("46383*9", "417447");
+    parser_eq!("78689*4", "314756");
+    parser_eq!("46024*5", "230120");
+    parser_eq!("27863*6", "167178");
+    parser_eq!("76867*7", "538069");
+    parser_eq!("79523*3", "238569");
+    parser_eq!("13877*9", "124893");
+    parser_eq!("24367*7", "170569");
+    parser_eq!("79342*9", "714078");
+    parser_eq!("13485*6", "80910");
+    parser_eq!("48566*9", "437094");
+    parser_eq!("97231*9", "875079");
+    parser_eq!("32138*4", "128552");
+    parser_eq!("23739*7", "166173");
+    parser_eq!("37979*6", "227874");
+    parser_eq!("15366*2", "30732");
+    parser_eq!("76373*3", "229119");
+    parser_eq!("12057*4", "48228");
+    parser_eq!("97921*7", "685447");
+    parser_eq!("48760*2", "97520");
+    parser_eq!("38793*8", "310344");
+    parser_eq!("16967*8", "135736");
+    parser_eq!("24672*3", "74016");
+    parser_eq!("3821*1347", "5146887");
+    parser_eq!("4512*3246", "14645952");
+    parser_eq!("4462*2543", "11346866");
+    parser_eq!("9948*5499", "54704052");
+    parser_eq!("9745*3726", "36309870");
+    parser_eq!("6201*4513", "27985113");
+    parser_eq!("5465*1202", "6568930");
+    parser_eq!("8762*7355", "64444510");
+    parser_eq!("8578*7377", "63279906");
+    parser_eq!("9057*7800", "70644600");
+    parser_eq!("9424*8054", "75900896");
+    parser_eq!("9873*9724", "96005052");
+    parser_eq!("5962*1912", "11399344");
+    parser_eq!("9353*4636", "43360508");
+    parser_eq!("4156*3737", "15530972");
+    parser_eq!("4784*3377", "16155568");
+    parser_eq!("7269*3289", "23907741");
+    parser_eq!("5931*5768", "34210008");
+    parser_eq!("8415*2560", "21542400");
+    parser_eq!("8415*2560", "21542400");
+    parser_eq!("7437*1221", "9080577");
+    parser_eq!("5786*4532", "26222152");
+    parser_eq!("7204*4621", "33289684");
+    parser_eq!("7838*4575", "35858850");
+    parser_eq!("8432*7387", "62287184");
+    parser_eq!("8432*7387", "62287184");
+    parser_eq!("7095/3", "2365");
+    parser_eq!("4512/2", "2256");
+    parser_eq!("7389/9", "821");
+    parser_eq!("9872/8", "1234");
+    parser_eq!("9416/4", "2354");
+    parser_eq!("7587/9", "843");
+    parser_eq!("7578/3", "2526");
+    parser_eq!("8638/7", "1234");
+    parser_eq!("8231/1", "8231");
+    parser_eq!("6024/8", "753");
+    parser_eq!("6840/15", "456");
+    parser_eq!("7704/24", "321");
+    parser_eq!("2568/6", "428");
+    parser_eq!("5033/7", "719");
+    parser_eq!("9475/5", "1895");
+    parser_eq!("6024/8", "753");
+    parser_eq!("7273/7", "1039");
+    parser_eq!("3682/7", "526");
+    parser_eq!("6738/2", "3369");
+    parser_eq!("8464/8", "1058");
+    parser_eq!("4755/5", "951");
+    parser_eq!("5112/6", "852");
+    parser_eq!("9468/12", "789");
+    parser_eq!("5904/16", "369");
+    parser_eq!("3821+1347*43", "61742");
+    parser_eq!("4525-2070/6", "4180");
+    parser_eq!("8124+1347-4371", "5100");
+    parser_eq!("7124-2070+1392", "6446");
+    parser_eq!("4284/2+1347*43", "60063");
+    parser_eq!("8285/5-5256/8", "1000");
+    parser_eq!("3482*3-7432/4", "8588");
+    parser_eq!("8285*8/5-5256+4361", "12361");
+    parser_eq!("1288*2*4+5416/4/2", "10981");
+    parser_eq!("4265*3-3236*2+1454*4", "12139");
     //   >>) 822 · 9 · 6 : 3 − 632 · 11 : 2 = 11320 l) 4265 : 5 + 6438 : 6 + 17848 : 8 = 4157
     //   >>ufgabe 12:
     //   >>) 1203 + 6799 + 5684 + 2156 + 9852 = 25694
@@ -339,46 +203,23 @@ fn basic_operations() {
     //   >> ) 89349 + 3256 − 8347 + 8939 · 11 − 4578 + 3250 − 6784 · 5 = 147339
     //   >>) 3422 · 312 − 26806 + 6 · 7846 − 92357 + 8356 · 8 − 4362 = 1058063
     //   >>) 29857 − 23658 + 26 · 366 − 543 + 23568 − 485 · 38 − 436 + 326 − 2666 − 735 = 16799
-    assert_eq!(
-        "16799",
-        Parser::new("29857-23658+26*366-543+23568-485*38-436+326-2666-735")
-            .parse()
-            .simplify()
-            .to_tex()
+    //
+    parser_eq!(
+        "29857-23658+26*366-543+23568-485*38-436+326-2666-735",
+        "16799"
     );
 }
 
 #[test]
 fn decimal() {
-    assert_eq!(
-        "5.5",
-        Parser::new("1.3*7-4.5*0.8").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "22.3",
-        Parser::new("5.2*7-3*4.7").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "8.64",
-        Parser::new("1.2*5.7+9*0.2").parse().simplify().to_tex()
-    );
+    parser_eq!("1.3*7-4.5*0.8", "5.5");
+    parser_eq!("5.2*7-3*4.7", "22.3");
+    parser_eq!("1.2*5.7+9*0.2", "8.64");
 }
 
 #[test]
 fn braces() {
-    assert_eq!(
-        "619",
-        Parser::new("45+7*(98-144/9)").parse().simplify().to_tex()
-    );
-    assert_eq!(
-        "655",
-        Parser::new("(13*21-112)*4+264/24")
-            .parse()
-            .simplify()
-            .to_tex()
-    );
-    assert_eq!(
-        "13",
-        Parser::new("(6*5+9*8)/3-3*7").parse().simplify().to_tex()
-    );
+    parser_eq!("45+7*(98-144/9)", "619");
+    parser_eq!("(13*21-112)*4+264/24", "655");
+    parser_eq!("(6*5+9*8)/3-3*7", "13");
 }

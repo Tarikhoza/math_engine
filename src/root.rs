@@ -10,10 +10,12 @@ pub struct Root {
 }
 
 impl Root {
+    #[must_use]
     pub fn to_tex(&self) -> String {
         todo!();
     }
 
+    #[must_use]
     pub fn negative(&self) -> Braces {
         todo!();
     }

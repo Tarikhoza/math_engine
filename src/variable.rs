@@ -15,15 +15,16 @@ pub struct Variable {
     pub exponent: Option<Box<Math>>,
 }
 
-fn ascii_score(s: String) -> u32 {
+fn ascii_score(s: &str) -> u32 {
     let mut score = 0;
     for (i, c) in s.chars().enumerate() {
-        score = (c.to_digit(10).unwrap_or(1000) / (i + 1) as u32) as u32;
+        score = c.to_digit(10).unwrap_or(1000) / (i + 1) as u32;
     }
     score
 }
 
 impl BasicOperations for Variable {
+    #[must_use]
     fn addition(&self, other: Variable) -> Math {
         //if suffix and exponent are the same
         if self.suffix == other.suffix
@@ -35,12 +36,13 @@ impl BasicOperations for Variable {
                 exponent: Some(Box::new(self.get_exponent())),
             });
         }
-        return Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other).clone()],
+        Math::Polynom(Polynom {
+            factors: vec![Math::Variable(self.clone()), Math::Variable(other)],
             operators: vec![Operators::Addition],
-        });
+        })
     }
 
+    #[must_use]
     fn subtraction(&self, other: Variable) -> Math {
         //if suffix and exponent are the same
         if self.suffix == other.suffix
@@ -52,15 +54,16 @@ impl BasicOperations for Variable {
                 exponent: Some(Box::new(self.get_exponent())),
             });
         }
-        return Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other).clone()],
+        Math::Polynom(Polynom {
+            factors: vec![Math::Variable(self.clone()), Math::Variable(other)],
             operators: vec![Operators::Subtraction],
-        });
+        })
     }
 
+    #[must_use]
     fn multiplication(&self, other: Variable) -> Math {
         //if suffix are empty
-        if self.suffix == "".to_string() && other.suffix == "".to_string() {
+        if self.suffix == *"" && other.suffix == *"" {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
                     value: self.value * other.value,
@@ -73,7 +76,7 @@ impl BasicOperations for Variable {
                     suffix: self.suffix.clone(),
                     exponent: Some(Box::new(other.get_exponent())),
                 });
-            } else if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
+            } else if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
                     value: self.value * other.value,
                     suffix: self.suffix.clone(),
@@ -82,8 +85,8 @@ impl BasicOperations for Variable {
             }
         }
         //if one suffix is empty and the second is some
-        else if (self.suffix == "".to_string() && other.suffix != "".to_string())
-            || (self.suffix != "".to_string() && other.suffix == "".to_string())
+        else if (self.suffix == *"" && other.suffix != *"")
+            || (self.suffix != *"" && other.suffix == *"")
         {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -113,7 +116,7 @@ impl BasicOperations for Variable {
             }
         }
         //if both suffix are some
-        else if self.suffix == other.suffix && self.suffix != "".to_string() {
+        else if self.suffix == other.suffix && self.suffix != *"" {
             return Math::Variable(Variable {
                 value: self.value * other.value,
                 suffix: self.suffix.clone(),
@@ -123,15 +126,16 @@ impl BasicOperations for Variable {
             });
         }
 
-        return Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
+        Math::Polynom(Polynom {
+            factors: vec![Math::Variable(self.clone()), Math::Variable(other)],
             operators: vec![Operators::InvMulti],
-        });
+        })
     }
 
+    #[must_use]
     fn division(&self, other: Variable) -> Math {
         //if suffix are empty
-        if self.suffix == "".to_string() && other.suffix == "".to_string() {
+        if self.suffix == *"" && other.suffix == *"" {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
                     value: self.value / other.value,
@@ -144,7 +148,7 @@ impl BasicOperations for Variable {
                     suffix: self.suffix.clone(),
                     exponent: Some(Box::new(other.get_exponent())),
                 });
-            } else if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
+            } else if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
                     value: self.value / other.value,
                     suffix: self.suffix.clone(),
@@ -153,8 +157,8 @@ impl BasicOperations for Variable {
             }
         }
         //if one suffix is empty and the second is some
-        else if (self.suffix == "".to_string() && other.suffix != "".to_string())
-            || (self.suffix != "".to_string() && other.suffix == "".to_string())
+        else if (self.suffix == *"" && other.suffix != *"")
+            || (self.suffix != *"" && other.suffix == *"")
         {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -184,7 +188,7 @@ impl BasicOperations for Variable {
             }
         }
         //if one suffix is some and the second is empty
-        else if self.suffix == other.suffix && self.suffix != "".to_string() {
+        else if self.suffix == other.suffix && self.suffix != *"" {
             return Math::Variable(Variable {
                 value: self.value / other.value,
                 suffix: self.suffix.clone(),
@@ -192,12 +196,13 @@ impl BasicOperations for Variable {
             });
         }
 
-        return Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
+        Math::Polynom(Polynom {
+            factors: vec![Math::Variable(self.clone()), Math::Variable(other)],
             operators: vec![Operators::Division],
-        });
+        })
     }
 
+    #[must_use]
     fn negative(&self) -> Math {
         match &self.exponent {
             Some(_e) => Math::Variable(Variable {
@@ -213,6 +218,7 @@ impl BasicOperations for Variable {
         }
     }
 
+    #[must_use]
     fn simplify(&self) -> Math {
         //TODO: apply_exponent
         todo!()
@@ -220,25 +226,24 @@ impl BasicOperations for Variable {
 }
 
 impl Variable {
-    pub fn new(tex: &str) -> Math {
-        Variable::from_tex(tex.to_string())
-    }
-
+    #[must_use]
     pub fn get_exponent(&self) -> Math {
         match &self.exponent {
             None => Math::Variable(Variable {
                 value: dec!(1),
-                suffix: "".to_string(),
+                suffix: String::new(),
                 exponent: None,
             }),
             Some(e) => *e.clone(),
         }
     }
 
+    #[must_use]
     pub fn apply_exponent(&self) -> Math {
         todo!()
     }
 
+    #[must_use]
     pub fn as_polynom(&self) -> Polynom {
         Polynom {
             factors: vec![Math::Variable(self.clone())],
@@ -246,24 +251,25 @@ impl Variable {
         }
     }
 
+    #[must_use]
     pub fn split_operator(&self) -> (Operators, Math) {
         if self.value < dec!(0) {
             return (Operators::Subtraction, self.negative());
         }
-        return (Operators::Addition, Math::Variable(self.clone()));
+        (Operators::Addition, Math::Variable(self.clone()))
     }
+    #[must_use]
     pub fn sort_score(&self) -> u32 {
-        let score = u32::MAX
-            - (ascii_score(self.suffix.clone()) + ascii_score(self.get_exponent().to_tex()));
-        score
+        u32::MAX - (ascii_score(&self.suffix) + ascii_score(&self.get_exponent().to_tex()))
     }
 }
 
 impl Parsable for Variable {
+    #[must_use]
     fn to_tex(&self) -> String {
         let mut val = self.value.normalize().to_string();
         if (val == "1.0" || val == "1") && !self.suffix.is_empty() {
-            val = "".to_string();
+            val = String::new();
         }
         match &self.exponent {
             Some(has_exp) => match &has_exp.to_tex()[..] {
@@ -275,69 +281,65 @@ impl Parsable for Variable {
         }
     }
 
-    fn from_tex(tex: String) -> Math {
+    fn from_tex(tex: &str) -> Result<Math, &'static str> {
         lazy_static! {
             static ref RE: Regex =
-                Regex::new(r"(-?\d+(?=\w*)(\.\d+)?|\d*(?=\w+)(\.\d+)?)(\w*)(\^(\{.+))?").unwrap();
+                Regex::new(r"(-?\d+(?=\w*)(\.\d+)?|\d*(?=\w+)(\.\d+)?)(\w*)(\^(\{.+))?")
+                    .unwrap_or_else(|e| {
+                        panic!("Failed to compile regex for braces: {e}");
+                    });
         }
-        let result = RE.captures(&tex);
+        let result = RE.captures(tex);
         let captures = result
             .expect("Error running regex")
             .expect("No match found");
-        let mut value = captures
-            .get(1)
-            .map(|m| m.as_str())
-            .unwrap_or("1.0")
-            .to_string();
-        let suffix = captures
-            .get(4)
-            .map(|m| m.as_str())
-            .unwrap_or("")
-            .to_string();
-        let exponent_str = Parser::extract_brace(
-            captures
-                .get(6)
-                .map(|m| m.as_str())
-                .unwrap_or("")
-                .to_string(),
-            '{',
-            '}',
-        );
-        let exponent: Option<Box<Math>>;
+        let mut value = captures.get(1).map_or("", |m| m.as_str()).to_string();
+        let suffix = captures.get(4).map_or("", |m| m.as_str()).to_string();
+        let exponent_str =
+            Parser::extract_brace(&captures.get(6).map_or("", |m| m.as_str()), '{', '}');
 
         if value.is_empty() {
             value = "1.0".to_string();
         }
 
-        if !exponent_str.is_empty() {
-            exponent = Some(Box::new(Parser::new(&exponent_str).parse()));
+        let exponent: Option<Box<Math>> = if exponent_str.is_empty() {
+            None
         } else {
-            exponent = None;
-        }
+            Some(Box::new(Parser::new(&exponent_str).parse()?))
+        };
 
-        Math::Variable(Variable {
-            value: Decimal::from_str(&value).unwrap(),
+        Ok(Math::Variable(Variable {
+            value: Decimal::from_str(&value).unwrap_or(dec!(1.0)),
             suffix,
             exponent,
-        })
+        }))
     }
 
+    #[must_use]
     fn on_begining(tex: String) -> Option<String> {
-        let re: Regex =
-            Regex::new(r"^(-?\d+(?=\w*)(\.\d+)?|\d*(?=\w+)(\.\d+)?)(\w*)(\^\{(.+)\})?").unwrap();
-        let f = re.find(&tex).unwrap()?.as_str();
-        if !f.is_empty() {
-            return Some(f.to_string());
+        lazy_static! {
+            static ref RE: Regex =
+                Regex::new(r"^(-?\d+(?=\w?)(\.\d+)?|\d*(?=\w?)(\.\d+)?)(\w?)(\^\{(.+)\})?")
+                    .unwrap_or_else(|e| {
+                        panic!("Failed to compile regex for variable: {e}");
+                    });
         }
-        return None;
+
+        if let Ok(Some(f)) = RE.find(&tex) {
+            let f_str = f.as_str().to_string();
+            if !f_str.is_empty() {
+                return Some(f_str);
+            }
+        }
+        None
     }
 }
 
 impl ops::Add<Math> for Variable {
     type Output = Math;
-    fn add(self, _rhs: Math) -> Math {
+    fn add(self, rhs: Math) -> Math {
         //        println!("{}+{}", self.to_tex(), _rhs.to_tex());
-        match _rhs {
+        match rhs {
             Math::Polynom(p) => self.as_polynom() + Math::Polynom(p),
             Math::Variable(v) => self.addition(v),
             Math::Undefined(u) => Math::Undefined(u),
@@ -348,9 +350,9 @@ impl ops::Add<Math> for Variable {
 
 impl ops::Sub<Math> for Variable {
     type Output = Math;
-    fn sub(self, _rhs: Math) -> Math {
+    fn sub(self, rhs: Math) -> Math {
         //        println!("{}-{}", self.to_tex(), _rhs.to_tex());
-        match _rhs {
+        match rhs {
             Math::Polynom(p) => self.as_polynom() - Math::Polynom(p),
             Math::Variable(v) => self.subtraction(v),
             Math::Undefined(u) => Math::Undefined(u),
@@ -361,8 +363,8 @@ impl ops::Sub<Math> for Variable {
 
 impl ops::Mul<Math> for Variable {
     type Output = Math;
-    fn mul(self, _rhs: Math) -> Math {
-        match _rhs {
+    fn mul(self, rhs: Math) -> Math {
+        match rhs {
             Math::Variable(v) => self.multiplication(v),
             Math::Polynom(p) => self.as_polynom() * Math::Polynom(p),
             Math::Undefined(u) => Math::Undefined(u),
@@ -373,8 +375,8 @@ impl ops::Mul<Math> for Variable {
 
 impl ops::Div<Math> for Variable {
     type Output = Math;
-    fn div(self, _rhs: Math) -> Math {
-        match _rhs {
+    fn div(self, rhs: Math) -> Math {
+        match rhs {
             //  Math::Polynom(p)  => self.as_polynom()*Math::Polynom(p),
             Math::Variable(v) => self.division(v),
             Math::Undefined(u) => Math::Undefined(u),
