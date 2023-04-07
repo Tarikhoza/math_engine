@@ -258,9 +258,17 @@ impl Variable {
         }
         (Operators::Addition, Math::Variable(self.clone()))
     }
+
     #[must_use]
     pub fn sort_score(&self) -> u32 {
         u32::MAX - (ascii_score(&self.suffix) + ascii_score(&self.get_exponent().to_tex()))
+    }
+
+    #[must_use]
+    pub fn add_sub_base(&self) -> String {
+        let mut x = self.clone();
+        x.value = dec!(1.0);
+        x.to_tex()
     }
 }
 

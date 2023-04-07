@@ -113,6 +113,14 @@ impl Math {
     }
 
     #[must_use]
+    pub fn morph_operator(pair: (&Operators, &Math)) -> Math {
+        match pair.0 {
+            Operators::Subtraction => pair.1.negative(),
+            _ => pair.1.clone(),
+        }
+    }
+
+    #[must_use]
     pub fn operators_to_string(op: &Operators) -> String {
         op.to_tex()
     }
@@ -134,6 +142,14 @@ impl Math {
         let before = format!("{}+{}", self.to_tex(), other.to_tex());
         let after = (self.clone() + other.clone()).to_tex();
         after != before
+    }
+
+    #[must_use]
+    pub fn add_sub_base(&self) -> String {
+        match &self {
+            Math::Variable(v) => v.add_sub_base(),
+            _ => String::new(),
+        }
     }
 }
 

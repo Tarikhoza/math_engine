@@ -33,8 +33,10 @@ extern crate rust_decimal;
 
 pub mod braces;
 pub mod math;
+pub mod matrix;
 pub mod parser;
 pub mod polynom;
 pub mod root;
 pub mod undefined;
 pub mod variable;
+pub mod vector;

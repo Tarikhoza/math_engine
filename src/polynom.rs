@@ -2,6 +2,7 @@ use std::ops;
 
 use crate::math::{BasicOperations, Math, Operators};
 use crate::parser::Parsable;
+use crate::vector::Vector;
 
 #[derive(Debug, Clone)]
 pub struct Polynom {
@@ -259,6 +260,20 @@ impl Polynom {
             return self.factors[0].clone();
         }
         Math::Polynom(self.clone())
+    }
+
+    #[must_use]
+    pub fn to_vector(&self) -> Vector {
+        let mut factors: Vec<Math> = self
+            .operators
+            .iter()
+            .zip(self.factors.iter().skip(1))
+            .map(|m| Math::morph_operator(m))
+            .collect();
+
+        println!("{:?}", factors);
+        factors.insert(0, self.factors.get(0).unwrap().to_owned());
+        Vector { factors }
     }
 }
 
