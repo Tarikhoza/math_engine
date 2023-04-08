@@ -15,7 +15,7 @@ impl Vector {
     fn get_bases(&self) -> Vec<String> {
         self.factors
             .iter()
-            .map(|m| m.add_sub_base())
+            .map(|m| m.add_sub_bases().first().unwrap().clone())
             .unique()
             .collect()
     }
@@ -25,7 +25,7 @@ impl Vector {
             .factors
             .iter()
             .map(|m| {
-                if m.add_sub_base() == base {
+                if m.add_sub_bases().first().unwrap().clone() == base {
                     m.clone()
                 } else {
                     Math::Variable(Variable {

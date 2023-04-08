@@ -26,7 +26,9 @@ pub enum Math {
     Operators(Operators),
 }
 
-pub trait BasicOperations {
+pub trait BasicOperations:
+    ops::Add<Math> + ops::Sub<Math> + ops::Mul<Math> + ops::Div<Math>
+{
     fn addition(&self, other: Self) -> Math;
     fn subtraction(&self, other: Self) -> Math;
     fn division(&self, other: Self) -> Math;
@@ -104,10 +106,19 @@ impl Math {
     }
 
     #[must_use]
-    pub fn add_sub_base(&self) -> String {
+    pub fn add_sub_bases(&self) -> Vec<String> {
         match &self {
-            Math::Variable(v) => v.add_sub_base(),
-            _ => String::new(),
+            Math::Variable(v) => v.add_sub_bases(),
+            _ => vec![String::new()],
+        }
+    }
+    #[must_use]
+    pub fn map_value(&self, suffix: &str, math: Math) -> Math {
+        match self {
+            Math::Variable(v) => v.map_value(suffix, math),
+            Math::Polynom(p) => p.map_value(suffix, math),
+            //            Math::Equation(e) => e.map_value(suffix, math),
+            s => todo!(),
         }
     }
 }

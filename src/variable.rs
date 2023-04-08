@@ -1,9 +1,8 @@
-use std::ops;
-
 use fancy_regex::Regex;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
+use crate::braces::Braces;
 use crate::math::{BasicOperations, Math};
 use crate::operators::Operators;
 use crate::parser::{Parsable, Parser};
@@ -64,59 +63,30 @@ impl Variable {
     }
 
     #[must_use]
-    pub fn add_sub_base(&self) -> String {
+    pub fn add_sub_bases(&self) -> Vec<String> {
         let mut x = self.clone();
         x.value = dec!(1.0);
-        x.to_tex()
+        vec![x.to_tex()]
     }
-}
 
-impl ops::Add<Math> for Variable {
-    type Output = Math;
-    fn add(self, rhs: Math) -> Math {
-        //        println!("{}+{}", self.to_tex(), _rhs.to_tex());
-        match rhs {
-            Math::Polynom(p) => self.as_polynom() + Math::Polynom(p),
-            Math::Variable(v) => self.addition(v),
-            Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Sub<Math> for Variable {
-    type Output = Math;
-    fn sub(self, rhs: Math) -> Math {
-        //        println!("{}-{}", self.to_tex(), _rhs.to_tex());
-        match rhs {
-            Math::Polynom(p) => self.as_polynom() - Math::Polynom(p),
-            Math::Variable(v) => self.subtraction(v),
-            Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Mul<Math> for Variable {
-    type Output = Math;
-    fn mul(self, rhs: Math) -> Math {
-        match rhs {
-            Math::Variable(v) => self.multiplication(v),
-            Math::Polynom(p) => self.as_polynom() * Math::Polynom(p),
-            Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Div<Math> for Variable {
-    type Output = Math;
-    fn div(self, rhs: Math) -> Math {
-        match rhs {
-            //  Math::Polynom(p)  => self.as_polynom()*Math::Polynom(p),
-            Math::Variable(v) => self.division(v),
-            Math::Undefined(u) => Math::Undefined(u),
-            _ => todo!(),
+    pub fn map_value(&self, suffix: &str, math: Math) -> Math {
+        if self.suffix == suffix {
+            Math::Polynom(Polynom {
+                factors: vec![
+                    Math::Variable(Variable {
+                        value: self.value,
+                        suffix: String::new(),
+                        exponent: None,
+                    }),
+                    Math::Braces(Braces {
+                        math: Box::new(math),
+                        exponent: Some(Box::new(self.get_exponent())),
+                    }),
+                ],
+                operators: vec![Operators::Multiplication],
+            })
+        } else {
+            Math::Variable(self.clone())
         }
     }
 }
