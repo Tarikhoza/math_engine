@@ -5,7 +5,7 @@ use math_engine::variable::Variable;
 
 //Add
 #[test]
-fn add_tw() {
+fn add_two() {
     let x = Variable::from_tex("2").unwrap();
     let y = Variable::from_tex("2").unwrap();
     assert_eq!("4", (x + y).to_tex());

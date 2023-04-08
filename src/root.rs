@@ -5,7 +5,7 @@ use crate::math::Math;
 
 #[derive(Debug, Clone)]
 pub struct Root {
-    pub math: Box<Math>,
+    pub math: Math,
     pub base: Box<Math>,
 }
 

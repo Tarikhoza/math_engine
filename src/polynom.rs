@@ -1,8 +1,11 @@
-use std::ops;
-
-use crate::math::{BasicOperations, Math, Operators};
+use crate::fraction::Fraction;
+use crate::math::{BasicOperations, Math};
+use crate::operators::Operators;
 use crate::parser::Parsable;
+use crate::variable::Variable;
 use crate::vector::Vector;
+use rust_decimal_macros::dec;
+use std::ops;
 
 #[derive(Debug, Clone)]
 pub struct Polynom {
@@ -10,86 +13,9 @@ pub struct Polynom {
     pub operators: Vec<Operators>,
 }
 
-impl BasicOperations for Polynom {
-    #[must_use]
-    fn addition(&self, other: Polynom) -> Math {
-        Math::Polynom(Polynom {
-            factors: {
-                let mut factors = self.factors.clone();
-                factors.extend(other.factors);
-                factors
-            },
-            operators: {
-                let mut operators = self.operators.clone();
-                operators.push(Operators::Addition);
-                operators.extend(other.operators.iter().cloned());
-                operators
-            },
-        })
-    }
-    #[must_use]
-    fn subtraction(&self, other: Polynom) -> Math {
-        Math::Polynom(Polynom {
-            factors: {
-                let mut factors = self.factors.clone();
-                factors.extend(other.factors);
-                factors
-            },
-            operators: {
-                let mut operators = self.operators.clone();
-                operators.push(Operators::Subtraction);
-                operators.extend(other.operators.iter().cloned());
-                operators
-            },
-        })
-    }
-
-    #[must_use]
-    fn multiplication(&self, other: Polynom) -> Math {
-        let mut factors: Vec<Math> = vec![];
-        for i in self.factors.iter() {
-            for j in other.factors.iter() {
-                factors.push((i.clone()) * (j.clone()));
-            }
-        }
-        let _len = factors.len();
-        Math::Polynom(Polynom {
-            factors,
-            operators: vec![Operators::InvMulti],
-        })
-    }
-
-    #[must_use]
-    fn division(&self, _other: Polynom) -> Math {
-        todo!()
-    }
-
-    #[must_use]
-    fn negative(&self) -> Math {
-        let mut factors = vec![];
-        for factor in self.factors.iter() {
-            factors.push(factor.clone().negative());
-        }
-        Math::Polynom(Polynom {
-            factors,
-            operators: self.operators.clone(),
-        })
-    }
-
-    //  PEMDAS
-    #[must_use]
-    fn simplify(&self) -> Math {
-        self.simplify_par()
-            .simplify_exp()
-            .simplify_mul_div()
-            .simplify_add_sub()
-            .unpack()
-    }
-}
-
-//simplify helper functions
-//  PEMDAS
 impl Polynom {
+    //  Simplify helper functions
+    //  PEMDAS
     //  P - Parentheses first
     #[must_use]
     pub fn simplify_par(&self) -> Polynom {
@@ -181,7 +107,6 @@ impl Polynom {
             }
         }
         let p = Polynom { factors, operators };
-        println!("{}", p.to_tex());
         if p.factors.len() > 1
             && (p.operators.contains(&Operators::Multiplication)
                 || p.operators.contains(&Operators::Division))
@@ -194,67 +119,9 @@ impl Polynom {
     //  AS - Addition and Subtraction (left-to-right)
 
     #[must_use]
-    pub fn simplify_add_sub(&self) -> Polynom {
-        if self.factors.len() <= 1
-            || (!self.operators.contains(&Operators::Addition)
-                && !self.operators.contains(&Operators::Subtraction))
-        {
-            return Polynom {
-                factors: self.factors.clone(),
-                operators: self.operators.clone(),
-            };
-        }
-        let mut factors: Vec<Math> = vec![];
-        let mut operators: Vec<Operators> = vec![];
-
-        let mut chan: bool = false;
-        let mut skip: bool = false;
-
-        for (i, _factor) in self.factors.iter().take(self.factors.len() - 1).enumerate() {
-            if chan {
-                operators.push(self.operators[i].clone());
-                if skip {
-                    skip = false;
-                } else {
-                    factors.push(self.factors[i].clone());
-                }
-                if i == self.factors.len() - 2 {
-                    factors.push(self.factors[i + 1].clone());
-                }
-                continue;
-            }
-            match &self.operators[i] {
-                Operators::Addition => {
-                    if self.factors[i].add_sub_change(&self.factors[i + 1]) {
-                        factors.push(self.factors[i].clone() + self.factors[i + 1].clone());
-                        chan = true;
-                        skip = true;
-                    } else {
-                        factors.push(self.factors[i].clone());
-                        operators.push(self.operators[i].clone());
-                    }
-                }
-                Operators::Subtraction => {
-                    if self.factors[i].add_sub_change(&self.factors[i + 1]) {
-                        factors.push(self.factors[i].clone() - self.factors[i + 1].clone());
-                        chan = true;
-                        skip = true;
-                    } else {
-                        factors.push(self.factors[i].clone());
-                        operators.push(self.operators[i].clone());
-                    }
-                }
-                o => {
-                    factors.push(self.factors[i].clone());
-                    operators.push(o.clone());
-                }
-            }
-        }
-
-        Polynom { factors, operators }
+    pub fn simplify_add_sub(&self) -> Math {
+        self.to_vector().to_based_matrix().add_all()
     }
-
-    #[must_use]
     pub fn unpack(&self) -> Math {
         if self.factors.len() == 1 {
             return self.factors[0].clone();
@@ -271,40 +138,18 @@ impl Polynom {
             .map(|m| Math::morph_operator(m))
             .collect();
 
-        println!("{:?}", factors);
         factors.insert(0, self.factors.get(0).unwrap().to_owned());
         Vector { factors }
     }
-}
-
-impl Parsable for Polynom {
-    #[must_use]
-    fn to_tex(&self) -> String {
-        if !self.factors.is_empty() {
-            if self.factors.len() <= 1 && self.factors.len() != self.operators.len() + 1 {
-                return self.factors[0].to_tex();
-            }
-            let mut temp = self.factors[0].to_tex();
-            for (i, factor) in self.factors.iter().skip(1).enumerate() {
-                temp = format!(
-                    "{}{}{}",
-                    temp,
-                    Math::operators_to_string(&self.operators[i]),
-                    factor.to_tex()
-                );
-            }
-            return temp;
+    pub fn to_fraction(&self) -> Fraction {
+        Fraction {
+            denominator: Box::new(Math::Polynom(self.clone())),
+            numerator: Box::new(Math::Variable(Variable {
+                value: dec!(1),
+                suffix: String::new(),
+                exponent: None,
+            })),
         }
-        String::new()
-    }
-
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        Math::from_tex(tex)
-    }
-
-    #[must_use]
-    fn on_begining(_tex: String) -> Option<String> {
-        None
     }
 }
 
@@ -315,8 +160,10 @@ impl ops::Add<Math> for Polynom {
             Math::Polynom(p) => self.addition(p),
             Math::Variable(v) => self.addition(v.as_polynom()),
             Math::Braces(b) => self + b.simplify(),
+            Math::Fraction(f) => self.to_fraction().addition(f),
             Math::Undefined(u) => Math::Undefined(u),
             Math::Operators(_) => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -330,6 +177,7 @@ impl ops::Sub<Math> for Polynom {
             Math::Braces(b) => self - b.simplify(),
             Math::Undefined(u) => Math::Undefined(u),
             Math::Operators(_) => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -343,6 +191,7 @@ impl ops::Mul<Math> for Polynom {
             Math::Braces(b) => self * b.simplify(),
             Math::Undefined(u) => Math::Undefined(u),
             Math::Operators(_) => todo!(),
+            _ => todo!(),
         }
     }
 }

@@ -1,17 +1,38 @@
 use crate::braces::Braces;
-use crate::math::{Math, Operators};
+use crate::equation::Equation;
+use crate::fraction::Fraction;
+use crate::math::Math;
+use crate::operators::Operators;
 use crate::polynom::Polynom;
 use crate::variable::Variable;
-
+use rust_decimal_macros::dec;
 pub struct Parser {
     input: String,
     pos: usize,
 }
 
 pub trait Parsable {
-    fn on_begining(tex: String) -> Option<String>;
-    fn to_tex(&self) -> String;
-    fn from_tex(tex: &str) -> Result<Math, &'static str>;
+    fn on_begining(tex: String) -> Option<String> {
+        Some(String::new())
+    }
+    fn to_tex(&self) -> String {
+        String::new()
+    }
+    fn from_tex(tex: &str) -> Result<Math, &'static str> {
+        Ok(Variable::from_tex("0")?)
+    }
+    fn parse(tex: &str) -> Option<(usize, Math)> {
+        if let Some(t) = Self::on_begining(tex.to_owned()) {
+            let math = Self::from_tex(&t).unwrap_or(Math::Variable(Variable {
+                value: dec!(0),
+                suffix: String::new(),
+                exponent: None,
+            }));
+            let len = math.to_tex().len();
+            return Some((len, math));
+        }
+        None
+    }
 }
 
 impl Parser {
@@ -23,6 +44,7 @@ impl Parser {
         }
     }
     #[must_use]
+    //TODO convert to result
     pub fn extract_brace(tex: &str, open_c: char, close_c: char) -> String {
         let mut pos = 1;
         let mut close = 0;
@@ -37,7 +59,7 @@ impl Parser {
                 _ => {}
             }
             if open == close {
-                return tex[1..pos].to_string();
+                return tex.get(1..pos).unwrap().to_string();
             }
             pos += 1;
         }
@@ -45,19 +67,26 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Math, &'static str> {
+        let to_parse: Vec<fn(tex: &str) -> Option<(usize, Math)>> = vec![
+            Equation::parse,
+            Braces::parse,
+            Variable::parse,
+            Fraction::parse,
+        ];
+
         let mut factors: Vec<Math> = vec![];
         let mut operators: Vec<Operators> = vec![];
         let mut op_search: bool = false;
 
-        while self.pos < self.input.len() {
+        'outer: while self.pos < self.input.len() {
             let remaining_input = &self.input.get(self.pos..).unwrap_or("");
             if remaining_input.is_empty() {
-                return Err("Error while parsing {self.input}");
+                return Err("Error while parsing");
             }
             if op_search {
                 if let Some(tex) = Operators::on_begining((*remaining_input).to_string()) {
                     let o = Operators::from_tex(&tex)?;
-                    self.pos += tex.len();
+                    self.pos += o.to_tex().len();
                     if let Math::Operators(o) = o {
                         operators.push(o);
                     }
@@ -66,22 +95,23 @@ impl Parser {
                 }
                 op_search = false;
             } else {
-                if let Some(tex) = Braces::on_begining((*remaining_input).to_string()) {
-                    let b = Braces::from_tex(&tex)?;
-                    self.pos += tex.len();
-                    factors.push(b);
-                } else if let Some(tex) = Variable::on_begining((*remaining_input).to_string()) {
-                    let v = Variable::from_tex(&tex)?;
-                    self.pos += tex.len();
-                    factors.push(v);
-                } else {
-                    return Err(
-                        "Invalid character at position {self.pos}: '{&self.input.chars().nth(self.pos).unwrap_or(' ')}' ",
-                    );
+                for parsing in to_parse.iter() {
+                    if let Some(pair) = parsing(remaining_input) {
+                        self.pos += pair.0;
+                        factors.push(pair.1);
+                        op_search = true;
+                        continue 'outer;
+                    }
                 }
-                op_search = true;
+                println!(
+                    "Invalid character at position {}: '{}' ",
+                    self.pos,
+                    self.input.chars().nth(self.pos).unwrap_or(' ')
+                );
+
+                return Err("While parsing found invalid character");
             }
         }
-        Ok(Math::Polynom(Polynom { factors, operators }))
+        Ok(Polynom { factors, operators }.unpack())
     }
 }

@@ -5,35 +5,23 @@
     clippy::style,
     clippy::panicking_unwrap
 )]
-#![allow(unreachable_patterns)]
 #![allow(clippy::todo)]
-#![warn(warnings)]
-#![deny(
-    bad_style,
-    dead_code,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    private_in_public,
-    unconditional_recursion,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true
-)]
-#![allow(clippy::todo)]
+#![allow(unused)]
 
 #[macro_use]
 extern crate lazy_static;
 extern crate fancy_regex;
+extern crate regex;
 extern crate rust_decimal;
 
+pub mod basic_operations;
 pub mod braces;
+pub mod equation;
+pub mod fraction;
 pub mod math;
 pub mod matrix;
+pub mod operators;
+pub mod parsable;
 pub mod parser;
 pub mod polynom;
 pub mod root;

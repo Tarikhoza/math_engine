@@ -1,28 +1,52 @@
 use crate::math::Math;
-use crate::parser::Parsable;
 use crate::vector::Vector;
+use std::ops;
+
+#[derive(Debug, Clone)]
 pub struct Matrix {
     pub factors: Vec<Vector>,
 }
 
-impl Parsable for Matrix {
-    fn to_tex(&self) -> String {
-        let s: String = self
-            .factors
-            .iter()
-            .map(|m| m.to_tex())
-            .collect::<Vec<_>>()
-            .join(",\n ");
-
-        format!("[\n {}\n]", s)
+impl Matrix {
+    pub fn add_all(&self) -> Math {
+        let mut result: Math = self.factors.get(0).unwrap().clone().add_all();
+        for factor in self.factors.iter().skip(1) {
+            result = result + factor.clone().add_all();
+        }
+        result
     }
+}
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
+impl ops::Add<Math> for Matrix {
+    type Output = Math;
+    fn add(self, rhs: Math) -> Math {
+        match rhs {
+            _ => todo!(),
+        }
+    }
+}
+
+impl ops::Sub<Math> for Matrix {
+    type Output = Math;
+    fn sub(self, rhs: Math) -> Math {
+        match rhs {
+            _ => todo!(),
+        }
+    }
+}
+
+impl ops::Mul<Math> for Matrix {
+    type Output = Math;
+    fn mul(self, rhs: Math) -> Math {
+        match rhs {
+            _ => todo!(),
+        }
+    }
+}
+
+impl ops::Div<Math> for Matrix {
+    type Output = Math;
+    fn div(self, _rhs: Math) -> Math {
         todo!()
-    }
-
-    #[must_use]
-    fn on_begining(_tex: String) -> Option<String> {
-        None
     }
 }

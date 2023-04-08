@@ -3,67 +3,27 @@ use std::ops;
 use fancy_regex::Regex;
 
 use crate::braces::Braces;
+use crate::equation::Equation;
+use crate::fraction::Fraction;
+use crate::matrix::Matrix;
+use crate::operators::Operators;
 use crate::parser::{Parsable, Parser};
 use crate::polynom::Polynom;
 use crate::undefined::Undefined;
 use crate::variable::Variable;
+use crate::vector::Vector;
 
 #[derive(Debug, Clone)]
 pub enum Math {
     Variable(Variable),
     Polynom(Polynom),
     Braces(Braces),
+    Fraction(Fraction),
+    Vector(Vector),
+    Matrix(Matrix),
     Undefined(Undefined),
+    Equation(Equation),
     Operators(Operators),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum Operators {
-    Addition,
-    Subtraction,
-    Multiplication,
-    Division,
-    InvMulti,
-}
-
-impl Parsable for Operators {
-    #[must_use]
-    fn to_tex(&self) -> String {
-        match self {
-            Operators::Addition => "+".to_owned(),
-            Operators::Subtraction => "-".to_owned(),
-            Operators::Multiplication => "*".to_owned(),
-            Operators::Division => "/".to_owned(),
-            Operators::InvMulti => String::new(),
-            _ => panic!("Conversion from operator to string went wrong"),
-        }
-    }
-
-    fn from_tex(op: &str) -> Result<Math, &'static str> {
-        match op {
-            x if x == "+" => Ok(Math::Operators(Operators::Addition)),
-            x if x == "-" => Ok(Math::Operators(Operators::Subtraction)),
-            x if x == "*" => Ok(Math::Operators(Operators::Multiplication)),
-            x if x == "/" => Ok(Math::Operators(Operators::Division)),
-            x if x == " " => Ok(Math::Operators(Operators::InvMulti)),
-            _ => Err("Conversion from string to operator went wrong"),
-        }
-    }
-    #[must_use]
-    fn on_begining(tex: String) -> Option<String> {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"^[\-+\/*]").unwrap_or_else(|e| {
-                panic!("Failed to compile regex for operators: {e}");
-            });
-        }
-        if let Ok(Some(f)) = RE.find(&tex) {
-            let f_str = f.as_str().to_string();
-            if !f_str.is_empty() {
-                return Some(f_str);
-            }
-        }
-        None
-    }
 }
 
 pub trait BasicOperations {
@@ -80,7 +40,7 @@ impl Math {
     pub fn simplify(&self) -> Math {
         match self {
             Math::Polynom(p) => p.simplify(),
-            Math::Braces(b) => b.simplify(),
+            Math::Braces(b) => b.math.simplify(),
             s => s.clone(),
         }
     }
@@ -98,7 +58,6 @@ impl Math {
         match self {
             Math::Variable(s) => s.negative(),
             Math::Polynom(s) => s.negative(),
-            Math::Braces(s) => s.negative(),
             Math::Braces(s) => s.negative(),
             s => s.clone(),
         }
@@ -153,36 +112,31 @@ impl Math {
     }
 }
 
-impl Parsable for Math {
-    #[must_use]
-    fn to_tex(&self) -> String {
-        match self {
-            Math::Variable(s) => s.to_tex(),
-            Math::Braces(s) => s.to_tex(),
-            Math::Polynom(s) => s.to_tex(),
-            Math::Undefined(s) => s.to_tex(),
-            Math::Operators(s) => s.to_tex(),
-            _ => todo!(),
-        }
+fn or_zero(first: &Math, second: &Math) -> bool {
+    if first.clone().to_tex() == "0" || second.clone().to_tex() == "0" {
+        return true;
     }
+    false
+}
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        Parser::new(tex).parse()
+fn non_zero(first: Math, second: Math) -> Math {
+    if first.clone().to_tex() != "0" {
+        return first;
     }
-
-    #[must_use]
-    fn on_begining(_tex: String) -> Option<String> {
-        None
-    }
+    return second;
 }
 
 impl ops::Add<Math> for Math {
     type Output = Math;
     fn add(self, rhs: Math) -> Math {
+        if or_zero(&self, &rhs) {
+            return non_zero(self, rhs);
+        }
         match self {
             Math::Polynom(p) => p + rhs,
             Math::Variable(v) => v + rhs,
             Math::Braces(b) => b + rhs,
+            Math::Fraction(f) => f + rhs,
             Math::Undefined(u) => Math::Undefined(u),
             _ => todo!(),
         }
@@ -192,10 +146,14 @@ impl ops::Add<Math> for Math {
 impl ops::Sub<Math> for Math {
     type Output = Math;
     fn sub(self, rhs: Math) -> Math {
+        if or_zero(&self, &rhs) {
+            return non_zero(self, rhs);
+        }
         match self {
             Math::Polynom(p) => p - rhs,
             Math::Variable(v) => v - rhs,
             Math::Braces(b) => b - rhs,
+            Math::Fraction(f) => f - rhs,
             Math::Undefined(u) => Math::Undefined(u),
             _ => todo!(),
         }
@@ -209,8 +167,10 @@ impl ops::Mul<Math> for Math {
             Math::Polynom(p) => p * rhs,
             Math::Variable(v) => v * rhs,
             Math::Braces(b) => b * rhs,
+            Math::Fraction(f) => f * rhs,
             Math::Undefined(u) => Math::Undefined(u),
             Math::Operators(_) => todo!(),
+            _ => todo!(),
         }
     }
 }
@@ -222,6 +182,7 @@ impl ops::Div<Math> for Math {
             //   Math::Polynom(p)  => p*_rhs,
             //   Math::Braces(b)   => b*_rhs,
             Math::Variable(v) => v / rhs,
+            Math::Fraction(f) => f / rhs,
             Math::Undefined(u) => Math::Undefined(u),
             _ => todo!(),
         }

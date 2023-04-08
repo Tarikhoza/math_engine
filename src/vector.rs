@@ -4,32 +4,11 @@ use crate::parser::Parsable;
 use crate::variable::Variable;
 use itertools::Itertools;
 use rust_decimal_macros::dec;
+use std::ops;
 
 #[derive(Debug, Clone)]
 pub struct Vector {
     pub factors: Vec<Math>,
-}
-
-impl Parsable for Vector {
-    fn to_tex(&self) -> String {
-        let s: String = self
-            .factors
-            .iter()
-            .map(|m| m.to_tex())
-            .collect::<Vec<_>>()
-            .join(",\t");
-
-        format!("[{}]", s)
-    }
-
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        todo!()
-    }
-
-    #[must_use]
-    fn on_begining(_tex: String) -> Option<String> {
-        None
-    }
 }
 
 impl Vector {
@@ -68,5 +47,49 @@ impl Vector {
                 .map(|m| self.non_matching_to_zero(m))
                 .collect(),
         }
+    }
+
+    pub fn add_all(&self) -> Math {
+        let mut result: Math = self.factors.get(0).unwrap().clone();
+        for factor in self.factors.iter().skip(1) {
+            if factor.clone().to_tex() != "0" {
+                result = result + factor.clone();
+            }
+        }
+        result
+    }
+}
+
+impl ops::Add<Math> for Vector {
+    type Output = Math;
+    fn add(self, rhs: Math) -> Math {
+        match rhs {
+            _ => todo!(),
+        }
+    }
+}
+
+impl ops::Sub<Math> for Vector {
+    type Output = Math;
+    fn sub(self, rhs: Math) -> Math {
+        match rhs {
+            _ => todo!(),
+        }
+    }
+}
+
+impl ops::Mul<Math> for Vector {
+    type Output = Math;
+    fn mul(self, rhs: Math) -> Math {
+        match rhs {
+            _ => todo!(),
+        }
+    }
+}
+
+impl ops::Div<Math> for Vector {
+    type Output = Math;
+    fn div(self, _rhs: Math) -> Math {
+        todo!()
     }
 }
