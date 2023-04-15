@@ -1,3 +1,4 @@
+use math_engine::math::operator::algebra::Operations;
 use math_engine::parser::{Parsable, Parser};
 
 macro_rules! parser_eq {
@@ -209,6 +210,12 @@ fn basic_operations() {
         "29857-23658+26*366-543+23568-485*38-436+326-2666-735",
         "16799"
     );
+}
+
+#[test]
+fn basic_operations_with_suffix() {
+    parser_eq!("3x+2x", "5x");
+    parser_eq!("3x*2x", "6x^{2}");
 }
 
 #[test]
