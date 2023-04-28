@@ -5,6 +5,7 @@ use rust_decimal_macros::dec;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+use crate::math::operator::Operator;
 
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::polynom::Polynom;
@@ -53,11 +54,17 @@ impl Variable {
     }
 
     #[must_use]
-    pub fn split_operator(&self) -> (AlgebraOperator, Math) {
+    pub fn split_operator(&self) -> (Operator, Math) {
         if self.value < dec!(0) {
-            return (AlgebraOperator::Subtraction, self.negative());
+            return (
+                Operator::Algebra(AlgebraOperator::Subtraction),
+                self.negative(),
+            );
         }
-        (AlgebraOperator::Addition, Math::Variable(self.clone()))
+        (
+            Operator::Algebra(AlgebraOperator::Addition),
+            Math::Variable(self.clone()),
+        )
     }
 
     #[must_use]
@@ -86,7 +93,7 @@ impl Variable {
                         exponent: Some(Box::new(self.get_exponent())),
                     }),
                 ],
-                operators: vec![AlgebraOperator::Multiplication],
+                operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
             })
         } else {
             Math::Variable(self.clone())

@@ -1,10 +1,10 @@
 use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::algebra::Operator as AlgebraOperator;
+use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;
 
 impl Parsable for Polynom {
-    #[must_use]
     fn to_tex(&self) -> String {
         if !self.factors.is_empty() {
             if self.factors.len() <= 1 && self.factors.len() != self.operators.len() + 1 {
@@ -15,7 +15,7 @@ impl Parsable for Polynom {
                 temp = format!(
                     "{}{}{}",
                     temp,
-                    AlgebraOperator::to_tex(&self.operators[i]),
+                    Operator::to_tex(&self.operators[i]),
                     factor.to_tex()
                 );
             }

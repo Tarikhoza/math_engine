@@ -2,11 +2,11 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
+use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;
 
 impl AlgebraOperatons for Variable {
-    #[must_use]
     fn addition(&self, other: &Variable) -> Math {
         //if suffix and exponent are the same
         if self.suffix == other.suffix
@@ -20,11 +20,10 @@ impl AlgebraOperatons for Variable {
         }
         Math::Polynom(Polynom {
             factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![AlgebraOperator::Addition],
+            operators: vec![Operator::Algebra(AlgebraOperator::Addition)],
         })
     }
 
-    #[must_use]
     fn subtraction(&self, other: &Variable) -> Math {
         //if suffix and exponent are the same
         if self.suffix == other.suffix
@@ -38,11 +37,10 @@ impl AlgebraOperatons for Variable {
         }
         Math::Polynom(Polynom {
             factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![AlgebraOperator::Subtraction],
+            operators: vec![Operator::Algebra(AlgebraOperator::Subtraction)],
         })
     }
 
-    #[must_use]
     fn multiplication(&self, other: &Variable) -> Math {
         //if suffix are empty
         if self.suffix == *"" && other.suffix == *"" {
@@ -110,11 +108,10 @@ impl AlgebraOperatons for Variable {
 
         Math::Polynom(Polynom {
             factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![AlgebraOperator::InvMulti],
+            operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
         })
     }
 
-    #[must_use]
     fn division(&self, other: &Variable) -> Math {
         //if suffix are empty
         if self.suffix == *"" && other.suffix == *"" {
@@ -180,7 +177,7 @@ impl AlgebraOperatons for Variable {
 
         Math::Polynom(Polynom {
             factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![AlgebraOperator::Division],
+            operators: vec![Operator::Algebra(AlgebraOperator::Division)],
         })
     }
 
@@ -220,7 +217,6 @@ impl AlgebraOperatons for Variable {
         }
     }
 
-    #[must_use]
     fn negative(&self) -> Math {
         match &self.exponent {
             Some(_e) => Math::Variable(Variable {
@@ -236,7 +232,6 @@ impl AlgebraOperatons for Variable {
         }
     }
 
-    #[must_use]
     fn simplify(&self) -> Math {
         //TODO: apply_exponent
         todo!()

@@ -4,6 +4,7 @@ use crate::math::algebra::braces::Braces;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+use crate::math::operator::Operator;
 //use crate::math::algebra::equation::Equation;
 //use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
@@ -40,14 +41,12 @@ pub trait Parsable {
 }
 
 impl Parser {
-    #[must_use]
     pub fn new(input: &str) -> Parser {
         Parser {
             input: input.to_string().replace(' ', ""),
             pos: 0,
         }
     }
-    #[must_use]
     //TODO convert to result
     pub fn extract_brace(tex: &str, open_c: char, close_c: char) -> String {
         let mut pos = 1;
@@ -79,7 +78,7 @@ impl Parser {
         ];
 
         let mut factors: Vec<Math> = vec![];
-        let mut operators: Vec<AlgebraOperator> = vec![];
+        let mut operators: Vec<Operator> = vec![];
         let mut op_search: bool = false;
 
         'outer: while self.pos < self.input.len() {
@@ -88,14 +87,14 @@ impl Parser {
                 return Err("Error while parsing");
             }
             if op_search {
-                if let Some(tex) = AlgebraOperator::on_begining((*remaining_input).to_string()) {
-                    let o = AlgebraOperator::from_tex(&tex)?;
+                if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
+                    let o = Operator::from_tex(&tex)?;
                     self.pos += o.to_tex().len();
-                    if let Math::Operators(o) = o {
+                    if let Math::Operator(o) = o {
                         operators.push(o);
                     }
                 } else {
-                    operators.push(AlgebraOperator::InvMulti);
+                    operators.push(Operator::Algebra(AlgebraOperator::InvMulti));
                 }
                 op_search = false;
             } else {

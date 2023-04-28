@@ -1,10 +1,3 @@
-#![warn(
-    clippy::all,
-    clippy::pedantic,
-    clippy::unwrap_used,
-    clippy::style,
-    clippy::panicking_unwrap
-)]
 #![allow(clippy::todo)]
 #![allow(unused)]
 

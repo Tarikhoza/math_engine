@@ -17,18 +17,17 @@ use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+use crate::math::operator::Operator;
 
 #[derive(Debug, Clone)]
 pub enum Math {
     Variable(Variable),
     Polynom(Polynom),
     Braces(Braces),
-    //    Fraction(Fraction),
     Vector(Vector),
     Matrix(Matrix),
     Undefined(Undefined),
-    Operators(AlgebraOperator),
-    //    Equation(Equation),
+    Operator(Operator),
 }
 
 impl Math {
@@ -39,21 +38,21 @@ impl Math {
         }
     }
 
-    pub fn split_operator(&self) -> (AlgebraOperator, Math) {
+    pub fn split_operator(&self) -> (Operator, Math) {
         match self {
             Math::Variable(s) => s.split_operator(),
-            _ => (AlgebraOperator::Addition, self.clone()),
+            _ => (Operator::Algebra(AlgebraOperator::Addition), self.clone()),
         }
     }
 
-    pub fn morph_operator(pair: (&AlgebraOperator, &Math)) -> Math {
+    pub fn morph_operator(pair: (&Operator, &Math)) -> Math {
         println!("{} {}", pair.1.to_tex(), pair.1.to_tex());
         match pair.0 {
             p => println!("{}", p.to_tex()),
         }
 
         match pair.0 {
-            AlgebraOperator::Subtraction => pair.1.negative(),
+            Operator::Algebra(AlgebraOperator::Subtraction) => pair.1.negative(),
             _ => pair.1.clone(),
         }
     }
@@ -91,7 +90,7 @@ fn non_zero(first: &Math, second: &Math) -> Math {
     if first.to_tex() != "0" {
         return first.clone();
     }
-    return second.clone();
+    second.clone()
 }
 
 impl AlgebraOperations for Math {
@@ -109,7 +108,7 @@ impl AlgebraOperations for Math {
     }
 
     fn add(&self, rhs: &Math) -> Math {
-        if or_zero(&self, &rhs) {
+        if or_zero(self, rhs) {
             return non_zero(self, rhs);
         }
         match self {
@@ -122,7 +121,7 @@ impl AlgebraOperations for Math {
         }
     }
     fn sub(&self, rhs: &Math) -> Math {
-        if or_zero(&self, &rhs) {
+        if or_zero(self, rhs) {
             return non_zero(self, rhs);
         }
         match self {

@@ -9,7 +9,7 @@ impl Parsable for Math {
             Math::Braces(s) => s.to_tex(),
             Math::Polynom(s) => s.to_tex(),
             Math::Undefined(s) => s.to_tex(),
-            Math::Operators(s) => s.to_tex(),
+            Math::Operator(s) => s.to_tex(),
             _ => todo!(),
         }
     }

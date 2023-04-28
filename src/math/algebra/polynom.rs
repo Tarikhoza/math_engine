@@ -2,6 +2,7 @@ use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
 
+use crate::math::operator::Operator;
 use crate::math::Math;
 
 use crate::math::algebra::variable::Variable;
@@ -12,7 +13,7 @@ use rust_decimal_macros::dec;
 #[derive(Debug, Clone)]
 pub struct Polynom {
     pub factors: Vec<Math>,
-    pub operators: Vec<AlgebraOperator>,
+    pub operators: Vec<Operator>,
 }
 
 impl Polynom {

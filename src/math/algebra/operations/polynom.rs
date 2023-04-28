@@ -3,6 +3,7 @@ use crate::math::algebra::undefined::Undefined;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperators,
 };
+use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 
@@ -16,7 +17,7 @@ impl AlgebraOperations for Polynom {
             },
             operators: {
                 let mut operators = self.operators.clone();
-                operators.push(AlgebraOperators::Addition);
+                operators.push(Operator::Algebra(AlgebraOperators::Addition));
                 operators.extend(other.operators.iter().cloned());
                 operators
             },
@@ -31,7 +32,7 @@ impl AlgebraOperations for Polynom {
             },
             operators: {
                 let mut operators = self.operators.clone();
-                operators.push(AlgebraOperators::Subtraction);
+                operators.push(Operator::Algebra(AlgebraOperators::Subtraction));
                 operators.extend(other.operators.iter().cloned());
                 operators
             },
@@ -48,11 +49,10 @@ impl AlgebraOperations for Polynom {
         let _len = factors.len();
         Math::Polynom(Polynom {
             factors,
-            operators: vec![AlgebraOperators::InvMulti],
+            operators: vec![Operator::Algebra(AlgebraOperators::InvMulti)],
         })
     }
 
-    #[must_use]
     fn division(&self, _other: &Polynom) -> Math {
         todo!()
     }
@@ -89,7 +89,6 @@ impl AlgebraOperations for Polynom {
         todo!()
     }
 
-    #[must_use]
     fn negative(&self) -> Math {
         let mut factors = vec![];
         for factor in self.factors.iter() {
@@ -102,7 +101,6 @@ impl AlgebraOperations for Polynom {
     }
 
     //  PEMDAS
-    #[must_use]
     fn simplify(&self) -> Math {
         self.simplify_par()
             .simplify_exp()
@@ -115,7 +113,6 @@ impl AlgebraOperations for Polynom {
 //  PEMDAS
 impl Polynom {
     //  P - Parentheses first
-    #[must_use]
     pub fn simplify_par(&self) -> Polynom {
         if self.factors.len() <= 1 {
             return Polynom {
@@ -124,7 +121,7 @@ impl Polynom {
             };
         }
         let mut factors: Vec<Math> = vec![];
-        let mut operators: Vec<AlgebraOperators> = vec![];
+        let mut operators: Vec<Operator> = vec![];
         //        let mut chan: bool = false;
 
         for (i, factor) in self.factors.iter().take(self.factors.len()).enumerate() {
@@ -145,22 +142,24 @@ impl Polynom {
     }
 
     //  E - Exponents (ie Powers and Square Roots, etc.)
-    #[must_use]
     pub fn simplify_exp(&self) -> Polynom {
         self.clone()
     }
 
     //  MD - Multiplication and Division (left-to-right)
-    #[must_use]
     pub fn simplify_mul_div(&self) -> Polynom {
         if self.factors.len() <= 1
-            || (!self.operators.contains(&AlgebraOperators::Multiplication)
-                && !self.operators.contains(&AlgebraOperators::Division))
+            || (!self
+                .operators
+                .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
+                && !self
+                    .operators
+                    .contains(&Operator::Algebra(AlgebraOperators::Division)))
         {
             return self.clone();
         }
         let mut factors: Vec<Math> = vec![];
-        let mut operators: Vec<AlgebraOperators> = vec![];
+        let mut operators: Vec<Operator> = vec![];
 
         let mut chan: bool = false;
         let mut skip: bool = false;
@@ -180,7 +179,7 @@ impl Polynom {
             }
 
             match &self.operators[i] {
-                AlgebraOperators::Multiplication => {
+                Operator::Algebra(AlgebraOperators::Multiplication) => {
                     let f = self.factors[i].mul(&self.factors[i + 1]);
                     if f.to_tex() != "0" {
                         factors.push(f);
@@ -188,7 +187,7 @@ impl Polynom {
                     chan = true;
                     skip = true;
                 }
-                AlgebraOperators::Division => {
+                Operator::Algebra(AlgebraOperators::Division) => {
                     let f = self.factors[i].div(&self.factors[i + 1]);
                     if f.to_tex() != "0" {
                         factors.push(f);
@@ -205,8 +204,11 @@ impl Polynom {
         let p = Polynom { factors, operators };
         println!("{}", p.to_tex());
         if p.factors.len() > 1
-            && (p.operators.contains(&AlgebraOperators::Multiplication)
-                || p.operators.contains(&AlgebraOperators::Division))
+            && (p
+                .operators
+                .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
+                || p.operators
+                    .contains(&Operator::Algebra(AlgebraOperators::Division)))
         {
             return p.simplify_mul_div();
         }
@@ -215,7 +217,6 @@ impl Polynom {
 
     //  AS - Addition and Subtraction (left-to-right)
 
-    #[must_use]
     pub fn simplify_add_sub(&self) -> Math {
         println!("{}", self.to_vector().to_tex());
         println!("{}", self.to_vector().to_based_matrix().to_tex());

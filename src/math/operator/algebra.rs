@@ -1,3 +1,4 @@
+use crate::math::operator::Operator as MainOperator;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 use fancy_regex::Regex;
@@ -41,11 +42,13 @@ impl Parsable for Operator {
 
     fn from_tex(op: &str) -> Result<Math, &'static str> {
         match op {
-            x if x == "+" => Ok(Math::Operators(Operator::Addition)),
-            x if x == "-" => Ok(Math::Operators(Operator::Subtraction)),
-            x if x == "*" => Ok(Math::Operators(Operator::Multiplication)),
-            x if x == "/" => Ok(Math::Operators(Operator::Division)),
-            x if x == "" => Ok(Math::Operators(Operator::InvMulti)),
+            x if x == "+" => Ok(Math::Operator(MainOperator::Algebra(Operator::Addition))),
+            x if x == "-" => Ok(Math::Operator(MainOperator::Algebra(Operator::Subtraction))),
+            x if x == "*" => Ok(Math::Operator(MainOperator::Algebra(
+                Operator::Multiplication,
+            ))),
+            x if x == "/" => Ok(Math::Operator(MainOperator::Algebra(Operator::Division))),
+            x if x == String::new()=> Ok(Math::Operator(MainOperator::Algebra(Operator::InvMulti))),
             _ => Err("Conversion from string to operator went wrong"),
         }
     }
