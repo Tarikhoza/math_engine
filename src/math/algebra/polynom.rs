@@ -10,10 +10,15 @@ use crate::math::linear_algebra::vector::Vector;
 use crate::parser::Parsable;
 use rust_decimal_macros::dec;
 
+#[cfg(feature = "step-tracking")]
+use crate::solver::step::{Step, DetailedOperator};
+
 #[derive(Debug, Clone)]
 pub struct Polynom {
     pub factors: Vec<Math>,
     pub operators: Vec<Operator>,
+    #[cfg(feature = "step-tracking")]
+    pub step: Option<Step>,
 }
 
 impl Polynom {
@@ -24,7 +29,6 @@ impl Polynom {
         Math::Polynom(self.clone())
     }
 
-    #[must_use]
     pub fn to_vector(&self) -> Vector {
         let mut factors: Vec<Math> = self
             .operators
@@ -55,6 +59,17 @@ impl Polynom {
             factors.push(factor.map_value(suffix, math.clone()));
         }
 
-        Math::Polynom(Polynom { factors, operators })
+        #[cfg(feature = "step-tracking")]
+        let step = Step::step(Math::Polynom(self.clone()),
+            Some(math.clone()), 
+            Operator::Detail(crate::solver::step::DetailedOperator::MapTo), 
+            String::from("Map every member to value") 
+        ) ;
+        Math::Polynom(Polynom { 
+            factors, 
+            operators, 
+            #[cfg(feature = "step-tracking")]
+            step 
+        })
     }
 }

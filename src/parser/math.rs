@@ -2,7 +2,6 @@ use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 
 impl Parsable for Math {
-    #[must_use]
     fn to_tex(&self) -> String {
         match self {
             Math::Variable(s) => s.to_tex(),
@@ -18,7 +17,6 @@ impl Parsable for Math {
         Parser::new(tex).parse()
     }
 
-    #[must_use]
     fn on_begining(_tex: String) -> Option<String> {
         None
     }

@@ -28,7 +28,6 @@ impl Parsable for Polynom {
         Math::from_tex(tex)
     }
 
-    #[must_use]
     fn on_begining(_tex: String) -> Option<String> {
         None
     }

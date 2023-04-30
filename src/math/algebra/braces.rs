@@ -9,13 +9,14 @@ pub struct Braces {
 }
 
 impl Braces {
-    #[must_use]
     pub fn get_exponent(&self) -> Math {
         match &self.exponent {
             None => Math::Variable(Variable {
                 value: dec!(1.0),
                 suffix: String::new(),
                 exponent: None,
+                #[cfg(feature = "step-tracking")]
+                step:None
             }),
             Some(e) => *e.clone(),
         }

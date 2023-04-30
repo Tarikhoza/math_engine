@@ -8,24 +8,19 @@ use crate::math::Math;
 use rust_decimal_macros::dec;
 
 impl Operations for Braces {
-    #[must_use]
     fn addition(&self, other: &Braces) -> Math {
         self.simplify().add(&other.simplify())
     }
-    #[must_use]
     fn subtraction(&self, other: &Braces) -> Math {
         self.simplify().sub(&other.simplify())
     }
-    #[must_use]
     fn multiplication(&self, other: &Braces) -> Math {
         self.simplify().mul(&other.simplify())
     }
 
-    #[must_use]
     fn division(&self, other: &Braces) -> Math {
         self.simplify().div(&other.simplify())
     }
-    #[must_use]
     fn negative(&self) -> Math {
         match &self.exponent {
             Some(_has_exp) => Math::Braces(Braces {
@@ -39,7 +34,6 @@ impl Operations for Braces {
         }
     }
 
-    #[must_use]
     fn simplify(&self) -> Math {
         //TODO apply exponent
         self.math.simplify()

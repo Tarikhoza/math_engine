@@ -5,6 +5,7 @@ use rust_decimal_macros::dec;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+
 use crate::math::operator::Operator;
 
 use crate::math::algebra::braces::Braces;
@@ -12,11 +13,16 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 
+#[cfg(feature = "step-tracking")]
+use crate::solver::step::{DetailedOperator, Step};
+
 #[derive(Debug, Clone)]
 pub struct Variable {
     pub value: Decimal,
     pub suffix: String,
     pub exponent: Option<Box<Math>>,
+    #[cfg(feature = "step-tracking")]
+    pub step: Option<Step>,
 }
 
 fn ascii_score(s: &str) -> u32 {
@@ -28,32 +34,32 @@ fn ascii_score(s: &str) -> u32 {
 }
 
 impl Variable {
-    #[must_use]
     pub fn get_exponent(&self) -> Math {
         match &self.exponent {
             None => Math::Variable(Variable {
                 value: dec!(1),
                 suffix: String::new(),
                 exponent: None,
+                #[cfg(feature = "step-tracking")]
+                step: None,
             }),
             Some(e) => *e.clone(),
         }
     }
 
-    #[must_use]
     pub fn apply_exponent(&self) -> Math {
         todo!()
     }
 
-    #[must_use]
     pub fn as_polynom(&self) -> Polynom {
         Polynom {
             factors: vec![Math::Variable(self.clone())],
             operators: vec![],
+            #[cfg(feature = "step-tracking")]
+            step:None
         }
     }
 
-    #[must_use]
     pub fn split_operator(&self) -> (Operator, Math) {
         if self.value < dec!(0) {
             return (
@@ -67,12 +73,10 @@ impl Variable {
         )
     }
 
-    #[must_use]
     pub fn sort_score(&self) -> u32 {
         u32::MAX - (ascii_score(&self.suffix) + ascii_score(&self.get_exponent().to_tex()))
     }
 
-    #[must_use]
     pub fn add_sub_base(&self) -> String {
         let mut x = self.clone();
         x.value = dec!(1.0);
@@ -87,6 +91,13 @@ impl Variable {
                         value: self.value,
                         suffix: String::new(),
                         exponent: None,
+                        #[cfg(feature = "step-tracking")]
+                        step: Step::step(
+                            Math::Variable(self.clone()),
+                            Some(math.clone()),
+                            Operator::Detail(DetailedOperator::MapTo),
+                            String::from("Map to"),
+                        ),
                     }),
                     Math::Braces(Braces {
                         math: Box::new(math),
@@ -94,6 +105,9 @@ impl Variable {
                     }),
                 ],
                 operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
+                 #[cfg(feature = "step-tracking")]
+                step:None
+
             })
         } else {
             Math::Variable(self.clone())

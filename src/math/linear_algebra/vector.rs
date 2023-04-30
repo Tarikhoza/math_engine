@@ -33,6 +33,8 @@ impl Vector {
                         value: dec!(0),
                         suffix: String::new(),
                         exponent: None,
+                        #[cfg(feature = "step-tracking")]
+                        step:None
                     })
                 }
             })

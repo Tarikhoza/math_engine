@@ -17,7 +17,11 @@ use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+
 use crate::math::operator::Operator;
+
+#[cfg(feature = "step-tracking")]
+use crate::solver::step::{DetailedOperator, Step};
 
 #[derive(Debug, Clone)]
 pub enum Math {
@@ -46,11 +50,6 @@ impl Math {
     }
 
     pub fn morph_operator(pair: (&Operator, &Math)) -> Math {
-        println!("{} {}", pair.1.to_tex(), pair.1.to_tex());
-        match pair.0 {
-            p => println!("{}", p.to_tex()),
-        }
-
         match pair.0 {
             Operator::Algebra(AlgebraOperator::Subtraction) => pair.1.negative(),
             _ => pair.1.clone(),
@@ -69,12 +68,55 @@ impl Math {
             _ => String::new(),
         }
     }
+
     pub fn map_value(&self, suffix: &str, math: Math) -> Math {
         match self {
             Math::Variable(v) => v.map_value(suffix, math),
             Math::Polynom(p) => p.map_value(suffix, math),
             //            Math::Equation(e) => e.map_value(suffix, math),
             s => todo!(),
+        }
+    }
+
+    #[cfg(feature = "step-tracking")]
+    pub fn get_step(&self) -> Step {
+        match self {
+            Math::Variable(v) => v.step.clone().unwrap(),
+            Math::Polynom(p) => p.step.clone().unwrap_or(
+                Step::step(
+                    self.clone(),
+                    None,
+                    Operator::Detail(DetailedOperator::Nothing),
+                    String::from("Nothing to do"),
+                )
+                .unwrap(),
+            ),
+            s => todo!(),
+        }
+    }
+
+    pub fn as_polynom(&self) -> Polynom {
+        match self {
+            Math::Variable(s) => Polynom {
+                factors: vec![self.clone()],
+                operators: vec![],
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            },
+            Math::Braces(s) => Polynom {
+                factors: vec![self.clone()],
+                operators: vec![],
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            },
+            Math::Undefined(s) => Polynom {
+                factors: vec![self.clone()],
+                operators: vec![],
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            },
+            Math::Polynom(s) => s.clone(),
+            _ => todo!(),
         }
     }
 }

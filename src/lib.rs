@@ -9,3 +9,4 @@ extern crate rust_decimal;
 
 pub mod math;
 pub mod parser;
+pub mod solver;

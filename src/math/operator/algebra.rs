@@ -28,7 +28,6 @@ pub trait Operations {
 }
 
 impl Parsable for Operator {
-    #[must_use]
     fn to_tex(&self) -> String {
         match self {
             Operator::Addition => "+".to_owned(),
@@ -48,11 +47,12 @@ impl Parsable for Operator {
                 Operator::Multiplication,
             ))),
             x if x == "/" => Ok(Math::Operator(MainOperator::Algebra(Operator::Division))),
-            x if x == String::new()=> Ok(Math::Operator(MainOperator::Algebra(Operator::InvMulti))),
+            x if x == String::new() => {
+                Ok(Math::Operator(MainOperator::Algebra(Operator::InvMulti)))
+            }
             _ => Err("Conversion from string to operator went wrong"),
         }
     }
-    #[must_use]
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"^[\-+\/*]").unwrap_or_else(|e| {

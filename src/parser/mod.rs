@@ -24,7 +24,7 @@ pub trait Parsable {
         String::new()
     }
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        Ok(Variable::from_tex("0")?)
+        Variable::from_tex("0")
     }
     fn parse(tex: &str) -> Option<(usize, Math)> {
         if let Some(t) = Self::on_begining(tex.to_owned()) {
@@ -32,6 +32,8 @@ pub trait Parsable {
                 value: dec!(0),
                 suffix: String::new(),
                 exponent: None,
+                #[cfg(feature = "step-tracking")]
+                step: None,
             }));
             let len = math.to_tex().len();
             return Some((len, math));
@@ -115,6 +117,10 @@ impl Parser {
                 return Err("While parsing found invalid character");
             }
         }
-        Ok(Polynom { factors, operators }.unpack())
+        Ok(Polynom { factors, operators, 
+           #[cfg(feature = "step-tracking")]
+            step:None 
+        }.unpack())
     }
+
 }
