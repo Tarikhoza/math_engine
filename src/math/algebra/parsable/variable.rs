@@ -36,7 +36,7 @@ impl Parsable for Variable {
         let mut value = captures.get(1).map_or("", |m| m.as_str()).to_string();
         let suffix = captures.get(4).map_or("", |m| m.as_str()).to_string();
         let exponent_str =
-            Parser::extract_brace(captures.get(6).map_or("", |m| m.as_str()), '{', '}');
+            Parser::extract_brace(captures.get(6).map_or("", |m| m.as_str()), '{', '}')?;
 
         if value.is_empty() {
             value = "1.0".to_string();

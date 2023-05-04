@@ -27,7 +27,7 @@ impl Parsable for Braces {
         let captures = result
             .expect("Error running regex")
             .expect("No match found");
-        let math = Parser::extract_brace(&captures.get(0).map_or("", |m| m.as_str()), '(', ')');
+        let math = Parser::extract_brace(captures.get(0).map_or("", |m| m.as_str()), '(', ')')?;
         let exponent_str = tex.split_at(math.len() + 2).1;
 
         let exponent: Option<Box<Math>> = if !exponent_str.is_empty()
@@ -35,7 +35,7 @@ impl Parsable for Braces {
             && exponent_str.chars().nth(1) == Some('{')
         {
             Some(Box::new(
-                Parser::new(&(Parser::extract_brace(&exponent_str[1..], '{', '}'))).parse()?,
+                Parser::new(&(Parser::extract_brace(&exponent_str[1..], '{', '}')?)).parse()?,
             ))
         } else {
             None

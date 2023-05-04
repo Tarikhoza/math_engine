@@ -50,12 +50,12 @@ impl Parser {
         }
     }
     //TODO convert to result
-    pub fn extract_brace(tex: &str, open_c: char, close_c: char) -> String {
+    pub fn extract_brace(tex: &str, open_c: char, close_c: char) -> Result<String, &'static str> {
         let mut pos = 1;
         let mut close = 0;
         let mut open = 1;
         if !tex.starts_with(open_c) {
-            return String::new();
+            return Ok(String::new());
         }
         for c in tex.chars().skip(1) {
             match c {
@@ -64,11 +64,11 @@ impl Parser {
                 _ => {}
             }
             if open == close {
-                return tex.get(1..pos).unwrap().to_string();
+                return Ok(tex.get(1..pos).unwrap().to_string());
             }
             pos += 1;
         }
-        String::new()
+        Err("Brace never closed")
     }
 
     pub fn parse(&mut self) -> Result<Math, &'static str> {

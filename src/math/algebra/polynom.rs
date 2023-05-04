@@ -11,7 +11,7 @@ use crate::parser::Parsable;
 use rust_decimal_macros::dec;
 
 #[cfg(feature = "step-tracking")]
-use crate::solver::step::{Step, DetailedOperator};
+use crate::solver::step::{DetailedOperator, Step};
 
 #[derive(Debug, Clone)]
 pub struct Polynom {
@@ -60,16 +60,17 @@ impl Polynom {
         }
 
         #[cfg(feature = "step-tracking")]
-        let step = Step::step(Math::Polynom(self.clone()),
-            Some(math.clone()), 
-            Operator::Detail(crate::solver::step::DetailedOperator::MapTo), 
-            String::from("Map every member to value") 
-        ) ;
-        Math::Polynom(Polynom { 
-            factors, 
-            operators, 
+        let step = Step::step(
+            Math::Polynom(self.clone()),
+            Some(math.clone()),
+            Operator::Detail(crate::solver::step::DetailedOperator::MapTo),
+            String::from("Map every member to value"),
+        );
+        Math::Polynom(Polynom {
+            factors,
+            operators,
             #[cfg(feature = "step-tracking")]
-            step 
+            step,
         })
     }
 }
