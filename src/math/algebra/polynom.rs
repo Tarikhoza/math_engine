@@ -34,10 +34,10 @@ impl Polynom {
             .operators
             .iter()
             .zip(self.factors.iter().skip(1))
-            .map(|m| Math::morph_operator(m))
+            .map(Math::morph_operator)
             .collect();
 
-        factors.insert(0, self.factors.get(0).unwrap().to_owned());
+        factors.insert(0, self.factors.get(0).cloned().unwrap_or_default());
         Vector { factors }
     }
     //   pub fn to_fraction(&self) -> Fraction {
