@@ -1,6 +1,7 @@
 use fancy_regex::Regex;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
+use std::default;
 
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
@@ -16,7 +17,7 @@ use crate::parser::{Parsable, Parser};
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Variable {
     pub value: Decimal,
     pub suffix: String,
@@ -56,7 +57,7 @@ impl Variable {
             factors: vec![Math::Variable(self.clone())],
             operators: vec![],
             #[cfg(feature = "step-tracking")]
-            step:None
+            step: None,
         }
     }
 
@@ -105,9 +106,8 @@ impl Variable {
                     }),
                 ],
                 operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
-                 #[cfg(feature = "step-tracking")]
-                step:None
-
+                #[cfg(feature = "step-tracking")]
+                step: None,
             })
         } else {
             Math::Variable(self.clone())

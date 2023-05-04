@@ -3,6 +3,7 @@ pub mod linear_algebra;
 pub mod operator;
 
 use fancy_regex::Regex;
+use std::default;
 use std::ops;
 
 use crate::parser::{Parsable, Parser};
@@ -32,6 +33,12 @@ pub enum Math {
     Matrix(Matrix),
     Undefined(Undefined),
     Operator(Operator),
+}
+
+impl Default for Math {
+    fn default() -> Self {
+        return Math::Variable(Variable::default());
+    }
 }
 
 impl Math {
