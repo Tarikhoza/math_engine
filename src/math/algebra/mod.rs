@@ -5,5 +5,4 @@ pub mod parsable;
 //pub mod fraction;
 pub mod polynom;
 pub mod root;
-pub mod undefined;
 pub mod variable;

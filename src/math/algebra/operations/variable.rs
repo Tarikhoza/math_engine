@@ -1,5 +1,5 @@
 use crate::math::algebra::polynom::Polynom;
-use crate::math::algebra::undefined::Undefined;
+//use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
@@ -205,6 +205,11 @@ impl AlgebraOperatons for Variable {
 
     fn division(&self, other: &Variable) -> Math {
         //if suffix are empty
+
+        //       if self.value == 0 {
+        //           return Undefined{};
+        //       }
+
         if self.suffix == *"" && other.suffix == *"" {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -335,7 +340,6 @@ impl AlgebraOperatons for Variable {
         match rhs {
             Math::Polynom(p) => self.as_polynom().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.addition(v),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -344,7 +348,7 @@ impl AlgebraOperatons for Variable {
         match rhs {
             Math::Polynom(p) => self.as_polynom().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.subtraction(v),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -352,7 +356,7 @@ impl AlgebraOperatons for Variable {
         match rhs {
             Math::Polynom(p) => self.as_polynom().mul(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.multiplication(v),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -361,7 +365,7 @@ impl AlgebraOperatons for Variable {
         match rhs {
             //  Math::Polynom(p)  => self.as_polynom()*Math::Polynom(p),
             Math::Variable(v) => self.division(v),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }

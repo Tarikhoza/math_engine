@@ -1,5 +1,5 @@
 use crate::math::algebra::braces::Braces;
-use crate::math::algebra::undefined::Undefined;
+//use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations, Operator};
 use std::ops;
@@ -46,7 +46,7 @@ impl Operations for Braces {
             Math::Braces(b) => self
                 .simplify()
                 .addition(&Math::Braces(b.clone()).simplify()),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //          Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -58,7 +58,7 @@ impl Operations for Braces {
             Math::Braces(b) => self
                 .simplify()
                 .addition(&Math::Braces(b.clone()).simplify()),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //           Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -70,7 +70,7 @@ impl Operations for Braces {
             Math::Braces(b) => self
                 .simplify()
                 .addition(&Math::Braces(b.clone()).simplify()),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }

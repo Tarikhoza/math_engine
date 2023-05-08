@@ -3,8 +3,9 @@ use crate::math::operator::algebra::Operator as AlgebraOperator;
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;
+use std::default;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Step {
     left: Box<Math>,
     right: Option<Box<Math>>,
@@ -78,8 +79,9 @@ impl Step {
         }
     }
 
-    pub fn print(&self) {
-        println!(
+    pub fn report(&self) -> Vec<String> {
+        let mut rep = vec![];
+        rep.push(format!(
             "{} {} and {}",
             self.details,
             self.left.to_tex(),
@@ -87,10 +89,10 @@ impl Step {
                 .clone()
                 .unwrap_or(Box::new(Variable::from_tex("0").unwrap()))
                 .to_tex()
-        );
+        ));
         for step in self.sub_steps.iter() {
-            print!("\t");
-            step.print();
+            rep.extend(step.report());
         }
+        rep
     }
 }

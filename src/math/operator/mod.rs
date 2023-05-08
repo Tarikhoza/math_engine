@@ -3,17 +3,25 @@ use crate::math::operator::algebra::Operator as AlgebraOperator;
 use crate::solver::step::DetailedOperator;
 use crate::math::Math;
 use crate::parser::Parsable;
-#[derive(Debug, Clone, PartialEq)]
+use std::default;
+#[derive(Debug, Clone, PartialEq, Default)]
 pub enum Operator {
     Algebra(AlgebraOperator),
     Detail(DetailedOperator),
+    #[default] 
+    Empty
 }
+
+
+
+
 
 impl Parsable for Operator {
     fn to_tex(&self) -> String {
         match self {
             Operator::Algebra(o) => o.to_tex(),
             Operator::Detail(o)=> String::from("Detail"),
+            Operator::Empty => String::from("Empty")
         }
     }
 

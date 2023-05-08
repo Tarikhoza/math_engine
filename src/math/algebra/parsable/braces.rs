@@ -6,7 +6,6 @@ use fancy_regex::Regex;
 use rust_decimal_macros::dec;
 
 impl Parsable for Braces {
-    #[must_use]
     fn to_tex(&self) -> String {
         match &self.exponent {
             Some(has_exp) => match &has_exp.to_tex()[..] {

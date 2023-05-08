@@ -1,5 +1,5 @@
 use crate::math::algebra::polynom::Polynom;
-use crate::math::algebra::undefined::Undefined;
+//use crate::math::algebra::undefined::Undefined;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperators,
 };
@@ -94,7 +94,7 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.addition(p),
             Math::Variable(v) => self.addition(&v.as_polynom()),
             Math::Braces(b) => self.add(&b.simplify()),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+//            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -104,7 +104,7 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.subtraction(p),
             Math::Variable(v) => self.subtraction(&v.as_polynom()),
             Math::Braces(b) => self.sub(&b.simplify()),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+//            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -113,7 +113,7 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.multiplication(p),
             Math::Variable(v) => self.multiplication(&v.as_polynom()),
             Math::Braces(b) => self.mul(&b.simplify()),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+//            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }

@@ -7,9 +7,14 @@ use itertools::Itertools;
 use rust_decimal_macros::dec;
 use std::ops;
 
+#[cfg(feature = "step-tracking")]
+use crate::solver::step::Step;
+
 #[derive(Debug, Clone)]
 pub struct Vector {
     pub factors: Vec<Math>,
+    #[cfg(feature = "step-tracking")]
+    pub step: Option<Step>,
 }
 
 impl Vector {
@@ -39,7 +44,10 @@ impl Vector {
                 }
             })
             .collect();
-        Vector { factors }
+        Vector { factors, 
+            #[cfg(feature = "step-tracking")]
+            step:None 
+        }
     }
     pub fn to_based_matrix(&self) -> Matrix {
         Matrix {
@@ -52,6 +60,9 @@ impl Vector {
     }
 
     pub fn add_all(&self) -> Math {
+        if self.factors.len() == 0{
+            return Math::Variable(Variable::default())
+        }
         let mut result: Math = self.factors.get(0).unwrap().clone();
         for factor in self.factors.iter().skip(1) {
             if factor.clone().to_tex() != "0" {
