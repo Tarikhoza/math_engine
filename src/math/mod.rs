@@ -9,8 +9,10 @@ use std::ops;
 use crate::parser::{Parsable, Parser};
 
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::variable::Variable;
+use crate::math::algebra::undefined::Undefined;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
 
@@ -30,6 +32,8 @@ pub enum Math {
     Braces(Braces),
     Vector(Vector),
     Matrix(Matrix),
+    Infinity(Infinity),
+    Undefined(Undefined),
     Operator(Operator),
 }
 
@@ -96,7 +100,13 @@ impl Math {
                 )
                 .unwrap(),
             ),
-            s => todo!(),
+            s => Step::step(
+                    self.clone(),
+                    None,
+                    Operator::Detail(DetailedOperator::Nothing),
+                    format!("Not implemented yet for type: {}", stringify!(s)),
+                ).unwrap()
+
         }
     }
 
@@ -114,12 +124,18 @@ impl Math {
                 #[cfg(feature = "step-tracking")]
                 step: None,
             },
-//           Math::Undefined(s) => Polynom {
-//               factors: vec![self.clone()],
-//               operators: vec![],
-//               #[cfg(feature = "step-tracking")]
-//               step: None,
-//           },
+            Math::Undefined(s) => Polynom {
+               factors: vec![self.clone()],
+               operators: vec![],
+               #[cfg(feature = "step-tracking")]
+               step: None,
+            },
+            Math::Infinity(s) => Polynom {
+               factors: vec![self.clone()],
+               operators: vec![],
+               #[cfg(feature = "step-tracking")]
+               step: None,
+           },
             Math::Polynom(s) => s.clone(),
             _ => todo!(),
         }
@@ -162,7 +178,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.add(rhs),
             Math::Braces(b) => b.add(rhs),
             //            Math::Fraction(f) => f.add(rhs),
- //           Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //           Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -175,7 +191,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.sub(rhs),
             Math::Braces(b) => b.sub(rhs),
             //            Math::Fraction(f) => f.sub(rhs),
-  //          Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //          Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -185,7 +201,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.mul(rhs),
             Math::Braces(b) => b.mul(rhs),
             //            Math::Fraction(f) => f * rhs,
-   //         Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //         Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -195,7 +211,7 @@ impl AlgebraOperations for Math {
             //   Math::Braces(b)   => b*_rhs,
             Math::Variable(v) => v.div(rhs),
             //            Math::Fraction(f) => f.div(rhs),
-    //        Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }

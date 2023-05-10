@@ -17,6 +17,8 @@ impl Braces {
                 value: dec!(1.0),
                 suffix: String::new(),
                 exponent: None,
+                #[cfg(feature = "step-tracking")]
+                step:None
             }),
             Some(e) => *e.clone(),
         }

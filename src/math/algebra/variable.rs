@@ -48,10 +48,10 @@ impl Variable {
         }
     }
 
+
     pub fn apply_exponent(&self) -> Math {
         todo!()
     }
-
     pub fn as_polynom(&self) -> Polynom {
         Polynom {
             factors: vec![Math::Variable(self.clone())],

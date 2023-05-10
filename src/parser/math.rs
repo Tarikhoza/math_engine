@@ -7,7 +7,8 @@ impl Parsable for Math {
             Math::Variable(s) => s.to_tex(),
             Math::Braces(s) => s.to_tex(),
             Math::Polynom(s) => s.to_tex(),
-     //       Math::Undefined(s) => s.to_tex(),
+            Math::Undefined(s) => s.to_tex(),
+            Math::Infinity(s) => s.to_tex(),
             Math::Operator(s) => s.to_tex(),
             _ => todo!(),
         }

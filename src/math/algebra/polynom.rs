@@ -38,7 +38,10 @@ impl Polynom {
             .collect();
 
         factors.insert(0, self.factors.get(0).cloned().unwrap_or_default());
-        Vector { factors }
+        Vector { factors, 
+            #[cfg(feature = "step-tracking")]
+            step:None 
+        }
     }
     //   pub fn to_fraction(&self) -> Fraction {
     //       Fraction {
@@ -62,7 +65,7 @@ impl Polynom {
         #[cfg(feature = "step-tracking")]
         let step = Step::step(
             Math::Polynom(self.clone()),
-            Some(math.clone()),
+            Some(math),
             Operator::Detail(crate::solver::step::DetailedOperator::MapTo),
             String::from("Map every member to value"),
         );

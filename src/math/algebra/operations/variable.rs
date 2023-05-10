@@ -1,11 +1,14 @@
 use crate::math::algebra::polynom::Polynom;
-//use crate::math::algebra::undefined::Undefined;
+use crate::math::algebra::undefined::Undefined;
+use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;
 use crate::solver::step::{DetailedOperator, Step};
+use rust_decimal::prelude::*;
+use rust_decimal_macros::dec;
 
 impl AlgebraOperatons for Variable {
     fn addition(&self, other: &Variable) -> Math {
@@ -202,14 +205,21 @@ impl AlgebraOperatons for Variable {
             ),
         })
     }
-
     fn division(&self, other: &Variable) -> Math {
+        //Handle 0/0 and 0/x
+        if self.value == dec!(0) {
+            if other.value == dec!(0){
+               return Math::Undefined(Undefined{});
+            }
+            return Math::default();
+        }
+
+        //Handle x/0
+        if self.value != dec!(0) && other.value == dec!(0) {
+           return Math::Infinity(Infinity{minus:false});
+        }
+
         //if suffix are empty
-
-        //       if self.value == 0 {
-        //           return Undefined{};
-        //       }
-
         if self.suffix == *"" && other.suffix == *"" {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
