@@ -267,13 +267,8 @@ impl Polynom {
             ),
         };
 
-        if p.factors.len() > 1
-            && (p
-                .operators
-                .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
-                || p.operators
-                    .contains(&Operator::Algebra(AlgebraOperators::Division)))
-        {
+        if p.factors.len() > 1 && (p.operators.contains(&Operator::Algebra(AlgebraOperators::Multiplication))
+                || p.operators.contains(&Operator::Algebra(AlgebraOperators::Division))){
             return p.simplify_mul_div();
         }
         p
