@@ -45,7 +45,7 @@ pub trait Parsable {
 }
 
 pub trait ParsableGenerics {
-    fn parse(&self) -> Result<Math, &'static str>;
+    fn parse_math(&self) -> Result<Math, &'static str>;
 }
 
 impl Parser {
