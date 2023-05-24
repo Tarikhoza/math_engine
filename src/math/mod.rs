@@ -11,8 +11,8 @@ use crate::parser::{Parsable, Parser};
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
-use crate::math::algebra::variable::Variable;
 use crate::math::algebra::undefined::Undefined;
+use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
 
@@ -101,12 +101,12 @@ impl Math {
                 .unwrap_or_default(),
             ),
             s => Step::step(
-                    self.clone(),
-                    None,
-                    Operator::Detail(DetailedOperator::Nothing),
-                    format!("Not implemented yet for type: {}", stringify!(s)),
-                ).unwrap_or_default()
-
+                self.clone(),
+                None,
+                Operator::Detail(DetailedOperator::Nothing),
+                format!("Not implemented yet for type: {}", stringify!(s)),
+            )
+            .unwrap_or_default(),
         }
     }
 
@@ -125,17 +125,17 @@ impl Math {
                 step: None,
             },
             Math::Undefined(s) => Polynom {
-               factors: vec![self.clone()],
-               operators: vec![],
-               #[cfg(feature = "step-tracking")]
-               step: None,
+                factors: vec![self.clone()],
+                operators: vec![],
+                #[cfg(feature = "step-tracking")]
+                step: None,
             },
             Math::Infinity(s) => Polynom {
-               factors: vec![self.clone()],
-               operators: vec![],
-               #[cfg(feature = "step-tracking")]
-               step: None,
-           },
+                factors: vec![self.clone()],
+                operators: vec![],
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            },
             Math::Polynom(s) => s.clone(),
             _ => todo!(),
         }
