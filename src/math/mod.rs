@@ -98,14 +98,14 @@ impl Math {
                     Operator::Detail(DetailedOperator::Nothing),
                     String::from("Nothing to do"),
                 )
-                .unwrap(),
+                .unwrap_or_default(),
             ),
             s => Step::step(
                     self.clone(),
                     None,
                     Operator::Detail(DetailedOperator::Nothing),
                     format!("Not implemented yet for type: {}", stringify!(s)),
-                ).unwrap()
+                ).unwrap_or_default()
 
         }
     }

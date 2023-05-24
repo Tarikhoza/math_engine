@@ -1,4 +1,6 @@
+pub mod generics;
 pub mod math;
+pub mod operator;
 
 use crate::math::algebra::braces::Braces;
 use crate::math::operator::algebra::{
@@ -40,6 +42,10 @@ pub trait Parsable {
         }
         None
     }
+}
+
+pub trait ParsableGenerics {
+    fn parse(&self) -> Result<Math, &'static str>;
 }
 
 impl Parser {
@@ -117,10 +123,12 @@ impl Parser {
                 return Err("While parsing found invalid character");
             }
         }
-        Ok(Polynom { factors, operators, 
-           #[cfg(feature = "step-tracking")]
-            step:None 
-        }.unpack())
+        Ok(Polynom {
+            factors,
+            operators,
+            #[cfg(feature = "step-tracking")]
+            step: None,
+        }
+        .unpack())
     }
-
 }

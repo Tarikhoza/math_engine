@@ -5,7 +5,7 @@ use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
-use crate::parser::Parsable;
+use crate::parser::{Parsable,Parser};
 use crate::solver::step::{DetailedOperator, Step};
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
@@ -64,6 +64,7 @@ impl AlgebraOperatons for Variable {
     }
 
     fn multiplication(&self, other: &Variable) -> Math {
+
         #[cfg(feature = "step-tracking")]
         let mul_two_var = Step::step(
             Math::Variable(self.clone()),
@@ -71,6 +72,7 @@ impl AlgebraOperatons for Variable {
             Operator::Algebra(AlgebraOperator::Multiplication),
             String::from("Multiplication of two variables"),
         );
+
         #[cfg(feature = "step-tracking")]
         let mul_two_var_one_suf = Step::step(
             Math::Variable(self.clone()),
@@ -80,6 +82,7 @@ impl AlgebraOperatons for Variable {
                 "Multiplication of two variables(one without suffix, one with)",
             ),
         );
+
         //if suffix are empty
         if self.suffix == *"" && other.suffix == *"" {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
@@ -160,6 +163,24 @@ impl AlgebraOperatons for Variable {
                     Some(Math::Variable(other.clone())),
                     Operator::Algebra(AlgebraOperator::Multiplication),
                     String::from("Multiplication of two variables(both with suffxes)"),
+                ),
+            });
+        }
+        let left = self.split_operator();
+        let right = other.split_operator();
+        let sign = left.0.morph(right.0);
+
+
+        if sign == Operator::Algebra(AlgebraOperator::Subtraction){
+            Math::Polynom(Polynom {
+                factors: vec![self.negative(), Math::Variable(other.clone())],
+                operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
+                #[cfg(feature = "step-tracking")]
+                step: Step::step(
+                    Math::Variable(self.clone()),
+                    Some(Math::Variable(other.clone())),
+                    Operator::Detail(DetailedOperator::GroupTogether),
+                    String::from("Grouping two variables together"),
                 ),
             });
         }

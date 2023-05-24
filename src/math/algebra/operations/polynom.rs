@@ -94,7 +94,7 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.addition(p),
             Math::Variable(v) => self.addition(&v.as_polynom()),
             Math::Braces(b) => self.add(&b.simplify()),
-//            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -104,7 +104,7 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.subtraction(p),
             Math::Variable(v) => self.subtraction(&v.as_polynom()),
             Math::Braces(b) => self.sub(&b.simplify()),
-//            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -113,7 +113,7 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.multiplication(p),
             Math::Variable(v) => self.multiplication(&v.as_polynom()),
             Math::Braces(b) => self.mul(&b.simplify()),
-//            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -200,6 +200,9 @@ impl Polynom {
                 .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
                 && !self
                     .operators
+                    .contains(&Operator::Algebra(AlgebraOperators::InvMulti))
+                && !self
+                    .operators
                     .contains(&Operator::Algebra(AlgebraOperators::Division)))
         {
             return self.clone();
@@ -228,7 +231,8 @@ impl Polynom {
             }
 
             match &self.operators[i] {
-                Operator::Algebra(AlgebraOperators::Multiplication) => {
+                Operator::Algebra(AlgebraOperators::Multiplication)
+                | Operator::Algebra(AlgebraOperators::InvMulti) => {
                     let f = self.factors[i].mul(&self.factors[i + 1]);
                     #[cfg(feature = "step-tracking")]
                     steps.push(f.get_step());
@@ -267,8 +271,16 @@ impl Polynom {
             ),
         };
 
-        if p.factors.len() > 1 && (p.operators.contains(&Operator::Algebra(AlgebraOperators::Multiplication))
-                || p.operators.contains(&Operator::Algebra(AlgebraOperators::Division))){
+        if p.factors.len() > 1
+            && (p
+                .operators
+                .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
+                || p.operators
+                .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
+
+                || p.operators
+                    .contains(&Operator::Algebra(AlgebraOperators::Division)))
+        {
             return p.simplify_mul_div();
         }
         p

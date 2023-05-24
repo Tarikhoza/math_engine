@@ -13,23 +13,15 @@ pub enum Operator {
 }
 
 
-
-
-
-impl Parsable for Operator {
-    fn to_tex(&self) -> String {
-        match self {
-            Operator::Algebra(o) => o.to_tex(),
-            Operator::Detail(o)=> String::from("Detail"),
-            Operator::Empty => String::from("Empty")
+impl Operator{
+    pub fn morph(&self, other:Operator) -> Operator{
+        if self == &Operator::Algebra(AlgebraOperator::Subtraction) && other == Operator::Algebra(AlgebraOperator::Addition) || 
+            other == Operator::Algebra(AlgebraOperator::Subtraction) && self == &Operator::Algebra(AlgebraOperator::Addition){
+            return Operator::Algebra(AlgebraOperator::Subtraction)
         }
+        Operator::Algebra(AlgebraOperator::Addition)
     }
+}
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        AlgebraOperator::from_tex(tex)
-    }
 
-    fn on_begining(tex: String) -> Option<String> {
-        AlgebraOperator::on_begining(tex)
-    }
- }
+
