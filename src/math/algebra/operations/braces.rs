@@ -78,4 +78,14 @@ impl Operations for Braces {
     fn div(&self, _rhs: &Math) -> Math {
         todo!()
     }
+
+    fn substitute(&self, suffix: String, math: Math) -> Math {
+        let new_math = Box::new(self.math.substitute(suffix.clone(), math.clone()));
+        let new_exponent = self.get_exponent().substitute(suffix.clone(), math.clone());
+
+        return Math::Braces(Braces {
+            math: new_math,
+            exponent: Some(Box::new(new_exponent)),
+        });
+    }
 }

@@ -34,15 +34,26 @@ impl AlgebraOperatons for Infinity {
         }
     }
 
-    fn sub(&self, rhs: &Math) -> Math {}
+    fn sub(&self, rhs: &Math) -> Math {
+        todo!();
+    }
 
-    fn mul(&self, rhs: &Math) -> Math {}
+    fn mul(&self, rhs: &Math) -> Math {
+        todo!();
+    }
 
-    fn div(&self, rhs: &Math) -> Math {}
+    fn div(&self, rhs: &Math) -> Math {
+        todo!();
+    }
 
-    fn negative(&self) -> Math {}
+    fn negative(&self) -> Math {
+        todo!();
+    }
 
     fn simplify(&self) -> Math {
         self.clone()
+    }
+    fn subtitute(&self, suffix: String, math: Math) {
+        self.clone();
     }
 }

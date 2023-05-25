@@ -48,7 +48,6 @@ impl Variable {
         }
     }
 
-
     pub fn apply_exponent(&self) -> Math {
         todo!()
     }
@@ -82,35 +81,5 @@ impl Variable {
         let mut x = self.clone();
         x.value = dec!(1.0);
         x.to_tex()
-    }
-
-    pub fn map_value(&self, suffix: &str, math: Math) -> Math {
-        if self.suffix == suffix {
-            Math::Polynom(Polynom {
-                factors: vec![
-                    Math::Variable(Variable {
-                        value: self.value,
-                        suffix: String::new(),
-                        exponent: None,
-                        #[cfg(feature = "step-tracking")]
-                        step: Step::step(
-                            Math::Variable(self.clone()),
-                            Some(math.clone()),
-                            Operator::Detail(DetailedOperator::MapTo),
-                            String::from("Map to"),
-                        ),
-                    }),
-                    Math::Braces(Braces {
-                        math: Box::new(math),
-                        exponent: Some(Box::new(self.get_exponent())),
-                    }),
-                ],
-                operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            })
-        } else {
-            Math::Variable(self.clone())
-        }
     }
 }

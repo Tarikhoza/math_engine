@@ -1,11 +1,12 @@
+use crate::math::algebra::braces::Braces;
+use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::undefined::Undefined;
-use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
-use crate::parser::{Parsable,Parser};
+use crate::parser::{Parsable, Parser};
 use crate::solver::step::{DetailedOperator, Step};
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
@@ -64,7 +65,6 @@ impl AlgebraOperatons for Variable {
     }
 
     fn multiplication(&self, other: &Variable) -> Math {
-
         #[cfg(feature = "step-tracking")]
         let mul_two_var = Step::step(
             Math::Variable(self.clone()),
@@ -78,9 +78,7 @@ impl AlgebraOperatons for Variable {
             Math::Variable(self.clone()),
             Some(Math::Variable(other.clone())),
             Operator::Algebra(AlgebraOperator::Multiplication),
-            String::from(
-                "Multiplication of two variables(one without suffix, one with)",
-            ),
+            String::from("Multiplication of two variables(one without suffix, one with)"),
         );
 
         //if suffix are empty
@@ -91,7 +89,7 @@ impl AlgebraOperatons for Variable {
                     suffix: self.suffix.clone(),
                     exponent: None,
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var
+                    step: mul_two_var,
                 });
             } else if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() != "1" {
                 return Math::Variable(Variable {
@@ -99,7 +97,7 @@ impl AlgebraOperatons for Variable {
                     suffix: self.suffix.clone(),
                     exponent: Some(Box::new(other.get_exponent())),
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var
+                    step: mul_two_var,
                 });
             } else if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -107,12 +105,13 @@ impl AlgebraOperatons for Variable {
                     suffix: self.suffix.clone(),
                     exponent: Some(Box::new(self.get_exponent().mul(&other.get_exponent()))),
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var
+                    step: mul_two_var,
                 });
             }
         }
         //if one suffix is empty and one is some
-        else if (self.suffix == *"" && other.suffix != *"") || (self.suffix != *"" && other.suffix == *"")
+        else if (self.suffix == *"" && other.suffix != *"")
+            || (self.suffix != *"" && other.suffix == *"")
         {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -120,7 +119,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: None,
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var_one_suf
+                    step: mul_two_var_one_suf,
                 });
             }
             if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() == "1" {
@@ -129,7 +128,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: Some(Box::new(self.get_exponent())),
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var_one_suf
+                    step: mul_two_var_one_suf,
                 });
             } else if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() != "1" {
                 return Math::Variable(Variable {
@@ -137,7 +136,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: Some(Box::new(other.get_exponent())),
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var_one_suf
+                    step: mul_two_var_one_suf,
                 });
             } else if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() != "1" {
                 return Math::Variable(Variable {
@@ -145,7 +144,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: Some(Box::new(self.get_exponent().mul(&other.get_exponent()))),
                     #[cfg(feature = "step-tracking")]
-                    step:mul_two_var_one_suf
+                    step: mul_two_var_one_suf,
                 });
             }
         }
@@ -170,8 +169,7 @@ impl AlgebraOperatons for Variable {
         let right = other.split_operator();
         let sign = left.0.morph(right.0);
 
-
-        if sign == Operator::Algebra(AlgebraOperator::Subtraction){
+        if sign == Operator::Algebra(AlgebraOperator::Subtraction) {
             Math::Polynom(Polynom {
                 factors: vec![self.negative(), Math::Variable(other.clone())],
                 operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
@@ -199,8 +197,8 @@ impl AlgebraOperatons for Variable {
     fn division(&self, other: &Variable) -> Math {
         //Handle 0/0 and 0/x
         if self.value == dec!(0) {
-            if other.value == dec!(0){
-               return Math::Undefined(Undefined{});
+            if other.value == dec!(0) {
+                return Math::Undefined(Undefined {});
             }
             return Math::default();
         }
@@ -220,7 +218,7 @@ impl AlgebraOperatons for Variable {
         );
         //Handle x/0
         if self.value != dec!(0) && other.value == dec!(0) {
-           return Math::Infinity(Infinity{minus:false});
+            return Math::Infinity(Infinity { minus: false });
         }
         //if suffix are empty
         if self.suffix == *"" && other.suffix == *"" {
@@ -230,15 +228,15 @@ impl AlgebraOperatons for Variable {
                     suffix: self.suffix.clone(),
                     exponent: None,
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var
-            });
+                    step: div_two_var,
+                });
             } else if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() != "1" {
                 return Math::Variable(Variable {
                     value: self.value / other.value,
                     suffix: self.suffix.clone(),
                     exponent: Some(Box::new(other.get_exponent())),
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var
+                    step: div_two_var,
                 });
             } else if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -246,12 +244,13 @@ impl AlgebraOperatons for Variable {
                     suffix: self.suffix.clone(),
                     exponent: Some(Box::new(self.get_exponent().div(&other.get_exponent()))),
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var
+                    step: div_two_var,
                 });
             }
         }
         //if one suffix is empty and the second is some
-        else if (self.suffix == *"" && other.suffix != *"") || (self.suffix != *"" && other.suffix == *"")
+        else if (self.suffix == *"" && other.suffix != *"")
+            || (self.suffix != *"" && other.suffix == *"")
         {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
                 return Math::Variable(Variable {
@@ -259,7 +258,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: None,
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var_one_suf
+                    step: div_two_var_one_suf,
                 });
             }
             if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() == "1" {
@@ -268,7 +267,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: Some(Box::new(self.get_exponent())),
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var_one_suf
+                    step: div_two_var_one_suf,
                 });
             } else if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() != "1" {
                 return Math::Variable(Variable {
@@ -276,7 +275,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: Some(Box::new(other.get_exponent())),
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var_one_suf
+                    step: div_two_var_one_suf,
                 });
             } else if self.get_exponent().to_tex() != "1" && other.get_exponent().to_tex() != "1" {
                 return Math::Variable(Variable {
@@ -284,7 +283,7 @@ impl AlgebraOperatons for Variable {
                     suffix: format!("{}{}", self.suffix, other.suffix),
                     exponent: Some(Box::new(self.get_exponent().div(&other.get_exponent()))),
                     #[cfg(feature = "step-tracking")]
-                    step: div_two_var_one_suf
+                    step: div_two_var_one_suf,
                 });
             }
         }
@@ -295,7 +294,7 @@ impl AlgebraOperatons for Variable {
                 suffix: self.suffix.clone(),
                 exponent: Some(Box::new(self.get_exponent().sub(&other.get_exponent()))),
                 #[cfg(feature = "step-tracking")]
-                step: div_two_var_one_suf
+                step: div_two_var_one_suf,
             });
         }
         Math::Polynom(Polynom {
@@ -373,5 +372,37 @@ impl AlgebraOperatons for Variable {
     fn simplify(&self) -> Math {
         //TODO: apply_exponent
         todo!()
+    }
+
+    fn substitute(&self, suffix: String, math: Math) -> Math {
+        if self.suffix == suffix {
+            Math::Polynom(Polynom {
+                factors: vec![
+                    Math::Variable(Variable {
+                        value: self.value,
+                        suffix: String::new(),
+                        exponent: None,
+                        #[cfg(feature = "step-tracking")]
+                        step: Step::step(
+                            Math::Variable(self.clone()),
+                            Some(math.clone()),
+                            Operator::Detail(DetailedOperator::MapTo),
+                            String::from("Map to"),
+                        ),
+                    }),
+                    Math::Braces(Braces {
+                        math: Box::new(math.clone()),
+                        exponent: Some(Box::new(
+                            self.get_exponent().substitute(suffix.clone(), math.clone()),
+                        )),
+                    }),
+                ],
+                operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            })
+        } else {
+            Math::Variable(self.clone())
+        }
     }
 }

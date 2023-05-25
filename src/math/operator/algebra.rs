@@ -20,6 +20,7 @@ pub trait Operations {
 
     fn simplify(&self) -> Math;
     fn negative(&self) -> Math;
+    fn substitute(&self, suffix: String, value: Math) -> Math;
 
     fn add(&self, other: &Math) -> Math;
     fn sub(&self, other: &Math) -> Math;

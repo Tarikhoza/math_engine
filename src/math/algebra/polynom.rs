@@ -66,27 +66,4 @@ impl Polynom {
     //           })),
     //       }
     //   }
-
-    pub fn map_value(&self, suffix: &str, math: Math) -> Math {
-        let mut factors: Vec<Math> = vec![];
-        let operators = self.operators.clone();
-
-        for factor in self.factors.iter() {
-            factors.push(factor.map_value(suffix, math.clone()));
-        }
-
-        #[cfg(feature = "step-tracking")]
-        let step = Step::step(
-            Math::Polynom(self.clone()),
-            Some(math),
-            Operator::Detail(crate::solver::step::DetailedOperator::MapTo),
-            String::from("Map every member to value"),
-        );
-        Math::Polynom(Polynom {
-            factors,
-            operators,
-            #[cfg(feature = "step-tracking")]
-            step,
-        })
-    }
 }

@@ -78,15 +78,6 @@ impl Math {
         }
     }
 
-    pub fn map_value(&self, suffix: &str, math: Math) -> Math {
-        match self {
-            Math::Variable(v) => v.map_value(suffix, math),
-            Math::Polynom(p) => p.map_value(suffix, math),
-            //            Math::Equation(e) => e.map_value(suffix, math),
-            s => todo!(),
-        }
-    }
-
     #[cfg(feature = "step-tracking")]
     pub fn get_step(&self) -> Step {
         match self {
@@ -228,6 +219,14 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.math.negative(),
             Math::Variable(v) => v.negative(),
             s => s.clone(),
+        }
+    }
+    fn substitute(&self, suffix: String, math: Math) -> Math {
+        match self {
+            Math::Variable(v) => v.substitute(suffix, math),
+            Math::Polynom(p) => p.substitute(suffix, math),
+            //            Math::Equation(e) => e.map_value(suffix, math),
+            s => todo!(),
         }
     }
 }
