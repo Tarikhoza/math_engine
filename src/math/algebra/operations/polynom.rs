@@ -145,6 +145,7 @@ impl AlgebraOperations for Polynom {
             .simplify_exp()
             .simplify_mul_div()
             .simplify_add_sub()
+            .unpack()
     }
 }
 
@@ -273,7 +274,7 @@ impl Polynom {
 
     //  AS - Addition and Subtraction (left-to-right)
 
-    pub fn simplify_add_sub(&self) -> Math {
-        Math::Polynom(self.to_vector().to_based_matrix().add_all().as_polynom())
+    pub fn simplify_add_sub(&self) -> Polynom {
+        self.to_vector().to_based_matrix().add_all().as_polynom()
     }
 }
