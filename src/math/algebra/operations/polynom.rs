@@ -213,23 +213,7 @@ impl Polynom {
         #[cfg(feature = "step-tracking")]
         let mut steps: Vec<Step> = vec![];
 
-        let mut chan: bool = false;
-        let mut skip: bool = false;
-
-        for (i, _factor) in self.factors.iter().take(self.factors.len() - 1).enumerate() {
-            if chan {
-                operators.push(self.operators[i].clone());
-                if skip {
-                    skip = false;
-                } else {
-                    factors.push(self.factors[i].clone());
-                }
-                if i == self.factors.len() - 2 {
-                    factors.push(self.factors[i + 1].clone());
-                }
-                continue;
-            }
-
+        for (i, _factor) in self.factors.iter().enumerate() {
             match &self.operators[i] {
                 Operator::Algebra(AlgebraOperators::Multiplication)
                 | Operator::Algebra(AlgebraOperators::InvMulti) => {
@@ -239,8 +223,9 @@ impl Polynom {
                     if f.to_tex() != "0" {
                         factors.push(f);
                     }
-                    chan = true;
-                    skip = true;
+                    factors.extend_from_slice(self.factors.get(i + 2..).unwrap_or(&[]));
+                    operators.extend_from_slice(self.operators.get(i + 1..).unwrap_or(&[]));
+                    break;
                 }
                 Operator::Algebra(AlgebraOperators::Division) => {
                     let f = self.factors[i].div(&self.factors[i + 1]);
@@ -249,8 +234,9 @@ impl Polynom {
                     if f.to_tex() != "0" {
                         factors.push(f);
                     }
-                    chan = true;
-                    skip = true;
+                    factors.extend_from_slice(self.factors.get(i + 2..).unwrap_or(&[]));
+                    operators.extend_from_slice(self.operators.get(i + 1..).unwrap_or(&[]));
+                    break;
                 }
                 o => {
                     factors.push(self.factors[i].clone());
@@ -276,8 +262,7 @@ impl Polynom {
                 .operators
                 .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
                 || p.operators
-                .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
-
+                    .contains(&Operator::Algebra(AlgebraOperators::Multiplication))
                 || p.operators
                     .contains(&Operator::Algebra(AlgebraOperators::Division)))
         {

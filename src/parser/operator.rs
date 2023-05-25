@@ -20,4 +20,4 @@ impl Parsable for Operator {
     fn on_begining(tex: String) -> Option<String> {
         AlgebraOperator::on_begining(tex)
     }
- }
+}

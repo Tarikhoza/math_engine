@@ -20,7 +20,10 @@ impl AlgebraOperatons for Infinity {
         }
     }
 
-    fn division(&self, other: &Infinity) -> Math {}
+    fn division(&self, other: &Infinity) -> Math {
+        //TODO check what to do when infinity is divided
+        self.clone()
+    }
 
     fn add(&self, rhs: &Math) -> Math {
         //        println!("{}+{}", self.to_tex(), _rhs.to_tex());
@@ -30,7 +33,9 @@ impl AlgebraOperatons for Infinity {
             _ => todo!(),
         }
     }
+
     fn sub(&self, rhs: &Math) -> Math {}
+
     fn mul(&self, rhs: &Math) -> Math {}
 
     fn div(&self, rhs: &Math) -> Math {}

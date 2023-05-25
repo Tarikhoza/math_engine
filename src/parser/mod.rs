@@ -13,6 +13,7 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use rust_decimal_macros::dec;
+
 pub struct Parser {
     input: String,
     pos: usize,
@@ -55,7 +56,6 @@ impl Parser {
             pos: 0,
         }
     }
-    //TODO convert to result
     pub fn extract_brace(tex: &str, open_c: char, close_c: char) -> Result<String, &'static str> {
         let mut pos = 1;
         let mut close = 0;
@@ -70,7 +70,7 @@ impl Parser {
                 _ => {}
             }
             if open == close {
-                return Ok(tex.get(1..pos).unwrap().to_string());
+                return Ok(tex.get(1..pos).expect("while extracting brace something unexpected happened").to_string());
             }
             pos += 1;
         }
@@ -78,7 +78,8 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Math, &'static str> {
-        let to_parse: Vec<fn(tex: &str) -> Option<(usize, Math)>> = vec![
+        type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
+        let to_parse: Vec<ParseFn> = vec![
             //            Equation::parse,
             Braces::parse,
             Variable::parse,
