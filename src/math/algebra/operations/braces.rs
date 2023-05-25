@@ -81,11 +81,11 @@ impl Operations for Braces {
 
     fn substitute(&self, suffix: String, math: Math) -> Math {
         let new_math = Box::new(self.math.substitute(suffix.clone(), math.clone()));
-        let new_exponent = self.get_exponent().substitute(suffix.clone(), math.clone());
+        let new_exponent = self.get_exponent().substitute(suffix, math);
 
-        return Math::Braces(Braces {
+        Math::Braces(Braces {
             math: new_math,
             exponent: Some(Box::new(new_exponent)),
-        });
+        })
     }
 }

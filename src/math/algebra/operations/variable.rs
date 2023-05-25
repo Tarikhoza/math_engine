@@ -170,7 +170,7 @@ impl AlgebraOperatons for Variable {
         let sign = left.0.morph(right.0);
 
         if sign == Operator::Algebra(AlgebraOperator::Subtraction) {
-            Math::Polynom(Polynom {
+            return Math::Polynom(Polynom {
                 factors: vec![self.negative(), Math::Variable(other.clone())],
                 operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
                 #[cfg(feature = "step-tracking")]
@@ -393,7 +393,7 @@ impl AlgebraOperatons for Variable {
                     Math::Braces(Braces {
                         math: Box::new(math.clone()),
                         exponent: Some(Box::new(
-                            self.get_exponent().substitute(suffix.clone(), math.clone()),
+                            self.get_exponent().substitute(suffix, math),
                         )),
                     }),
                 ],

@@ -36,7 +36,7 @@ impl Polynom {
             .replace("+-", "-")
             .replace("-+", "-");
         if ret != self.to_tex() {
-            return ret.parse_math().unwrap();
+            return ret.parse_math().expect("an error happened while morphing double operators");
         }
         self.unpack()
     }
