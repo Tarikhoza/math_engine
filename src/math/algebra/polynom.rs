@@ -7,7 +7,7 @@ use crate::math::Math;
 
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::vector::Vector;
-use crate::parser::Parsable;
+use crate::parser::{Parsable, ParsableGenerics};
 use rust_decimal_macros::dec;
 
 #[cfg(feature = "step-tracking")]
@@ -28,6 +28,18 @@ impl Polynom {
         }
         Math::Polynom(self.clone())
     }
+    pub fn morph_double_operator(&self) -> Math {
+        let ret = self
+            .to_tex()
+            .replace("++", "+")
+            .replace("--", "+")
+            .replace("+-", "-")
+            .replace("-+", "-");
+        if ret != self.to_tex() {
+            return ret.parse_math().unwrap();
+        }
+        self.unpack()
+    }
 
     pub fn to_vector(&self) -> Vector {
         let mut factors: Vec<Math> = self
@@ -38,9 +50,10 @@ impl Polynom {
             .collect();
 
         factors.insert(0, self.factors.get(0).cloned().unwrap_or_default());
-        Vector { factors, 
+        Vector {
+            factors,
             #[cfg(feature = "step-tracking")]
-            step:None 
+            step: None,
         }
     }
     //   pub fn to_fraction(&self) -> Fraction {

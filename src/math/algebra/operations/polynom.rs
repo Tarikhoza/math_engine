@@ -58,18 +58,17 @@ impl AlgebraOperations for Polynom {
 
     fn multiplication(&self, other: &Polynom) -> Math {
         let mut factors: Vec<Math> = vec![];
-
         #[cfg(feature = "step-tracking")]
         let mut steps: Vec<Step> = vec![];
-
-        for i in self.factors.iter() {
-            for j in other.factors.iter() {
+        for i in self.to_vector().factors.iter() {
+            for j in other.to_vector().factors.iter() {
                 let product = i.mul(j);
                 #[cfg(feature = "step-tracking")]
                 steps.push(product.get_step());
                 factors.push(i.mul(j));
             }
         }
+
         let len = factors.len();
         Math::Polynom(Polynom {
             factors,
@@ -145,7 +144,7 @@ impl AlgebraOperations for Polynom {
             .simplify_exp()
             .simplify_mul_div()
             .simplify_add_sub()
-            .unpack()
+            .morph_double_operator()
     }
 }
 
