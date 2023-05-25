@@ -10,6 +10,7 @@ impl Parsable for Math {
             Math::Undefined(s) => s.to_tex(),
             Math::Infinity(s) => s.to_tex(),
             Math::Operator(s) => s.to_tex(),
+            Math::Fraction(s) => s.to_tex(),
             _ => todo!(),
         }
     }

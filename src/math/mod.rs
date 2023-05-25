@@ -9,6 +9,7 @@ use std::ops;
 use crate::parser::{Parsable, Parser};
 
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::undefined::Undefined;
@@ -29,6 +30,7 @@ use crate::solver::step::{DetailedOperator, Step};
 pub enum Math {
     Variable(Variable),
     Polynom(Polynom),
+    Fraction(Fraction),
     Braces(Braces),
     Vector(Vector),
     Matrix(Matrix),
@@ -225,6 +227,7 @@ impl AlgebraOperations for Math {
         match self {
             Math::Variable(v) => v.substitute(suffix, math),
             Math::Polynom(p) => p.substitute(suffix, math),
+            Math::Braces(b) => b.substitute(suffix, math),
             //            Math::Equation(e) => e.map_value(suffix, math),
             s => todo!(),
         }

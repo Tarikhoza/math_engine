@@ -8,7 +8,7 @@ use crate::math::operator::algebra::{
 };
 use crate::math::operator::Operator;
 //use crate::math::algebra::equation::Equation;
-//use crate::math::algebra::fraction::Fraction;
+use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
@@ -70,7 +70,10 @@ impl Parser {
                 _ => {}
             }
             if open == close {
-                return Ok(tex.get(1..pos).expect("while extracting brace something unexpected happened").to_string());
+                return Ok(tex
+                    .get(1..pos)
+                    .expect("while extracting brace something unexpected happened")
+                    .to_string());
             }
             pos += 1;
         }
@@ -81,9 +84,10 @@ impl Parser {
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
             //            Equation::parse,
+            //
             Braces::parse,
+            Fraction::parse,
             Variable::parse,
-            //            Fraction::parse,
         ];
 
         let mut factors: Vec<Math> = vec![];

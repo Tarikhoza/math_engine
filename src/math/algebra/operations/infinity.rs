@@ -1,37 +1,30 @@
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
+use crate::math::Infinity;
 use crate::math::Math;
 use crate::parser::Parsable;
 
 impl AlgebraOperatons for Infinity {
     fn addition(&self, other: &Infinity) -> Math {
-        self.clone()
+        todo!();
     }
 
     fn subtraction(&self, other: &Infinity) -> Math {
-        self.clone()
+        todo!();
     }
 
     fn multiplication(&self, other: &Infinity) -> Math {
-        if self.minus && other.minus || self.minus && other.minus {
-            return Infinity { minus: false };
-        } else if self.minus && !other.minus || !self.minus && other.minus {
-            return Infinity { minus: true };
-        }
+        todo!();
     }
 
     fn division(&self, other: &Infinity) -> Math {
         //TODO check what to do when infinity is divided
-        self.clone()
+        todo!();
     }
 
     fn add(&self, rhs: &Math) -> Math {
         //        println!("{}+{}", self.to_tex(), _rhs.to_tex());
-        match rhs {
-            Math::Polynom(p) => self.as_polynom().add(&Math::Polynom(p.clone())),
-            Math::Variable(v) => self.addition(v),
-            _ => todo!(),
-        }
+        todo!();
     }
 
     fn sub(&self, rhs: &Math) -> Math {
@@ -51,9 +44,9 @@ impl AlgebraOperatons for Infinity {
     }
 
     fn simplify(&self) -> Math {
-        self.clone()
+        todo!();
     }
-    fn subtitute(&self, suffix: String, math: Math) {
-        self.clone();
+    fn substitute(&self, suffix: String, math: Math) -> Math {
+        todo!();
     }
 }

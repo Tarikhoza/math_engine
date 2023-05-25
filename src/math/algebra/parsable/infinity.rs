@@ -4,10 +4,10 @@ use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 use fancy_regex::Regex;
 
-impl Parsable for Infinity{
+impl Parsable for Infinity {
     fn to_tex(&self) -> String {
         if self.minus {
-         return String::from(r"-\infty");
+            return String::from(r"-\infty");
         }
         String::from(r"\infty")
     }
@@ -18,7 +18,7 @@ impl Parsable for Infinity{
 
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"-?\\infty").unwrap_or_else(|e| {
+            static ref RE: Regex = Regex::new(r"^-?\\infty").unwrap_or_else(|e| {
                 panic!("Failed to compile regex for braces: {e}");
             });
         }
