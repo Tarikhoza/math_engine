@@ -36,7 +36,9 @@ impl Polynom {
             .replace("+-", "-")
             .replace("-+", "-");
         if ret != self.to_tex() {
-            return ret.parse_math().expect("an error happened while morphing double operators");
+            return ret
+                .parse_math()
+                .expect("an error happened while morphing double operators");
         }
         self.unpack()
     }
@@ -50,6 +52,7 @@ impl Polynom {
             .collect();
 
         factors.insert(0, self.factors.get(0).cloned().unwrap_or_default());
+
         Vector {
             factors,
             #[cfg(feature = "step-tracking")]

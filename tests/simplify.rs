@@ -3,7 +3,10 @@ use math_engine::parser::{Parsable, ParsableGenerics};
 
 macro_rules! parser_eq {
     ($input:expr, $expected:expr) => {
-        assert_eq!($expected, $input.parse_math().unwrap().simplify().to_tex());
+        assert_eq!(
+            $expected,
+            $input.parse_math().unwrap().simplify().simplify().to_tex()
+        );
     };
 }
 
@@ -221,6 +224,37 @@ fn basic_operations_with_suffix() {
     parser_eq!("3x*2x", "6x^{2}");
     parser_eq!("8x+4+3*(2x-3)", "14x-5");
     parser_eq!("5x+3y+4-2x+8y-7", "3x+11y-3");
+    parser_eq!("3x+5a-3a+2x", "5x+2a");
+    parser_eq!("69g-5p+16p-7g+11g", "73g+11p");
+    parser_eq!("3a+3b+19a-2b+7b", "22a+8b");
+    parser_eq!("13a+53b-32b-11b+8a", "21a+10b");
+    parser_eq!("5b-7h+3d+18h-4b+12d", "b+11h+15d");
+    parser_eq!("12x+8y+23z-5y+13z-9x", "3x+3y+36z");
+    parser_eq!("4y+8x+3x-7x+15y", "4x+19y");
+    parser_eq!("6k-7u+11k+14u-2k", "7u+15k");
+
+    parser_eq!("6a+5d-3a", "3a+5d");
+    parser_eq!("14y+8x-10y-3x", "4y+5x");
+    parser_eq!("7g-14h-4g-5h", "3g-19h");
+    parser_eq!("82a+66b-49a-38b", "33a+28b");
+    parser_eq!("3z-7g+19g+6z", "9z+12g");
+    parser_eq!("8a-5f+a-4f", "9a-9f");
+    parser_eq!("99k-43h+37h-25k", "74k-6h");
+    parser_eq!("82u+13l-44l-77u", "5u-31l");
+    parser_eq!("-4z+3r-8r-3z", "-7z-5r");
+    parser_eq!("33y-28x+19y+43x-27y", "25y+15x");
+    parser_eq!("16c-4c+72d+17c-13d", "29c+59d");
+    parser_eq!("25p+8o-9o-22p+5o", "4o+3p");
+    parser_eq!("5v-9q-3v+8v-2y", "8v-9q");
+    parser_eq!("13e-5w+4e+19w-7e", "10+14w");
+    parser_eq!("72a+33s-19a-56d+5s-44d", "38s-100d-53a");
+    parser_eq!("34f+5g-7h+11g+17h-15f", "10h+16g+19f");
+    parser_eq!("5a+7b-3a-2b+6a+11a+7b-2a", "17a+12b");
+    parser_eq!("9c-4c-6a-12a+36a+3c+a-2c+15c", "27a+15c");
+    parser_eq!("75z-14t-7t-33z+25z-13y+18x-29z-13y", "12c+30z+40t");
+    parser_eq!("-11x+71+33x+45z-13y+18x-29z-13y", "40x+16z+45y");
+    parser_eq!("a+b+a+b+c+b+a+b-c-a+b+c-a+b-a", "4b+c");
+    parser_eq!("55d-33s+d+65s-32a+13z-21d+77a-z", "12z+33d-32s+45a");
 }
 
 #[test]

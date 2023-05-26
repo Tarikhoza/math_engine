@@ -76,6 +76,11 @@ impl Math {
     pub fn add_sub_base(&self) -> String {
         match &self {
             Math::Variable(v) => v.add_sub_base(),
+            Math::Fraction(f) => format!(
+                "\\frac{{{}}}{{{}}}",
+                f.numerator.add_sub_base(),
+                f.denominator.add_sub_base()
+            ),
             _ => String::new(),
         }
     }
@@ -105,32 +110,13 @@ impl Math {
 
     pub fn as_polynom(&self) -> Polynom {
         match self {
-            Math::Variable(s) => Polynom {
-                factors: vec![self.clone()],
-                operators: vec![],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            },
-            Math::Braces(s) => Polynom {
-                factors: vec![self.clone()],
-                operators: vec![],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            },
-            Math::Undefined(s) => Polynom {
-                factors: vec![self.clone()],
-                operators: vec![],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            },
-            Math::Infinity(s) => Polynom {
-                factors: vec![self.clone()],
-                operators: vec![],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            },
             Math::Polynom(s) => s.clone(),
-            _ => todo!(),
+            _ => Polynom {
+                factors: vec![self.clone()],
+                operators: vec![],
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            },
         }
     }
 }
@@ -170,7 +156,7 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.add(rhs),
             Math::Variable(v) => v.add(rhs),
             Math::Braces(b) => b.add(rhs),
-            //            Math::Fraction(f) => f.add(rhs),
+            Math::Fraction(f) => f.add(rhs),
             //           Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -183,7 +169,7 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.sub(rhs),
             Math::Variable(v) => v.sub(rhs),
             Math::Braces(b) => b.sub(rhs),
-            //            Math::Fraction(f) => f.sub(rhs),
+            Math::Fraction(f) => f.sub(rhs),
             //          Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -193,7 +179,7 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.mul(rhs),
             Math::Variable(v) => v.mul(rhs),
             Math::Braces(b) => b.mul(rhs),
-            //            Math::Fraction(f) => f * rhs,
+            Math::Fraction(f) => f.mul(rhs),
             //         Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -203,7 +189,7 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.div(rhs),
             //   Math::Braces(b)   => b*_rhs,
             Math::Variable(v) => v.div(rhs),
-            //            Math::Fraction(f) => f.div(rhs),
+            Math::Fraction(f) => f.div(rhs),
             //            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }

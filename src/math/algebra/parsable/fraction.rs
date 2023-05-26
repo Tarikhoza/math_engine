@@ -35,7 +35,6 @@ impl Parsable for Fraction {
             '}',
         )?;
 
-        dbg!(numerator.clone(), denominator.clone());
         if numerator.is_empty() {
             return Err("While parsing numerator was empty");
         }

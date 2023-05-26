@@ -1,6 +1,6 @@
 use crate::math::Math;
 use crate::parser::{ParsableGenerics, Parser};
-
+use crate::math::algebra::variable::Variable;
 impl ParsableGenerics for String {
     fn parse_math(&self) -> Result<Math, &'static str> {
         Parser::new(self).parse()

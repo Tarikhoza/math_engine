@@ -47,6 +47,12 @@ pub trait Parsable {
 
 pub trait ParsableGenerics {
     fn parse_math(&self) -> Result<Math, &'static str>;
+    fn as_variable(&self) -> Result<Variable, &'static str>{
+        match self.parse_math().expect("error parsing math"){
+            Math::Variable(v) => return Ok(v),
+            _ => return Err("not a variable")
+        }
+    }
 }
 
 impl Parser {
