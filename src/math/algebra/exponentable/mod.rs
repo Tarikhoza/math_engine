@@ -36,7 +36,8 @@ pub trait Exponentable {
                 return value;
             } else {
                 //Turn into a fraction and use with apply exponent with root
-                todo!()
+                dbg!("Exponentable::apply_exponent");
+                return self.with_exponent();
             }
         }
         self.with_exponent()

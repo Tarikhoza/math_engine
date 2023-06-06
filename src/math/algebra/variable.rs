@@ -37,7 +37,7 @@ fn ascii_score(s: &str) -> u32 {
 
 impl Variable {
     pub fn is_integer(&self) -> bool {
-        self.value - self.value.round() == self.value
+        self.value - self.value.round() == dec!(0)
             && self.suffix.is_empty()
             && self.exponent.is_none()
     }

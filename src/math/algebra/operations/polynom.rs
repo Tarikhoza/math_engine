@@ -1,5 +1,6 @@
 use crate::math::algebra::polynom::Polynom;
 //use crate::math::algebra::undefined::Undefined;
+use crate::math::algebra::exponentable::Exponentable;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperators,
 };
@@ -212,7 +213,20 @@ impl Polynom {
 
     //  E - Exponents (ie Powers and Square Roots, etc.)
     pub fn simplify_exp(&self) -> Polynom {
-        self.clone()
+        let mut factors: Vec<Math> = vec![];
+        for i in self.factors.iter() {
+            match i {
+                Math::Braces(b) => factors.push(b.apply_exponent()),
+                Math::Variable(v) => factors.push(v.apply_exponent()),
+                s => factors.push(s.clone()),
+            }
+        }
+        Polynom {
+            factors,
+            operators: self.operators.clone(),
+            #[cfg(feature = "step-tracking")]
+            step: None,
+        }
     }
 
     //  MD - Multiplication and Division (left-to-right)
