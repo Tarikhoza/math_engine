@@ -1,4 +1,5 @@
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::undefined::Undefined;
@@ -196,12 +197,18 @@ impl AlgebraOperatons for Variable {
     }
     fn division(&self, other: &Variable) -> Math {
         //Handle 0/0 and 0/x
-        if self.value == dec!(0) {
-            if other.value == dec!(0) {
+        if self.value.is_zero() {
+            if other.value.is_zero() {
                 return Math::Undefined(Undefined {});
             }
             return Math::default();
         }
+
+        //Handle x/0
+        if self.value != dec!(0) && other.value == dec!(0) {
+            return Math::Infinity(Infinity { minus: false });
+        }
+
         #[cfg(feature = "step-tracking")]
         let div_two_var = Step::step(
             Math::Variable(self.clone()),
@@ -216,10 +223,6 @@ impl AlgebraOperatons for Variable {
             Operator::Algebra(AlgebraOperator::Division),
             String::from("Division of two variables(one without suffix, one with)"),
         );
-        //Handle x/0
-        if self.value != dec!(0) && other.value == dec!(0) {
-            return Math::Infinity(Infinity { minus: false });
-        }
         //if suffix are empty
         if self.suffix == *"" && other.suffix == *"" {
             if self.get_exponent().to_tex() == "1" && other.get_exponent().to_tex() == "1" {
@@ -306,27 +309,27 @@ impl AlgebraOperatons for Variable {
     }
 
     fn add(&self, rhs: &Math) -> Math {
-        //        println!("{}+{}", self.to_tex(), _rhs.to_tex());
         match rhs {
             Math::Polynom(p) => self.as_polynom().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.addition(v),
             _ => todo!(),
         }
     }
+
     fn sub(&self, rhs: &Math) -> Math {
-        //        println!("{}-{}", self.to_tex(), _rhs.to_tex());
         match rhs {
             Math::Polynom(p) => self.as_polynom().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.subtraction(v),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
+
     fn mul(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Polynom(p) => self.as_polynom().mul(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.multiplication(v),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -335,7 +338,7 @@ impl AlgebraOperatons for Variable {
         match rhs {
             //  Math::Polynom(p)  => self.as_polynom()*Math::Polynom(p),
             Math::Variable(v) => self.division(v),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -376,7 +379,7 @@ impl AlgebraOperatons for Variable {
 
     fn substitute(&self, suffix: String, math: Math) -> Math {
         if self.suffix == suffix {
-            Math::Polynom(Polynom {
+            return Math::Polynom(Polynom {
                 factors: vec![
                     Math::Variable(Variable {
                         value: self.value,
@@ -392,17 +395,14 @@ impl AlgebraOperatons for Variable {
                     }),
                     Math::Braces(Braces {
                         math: Box::new(math.clone()),
-                        exponent: Some(Box::new(
-                            self.get_exponent().substitute(suffix, math),
-                        )),
+                        exponent: Some(Box::new(self.get_exponent().substitute(suffix, math))),
                     }),
                 ],
                 operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
                 #[cfg(feature = "step-tracking")]
                 step: None,
-            })
-        } else {
-            Math::Variable(self.clone())
+            });
         }
+        Math::Variable(self.clone())
     }
 }

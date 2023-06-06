@@ -1,3 +1,4 @@
+use crate::math::operator::algebra::Operations;
 use crate::math::Math;
 
 #[derive(Debug, Clone)]
@@ -11,6 +12,12 @@ impl Fraction {
         Fraction {
             numerator: self.denominator.clone(),
             denominator: self.numerator.clone(),
+        }
+    }
+    pub fn expand(&self, other: Math) -> Fraction {
+        Fraction {
+            numerator: Box::new(self.numerator.mul(&other)),
+            denominator: Box::new(self.denominator.mul(&other)),
         }
     }
 }

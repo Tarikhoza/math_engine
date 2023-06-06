@@ -27,7 +27,7 @@ pub trait Parsable {
         String::new()
     }
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        Variable::from_tex("0")
+        0.parse_math()
     }
     fn parse(tex: &str) -> Option<(usize, Math)> {
         if let Some(t) = Self::on_begining(tex.to_owned()) {
@@ -47,12 +47,11 @@ pub trait Parsable {
 
 pub trait ParsableGenerics {
     fn parse_math(&self) -> Result<Math, &'static str>;
-    fn as_variable(&self) -> Result<Variable, &'static str>{
-        match self.parse_math().expect("error parsing math"){
-            Math::Variable(v) => return Ok(v),
-            _ => return Err("not a variable")
-        }
-    }
+}
+
+pub trait ParsableGenericsAsVariable {
+    fn parse_math(&self) -> Result<Math, &'static str>;
+    fn as_variable(&self) -> Variable;
 }
 
 impl Parser {
@@ -89,8 +88,7 @@ impl Parser {
     pub fn parse(&mut self) -> Result<Math, &'static str> {
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
-            //            Equation::parse,
-            //
+            //Equation::parse,
             Braces::parse,
             Fraction::parse,
             Variable::parse,
@@ -101,7 +99,7 @@ impl Parser {
         let mut op_search: bool = false;
 
         'outer: while self.pos < self.input.len() {
-            let remaining_input = &self.input.get(self.pos..).unwrap_or("");
+            let remaining_input = self.input.get(self.pos..).unwrap_or("");
             if remaining_input.is_empty() {
                 return Err("Error while parsing");
             }

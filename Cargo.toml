@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
+default = ["step-tracking"]
 step-tracking = []
 
 
@@ -14,7 +15,6 @@ step-tracking = []
 fancy-regex = "0.11.0"
 itertools = "0.10.5"
 lazy_static = "1.4.0"
-no-panic = "0.1.22"
 regex = "1.7.3"
 rust_decimal = "1.28.1"
 rust_decimal_macros = "1.28.1"

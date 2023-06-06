@@ -14,11 +14,11 @@ impl Braces {
     pub fn get_exponent(&self) -> Math {
         match &self.exponent {
             None => Math::Variable(Variable {
-                value: dec!(1.0),
+                value: dec!(1),
                 suffix: String::new(),
                 exponent: None,
                 #[cfg(feature = "step-tracking")]
-                step:None
+                step: None,
             }),
             Some(e) => *e.clone(),
         }

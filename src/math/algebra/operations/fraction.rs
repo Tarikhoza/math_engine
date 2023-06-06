@@ -3,7 +3,7 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
-use crate::parser::Parsable;
+use crate::parser::{Parsable, ParsableGenericsAsVariable};
 
 impl AlgebraOperatons for Fraction {
     fn addition(&self, other: &Fraction) -> Math {
@@ -13,14 +13,9 @@ impl AlgebraOperatons for Fraction {
                 denominator: self.denominator.clone(),
             });
         }
-        Math::Fraction(Fraction {
-            numerator: Box::new(self.numerator.mul(&other.denominator)),
-            denominator: Box::new(self.denominator.mul(&other.denominator)),
-        })
-        .add(&Math::Fraction(Fraction {
-            numerator: Box::new(other.numerator.mul(&self.denominator)),
-            denominator: Box::new(other.denominator.mul(&self.denominator)),
-        }))
+
+        Math::Fraction(self.expand(*other.denominator.clone()))
+            .add(&Math::Fraction(other.expand(*self.denominator.clone())))
     }
 
     fn subtraction(&self, other: &Fraction) -> Math {
@@ -30,15 +25,8 @@ impl AlgebraOperatons for Fraction {
                 denominator: self.denominator.clone(),
             });
         }
-
-        Math::Fraction(Fraction {
-            numerator: Box::new(self.numerator.mul(&other.denominator)),
-            denominator: Box::new(self.denominator.mul(&other.denominator)),
-        })
-        .sub(&Math::Fraction(Fraction {
-            numerator: Box::new(other.numerator.mul(&self.denominator)),
-            denominator: Box::new(other.denominator.mul(&self.denominator)),
-        }))
+        Math::Fraction(self.expand(*other.denominator.clone()))
+            .sub(&Math::Fraction(other.expand(*self.denominator.clone())))
     }
 
     fn multiplication(&self, other: &Fraction) -> Math {
@@ -81,13 +69,16 @@ impl AlgebraOperatons for Fraction {
     }
 
     fn negative(&self) -> Math {
-        todo!();
+        self.mul(&Math::Variable((-1 as i32).as_variable()))
     }
 
     fn simplify(&self) -> Math {
         todo!();
     }
     fn substitute(&self, suffix: String, math: Math) -> Math {
-        todo!();
+        Math::Fraction(Fraction {
+            numerator: Box::new(self.numerator.substitute(suffix.clone(), math.clone())),
+            denominator: Box::new(self.denominator.substitute(suffix.clone(), math.clone())),
+        })
     }
 }

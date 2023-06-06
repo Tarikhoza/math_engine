@@ -1,4 +1,5 @@
 pub mod algebra;
+pub mod descrete;
 pub mod linear_algebra;
 pub mod operator;
 
