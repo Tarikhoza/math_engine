@@ -13,6 +13,7 @@ use crate::math::algebra::braces::Braces;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
+use crate::math::algebra::root::Root;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
@@ -34,6 +35,7 @@ pub enum Math {
     Fraction(Fraction),
     Braces(Braces),
     Vector(Vector),
+    Root(Root),
     Matrix(Matrix),
     Infinity(Infinity),
     Undefined(Undefined),

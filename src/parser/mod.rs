@@ -10,6 +10,7 @@ use crate::math::operator::Operator;
 //use crate::math::algebra::equation::Equation;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
+use crate::math::algebra::root::Root;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use rust_decimal_macros::dec;
@@ -91,6 +92,7 @@ impl Parser {
             //Equation::parse,
             Braces::parse,
             Fraction::parse,
+            Root::parse,
             Variable::parse,
         ];
 
