@@ -1,11 +1,11 @@
 use crate::math::algebra::root::Root;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, Parser};
+use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 use fancy_regex::Regex;
 
 impl Parsable for Root {
     fn to_tex(&self) -> String {
-        if self.base.is_none() || self.base.clone().unwrap().to_tex() == "2" {
+        if self.base.is_none() {
             format!("\\sqrt[]{{{}}}", self.math.to_tex())
         } else {
             format!(
@@ -26,7 +26,6 @@ impl Parsable for Root {
         let captures = result
             .expect("Error running regex")
             .expect("No match found");
-
         let base = Parser::extract_brace(captures.get(2).map_or("", |m| m.as_str()), '[', ']')?;
         let math = Parser::extract_brace(
             captures
@@ -40,7 +39,7 @@ impl Parsable for Root {
         if base.is_empty() {
             return Ok(Math::Root(Root {
                 math: Box::new(math.parse_math()?),
-                base: None,
+                base: Some(Box::new(Math::Variable(2.as_variable()))),
             }));
         }
         Ok(Math::Root(Root {
