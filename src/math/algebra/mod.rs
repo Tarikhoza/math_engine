@@ -1,10 +1,10 @@
 pub mod braces;
-pub mod operations;
-pub mod parsable;
-//pub mod equation;
 pub mod exponentable;
 pub mod fraction;
+pub mod function;
 pub mod infinity;
+pub mod operations;
+pub mod parsable;
 pub mod polynom;
 pub mod root;
 pub mod undefined;

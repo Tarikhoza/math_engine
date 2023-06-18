@@ -26,7 +26,7 @@ impl Parsable for Variable {
             static ref RE: Regex =
                 Regex::new(r"(-?\d+(?=\w*)(\.\d+)?|\d*(?=\w+)(\.\d+)?)(\w*)(\^(\{.+))?")
                     .unwrap_or_else(|e| {
-                        panic!("Failed to compile regex for braces: {e}");
+                        panic!("Failed to compile regex for variable: {e}");
                     });
         }
         let result = RE.captures(tex);
@@ -53,7 +53,7 @@ impl Parsable for Variable {
             suffix,
             exponent,
             #[cfg(feature = "step-tracking")]
-            step:None
+            step: None,
         }))
     }
 

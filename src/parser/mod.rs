@@ -9,6 +9,7 @@ use crate::math::operator::algebra::{
 use crate::math::operator::Operator;
 //use crate::math::algebra::equation::Equation;
 use crate::math::algebra::fraction::Fraction;
+use crate::math::algebra::function::Function;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
 use crate::math::algebra::variable::Variable;
@@ -32,13 +33,7 @@ pub trait Parsable {
     }
     fn parse(tex: &str) -> Option<(usize, Math)> {
         if let Some(t) = Self::on_begining(tex.to_owned()) {
-            let math = Self::from_tex(&t).unwrap_or(Math::Variable(Variable {
-                value: dec!(0),
-                suffix: String::new(),
-                exponent: None,
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            }));
+            let math = Self::from_tex(&t).unwrap_or(Math::default());
             let len = math.to_tex().len();
             return Some((len, math));
         }
@@ -90,6 +85,9 @@ impl Parser {
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
             //Equation::parse,
+            //
+            //
+            Function::parse,
             Braces::parse,
             Fraction::parse,
             Root::parse,

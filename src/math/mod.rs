@@ -11,6 +11,7 @@ use crate::parser::{Parsable, Parser};
 
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::fraction::Fraction;
+use crate::math::algebra::function::Function;
 use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
@@ -34,6 +35,7 @@ pub enum Math {
     Polynom(Polynom),
     Fraction(Fraction),
     Braces(Braces),
+    Function(Function),
     Vector(Vector),
     Root(Root),
     Matrix(Matrix),

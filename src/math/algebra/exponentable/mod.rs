@@ -1,4 +1,5 @@
 pub mod braces;
+pub mod function;
 pub mod variable;
 
 use crate::math::AlgebraOperations;
