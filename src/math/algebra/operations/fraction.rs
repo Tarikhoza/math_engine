@@ -75,7 +75,7 @@ impl AlgebraOperatons for Fraction {
     fn simplify(&self) -> Math {
         todo!();
     }
-    fn substitute(&self, suffix: String, math: Math) -> Math {
+    fn substitute(&self, suffix: &str, math: Math) -> Math {
         Math::Fraction(Fraction {
             numerator: Box::new(self.numerator.substitute(suffix.clone(), math.clone())),
             denominator: Box::new(self.denominator.substitute(suffix.clone(), math.clone())),

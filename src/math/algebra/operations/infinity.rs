@@ -46,7 +46,7 @@ impl AlgebraOperatons for Infinity {
     fn simplify(&self) -> Math {
         todo!();
     }
-    fn substitute(&self, suffix: String, math: Math) -> Math {
+    fn substitute(&self, suffix: &str, math: Math) -> Math {
         todo!();
     }
 }

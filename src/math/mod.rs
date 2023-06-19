@@ -1,7 +1,9 @@
 pub mod algebra;
 pub mod descrete;
+pub mod geometry;
 pub mod linear_algebra;
 pub mod operator;
+pub mod trigonometry;
 
 use fancy_regex::Regex;
 use std::default;
@@ -9,6 +11,7 @@ use std::ops;
 
 use crate::parser::{Parsable, Parser};
 
+use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
@@ -36,6 +39,7 @@ pub enum Math {
     Fraction(Fraction),
     Braces(Braces),
     Function(Function),
+    Absolute(Absolute),
     Vector(Vector),
     Root(Root),
     Matrix(Matrix),
@@ -214,7 +218,7 @@ impl AlgebraOperations for Math {
             s => s.clone(),
         }
     }
-    fn substitute(&self, suffix: String, math: Math) -> Math {
+    fn substitute(&self, suffix: &str, math: Math) -> Math {
         match self {
             Math::Variable(v) => v.substitute(suffix, math),
             Math::Polynom(p) => p.substitute(suffix, math),

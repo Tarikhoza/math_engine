@@ -8,6 +8,7 @@ use crate::math::operator::algebra::{
 };
 use crate::math::operator::Operator;
 //use crate::math::algebra::equation::Equation;
+use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::polynom::Polynom;
@@ -81,16 +82,58 @@ impl Parser {
         Err("Brace never closed")
     }
 
+    pub fn at_start(tex: &str, str: &str) -> bool {
+        if tex.strip_prefix(&str).is_some() {
+            return true;
+        }
+        false
+    }
+
+    pub fn extract_between(tex: &str, open_s: &str, close_s: &str) -> Result<String, &'static str> {
+        //throw compile time error if open_s and close_s are the same
+        if open_s == close_s {
+            panic!("open_s and close_s are the same");
+        }
+
+        let mut pos = open_s.len();
+        let mut close = 0;
+        let mut open = 1;
+        if !Parser::at_start(tex, &open_s) {
+            return Ok(String::new());
+        }
+        while pos < tex.len() {
+            match tex
+                .get(pos..)
+                .expect("while extracting brace something unexpected happened")
+            {
+                x if Parser::at_start(x, &open_s) => {
+                    open += 1;
+                    pos += open_s.len()
+                }
+                x if Parser::at_start(x, &close_s) => {
+                    close += 1;
+                    pos += close_s.len()
+                }
+                _ => pos += 1,
+            }
+            if open == close {
+                return Ok(tex
+                    .get(open_s.len()..(pos - close_s.len()))
+                    .expect("while extracting between something unexpected happened")
+                    .to_string());
+            }
+        }
+        Err("Brace never closed")
+    }
+
     pub fn parse(&mut self) -> Result<Math, &'static str> {
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
-            //Equation::parse,
-            //
-            //
             Function::parse,
             Braces::parse,
             Fraction::parse,
             Root::parse,
+            Absolute::parse,
             Variable::parse,
         ];
 
@@ -123,10 +166,11 @@ impl Parser {
                         continue 'outer;
                     }
                 }
+
                 println!(
-                    "Invalid character at position {}: '{}' ",
+                    "Invalid character at position {}: '{}'",
                     self.pos,
-                    self.input.chars().nth(self.pos).unwrap_or(' ')
+                    self.input.chars().nth(self.pos).unwrap_or(' '),
                 );
 
                 return Err("While parsing found invalid character");

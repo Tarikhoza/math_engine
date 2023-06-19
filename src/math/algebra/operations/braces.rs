@@ -79,7 +79,7 @@ impl Operations for Braces {
         todo!()
     }
 
-    fn substitute(&self, suffix: String, math: Math) -> Math {
+    fn substitute(&self, suffix: &str, math: Math) -> Math {
         let new_math = Box::new(self.math.substitute(suffix.clone(), math.clone()));
         let new_exponent = self.get_exponent().substitute(suffix, math);
 

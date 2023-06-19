@@ -86,7 +86,7 @@ impl AlgebraOperations for Polynom {
     }
 
     fn division(&self, _other: &Polynom) -> Math {
-        todo!()
+        todo!("you have to implement division between polynomes")
     }
 
     fn add(&self, rhs: &Math) -> Math {
@@ -114,11 +114,11 @@ impl AlgebraOperations for Polynom {
             Math::Variable(v) => self.multiplication(&v.as_polynom()),
             Math::Braces(b) => self.mul(&b.simplify()),
             //            Math::Undefined(u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!("did not implement mul with polynom"),
         }
     }
     fn div(&self, _rhs: &Math) -> Math {
-        todo!()
+        todo!("you have to implement division between polynomes")
     }
 
     fn negative(&self) -> Math {
@@ -148,7 +148,7 @@ impl AlgebraOperations for Polynom {
             .morph_double_operator()
     }
 
-    fn substitute(&self, suffix: String, math: Math) -> Math {
+    fn substitute(&self, suffix: &str, math: Math) -> Math {
         let mut factors: Vec<Math> = vec![];
         let operators = self.operators.clone();
 
