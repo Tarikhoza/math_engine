@@ -5,7 +5,7 @@ use crate::math::Math;
 use crate::parser::Parsable;
 use std::default;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Step {
     left: Box<Math>,
     right: Option<Box<Math>>,

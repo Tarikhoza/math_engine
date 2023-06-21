@@ -15,14 +15,15 @@ pub trait Exponentable {
     fn apply_exponent(&self) -> Math {
         if let Math::Variable(exponent) = self.get_exponent() {
             if exponent.is_integer() {
-                let mut value = self.without_exponent();
+                let mut value = self.without_exponent().simplify();
+                let orig = value.clone();
                 if exponent.value.is_sign_positive() {
                     for i in 1..exponent
                         .value
                         .to_i64()
                         .expect("error converting dec to i64")
                     {
-                        value = value.mul(&value)
+                        value = value.mul(&orig)
                     }
                 } else {
                     //TODO check for correctness
@@ -31,12 +32,12 @@ pub trait Exponentable {
                         .to_i64()
                         .expect("error converting dec to i64")
                     {
-                        value = value.div(&value)
+                        value = value.div(&orig)
                     }
                 }
                 return value;
             } else {
-                //Turn into a fraction and use with apply exponent with root
+                //Turn into a fraction and apply exponent with root
                 dbg!("Exponentable::apply_exponent");
                 return self.with_exponent();
             }

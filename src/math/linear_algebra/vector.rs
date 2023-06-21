@@ -10,7 +10,7 @@ use std::ops;
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::Step;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Vector {
     pub factors: Vec<Math>,
     #[cfg(feature = "step-tracking")]
@@ -39,14 +39,15 @@ impl Vector {
                         suffix: String::new(),
                         exponent: None,
                         #[cfg(feature = "step-tracking")]
-                        step:None
+                        step: None,
                     })
                 }
             })
             .collect();
-        Vector { factors, 
+        Vector {
+            factors,
             #[cfg(feature = "step-tracking")]
-            step:None 
+            step: None,
         }
     }
     pub fn to_based_matrix(&self) -> Matrix {
@@ -60,8 +61,8 @@ impl Vector {
     }
 
     pub fn add_all(&self) -> Math {
-        if self.factors.len() == 0{
-            return Math::Variable(Variable::default())
+        if self.factors.len() == 0 {
+            return Math::Variable(Variable::default());
         }
         let mut result: Math = self.factors.get(0).unwrap().clone();
         for factor in self.factors.iter().skip(1) {

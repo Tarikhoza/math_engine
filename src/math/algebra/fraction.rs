@@ -1,7 +1,7 @@
 use crate::math::operator::algebra::Operations;
 use crate::math::Math;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Fraction {
     pub numerator: Box<Math>,
     pub denominator: Box<Math>,

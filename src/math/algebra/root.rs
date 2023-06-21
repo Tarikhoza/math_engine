@@ -9,7 +9,7 @@ use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
 //use crate::variable::Variable;
 //use std::ops;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Root {
     pub math: Box<Math>,
     pub base: Option<Box<Math>>,
@@ -17,15 +17,14 @@ pub struct Root {
 
 impl Root {
     pub fn square_root(&self) -> Math {
-        let mut math = *self.math.clone();
+        let mut math = self.math.simplify();
         let mut guess = math.clone();
         let mut result = math.clone();
         let mut last_result = Math::default();
-
         //TODO implement division in all Math types
-        lazy_static! {
-            static ref EXPRESSION: Math = "(g+r)/2".parse_math().unwrap();
-        }
+        //lazy_static! {
+        //    static ref EXPRESSION: Math = "(g+r)/2".parse_math().unwrap();
+        //}
 
         //for i in 1..100 {
         //    result = math.div(&guess);

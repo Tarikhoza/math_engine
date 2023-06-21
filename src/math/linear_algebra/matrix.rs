@@ -3,7 +3,7 @@ use crate::math::operator::algebra::{Operations, Operator};
 use crate::math::Math;
 use std::ops;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Matrix {
     pub factors: Vec<Vector>,
 }

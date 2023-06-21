@@ -48,7 +48,6 @@ impl Descrete for Variable {
     }
 
     fn lowest_common_denominator(&self, other: Variable) -> Variable {
-        //TODO use generators for generating primes
         for i in self.factorise_prime() {
             for j in other.factorise_prime() {
                 if i.value == j.value {

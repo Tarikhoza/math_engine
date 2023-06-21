@@ -1,15 +1,17 @@
-use crate::math::operator::Operator;
 use crate::math::operator::algebra::Operator as AlgebraOperator;
-use crate::solver::step::DetailedOperator;
+use crate::math::operator::equation::Operator as EquationOperator;
+use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;
+use crate::solver::step::DetailedOperator;
 
 impl Parsable for Operator {
     fn to_tex(&self) -> String {
         match self {
             Operator::Algebra(o) => o.to_tex(),
-            Operator::Detail(o)=> String::from("Detail"),
-            Operator::Empty => String::from("Empty")
+            Operator::Equation(o) => o.to_tex(),
+            Operator::Detail(o) => String::from("Detail"),
+            Operator::Empty => String::from("Empty"),
         }
     }
 

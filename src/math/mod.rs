@@ -13,6 +13,7 @@ use crate::parser::{Parsable, Parser};
 
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::equation::Equation;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::infinity::Infinity;
@@ -32,9 +33,10 @@ use crate::math::operator::Operator;
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Math {
     Variable(Variable),
+    Equation(Equation),
     Polynom(Polynom),
     Fraction(Fraction),
     Braces(Braces),
@@ -166,6 +168,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.add(rhs),
             Math::Braces(b) => b.add(rhs),
             Math::Fraction(f) => f.add(rhs),
+            Math::Equation(e) => e.add(rhs),
             //           Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -179,6 +182,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.sub(rhs),
             Math::Braces(b) => b.sub(rhs),
             Math::Fraction(f) => f.sub(rhs),
+            Math::Equation(e) => e.sub(rhs),
             //          Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -207,6 +211,8 @@ impl AlgebraOperations for Math {
         match self {
             Math::Polynom(p) => p.simplify(),
             Math::Braces(b) => b.math.simplify(),
+            Math::Root(r) => r.take_root(),
+            Math::Absolute(a) => a.simplify(),
             s => s.clone(),
         }
     }

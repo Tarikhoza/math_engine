@@ -18,7 +18,7 @@ use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Pars
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Variable {
     pub value: Decimal,
     pub suffix: String,

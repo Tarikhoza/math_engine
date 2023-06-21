@@ -13,7 +13,7 @@ use rust_decimal_macros::dec;
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Polynom {
     pub factors: Vec<Math>,
     pub operators: Vec<Operator>,

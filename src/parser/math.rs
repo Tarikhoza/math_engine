@@ -14,7 +14,8 @@ impl Parsable for Math {
             Math::Function(s) => s.to_tex(),
             Math::Absolute(s) => s.to_tex(),
             Math::Operator(s) => s.to_tex(),
-            _ => todo!(),
+            Math::Equation(s) => s.to_tex(),
+            _ => todo!("Parsing is not implemented for this"),
         }
     }
 

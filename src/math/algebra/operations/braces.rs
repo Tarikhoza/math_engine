@@ -1,4 +1,5 @@
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::exponentable::Exponentable;
 //use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations, Operator};
@@ -35,8 +36,7 @@ impl Operations for Braces {
     }
 
     fn simplify(&self) -> Math {
-        //TODO apply exponent
-        self.math.simplify()
+        self.apply_exponent().simplify()
     }
 
     fn add(&self, rhs: &Math) -> Math {
