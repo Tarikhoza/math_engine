@@ -5,6 +5,7 @@ pub mod variable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::math::Variable;
+use crate::parser::Parsable;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
@@ -23,7 +24,9 @@ pub trait Exponentable {
                         .to_i64()
                         .expect("error converting dec to i64")
                     {
-                        value = value.mul(&orig)
+                        value = value.mul(&orig);
+
+                        dbg!(value.to_tex());
                     }
                 } else {
                     //TODO check for correctness

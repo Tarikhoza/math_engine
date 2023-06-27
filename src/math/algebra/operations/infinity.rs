@@ -49,4 +49,7 @@ impl AlgebraOperatons for Infinity {
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         todo!();
     }
+    fn get_all_suffixes(&self) -> Vec<String> {
+        todo!();
+    }
 }

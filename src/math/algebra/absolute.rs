@@ -8,15 +8,15 @@ pub struct Absolute {
 
 impl Absolute {
     pub fn simplify(&self) -> Math {
-        let math = match self.math.simplify() {
+        match self.math.simplify() {
             Math::Variable(v) => {
                 if v.value.is_sign_negative() {
-                    return v.negative();
+                    v.negative()
                 } else {
-                    return Math::Variable(v.clone());
+                    Math::Variable(v)
                 }
             }
             _ => todo!(),
-        };
+        }
     }
 }

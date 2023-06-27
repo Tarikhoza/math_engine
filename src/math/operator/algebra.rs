@@ -26,6 +26,8 @@ pub trait Operations {
     fn sub(&self, other: &Math) -> Math;
     fn div(&self, other: &Math) -> Math;
     fn mul(&self, other: &Math) -> Math;
+
+    fn get_all_suffixes(&self) -> Vec<String>;
 }
 
 impl Parsable for Operator {
@@ -69,4 +71,3 @@ impl Parsable for Operator {
         None
     }
 }
-

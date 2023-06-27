@@ -36,7 +36,7 @@ impl Operations for Braces {
     }
 
     fn simplify(&self) -> Math {
-        self.apply_exponent().simplify()
+        self.apply_exponent()
     }
 
     fn add(&self, rhs: &Math) -> Math {
@@ -80,12 +80,21 @@ impl Operations for Braces {
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
-        let new_math = Box::new(self.math.substitute(suffix.clone(), math.clone()));
+        let new_math = Box::new(self.math.substitute(suffix, math.clone()));
         let new_exponent = self.get_exponent().substitute(suffix, math);
 
         Math::Braces(Braces {
             math: new_math,
             exponent: Some(Box::new(new_exponent)),
         })
+    }
+    fn get_all_suffixes(&self) -> Vec<String> {
+        let mut suf: Vec<String> = vec![];
+        suf.extend_from_slice(&self.math.get_all_suffixes());
+        suf.extend_from_slice(&self.get_exponent().get_all_suffixes());
+
+        suf.sort();
+        suf.dedup();
+        suf
     }
 }

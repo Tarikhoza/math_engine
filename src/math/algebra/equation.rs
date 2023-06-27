@@ -24,8 +24,20 @@ impl Equation {
         let mut new_eq = (*self).clone();
         let mut sum = new_eq.factors[0].clone();
         for i in self.factors.iter().skip(1) {
-            sum = sum.add(i);
+            sum = sum.add(&i.negative());
         }
         sum
+    }
+
+    pub fn all_to_left(&self) -> Math {
+        format!("{}=0", self.sum().to_tex())
+            .parse_math()
+            .expect("error parsing math for all_to_left")
+    }
+    pub fn decouple(&self) -> Math {
+        self.factors
+            .last()
+            .expect("error decoupleing equation")
+            .clone()
     }
 }

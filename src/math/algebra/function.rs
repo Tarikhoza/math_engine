@@ -5,6 +5,6 @@ use crate::math::Math;
 pub struct Function {
     pub label: String,
     pub args: Vec<String>,
-    pub definition: Option<Box<Math>>,
+    pub definition: Option<fn(Math) -> Math>,
     pub exponent: Option<Box<Math>>,
 }

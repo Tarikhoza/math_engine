@@ -9,6 +9,7 @@ use crate::math::operator::algebra::{
 use crate::math::operator::Operator;
 //use crate::math::algebra::equation::Equation;
 use crate::math::algebra::absolute::Absolute;
+use crate::math::algebra::equation::Equation;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::polynom::Polynom;
@@ -79,7 +80,7 @@ impl Parser {
             }
             pos += 1;
         }
-        Err("Brace never closed")
+        Err("extract_between: Brace never closed")
     }
 
     pub fn at_start(tex: &str, str: &str) -> bool {
@@ -127,6 +128,10 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Math, &'static str> {
+        if let Some(eq) = Equation::on_begining(self.input.clone()) {
+            return Equation::from_tex(&self.input);
+        }
+
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
             Function::parse,
@@ -175,6 +180,9 @@ impl Parser {
 
                 return Err("While parsing found invalid character");
             }
+        }
+        if factors.len() <= operators.len() {
+            return Err("To many operators");
         }
         Ok(Polynom {
             factors,

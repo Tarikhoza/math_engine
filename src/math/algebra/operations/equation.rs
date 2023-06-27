@@ -117,4 +117,15 @@ impl AlgebraOperations for Equation {
         }
         return Math::Equation(new_eq);
     }
+
+    fn get_all_suffixes(&self) -> Vec<String> {
+        let mut suf: Vec<String> = vec![];
+        for i in self.factors.iter() {
+            suf.extend(i.get_all_suffixes())
+        }
+        //TODO remove duplicates
+        suf.sort();
+        suf.dedup();
+        suf
+    }
 }

@@ -81,4 +81,14 @@ impl AlgebraOperatons for Fraction {
             denominator: Box::new(self.denominator.substitute(suffix.clone(), math.clone())),
         })
     }
+
+    fn get_all_suffixes(&self) -> Vec<String> {
+        let mut suf: Vec<String> = vec![];
+        suf.extend(self.denominator.get_all_suffixes());
+        suf.extend(self.numerator.get_all_suffixes());
+        //TODO remove duplicates
+        suf.sort();
+        suf.dedup();
+        suf
+    }
 }

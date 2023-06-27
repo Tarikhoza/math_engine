@@ -14,6 +14,7 @@ use crate::parser::{Parsable, Parser};
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::equation::Equation;
+use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::infinity::Infinity;
@@ -169,7 +170,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.add(rhs),
             Math::Fraction(f) => f.add(rhs),
             Math::Equation(e) => e.add(rhs),
-            //           Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -183,7 +184,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.sub(rhs),
             Math::Fraction(f) => f.sub(rhs),
             Math::Equation(e) => e.sub(rhs),
-            //          Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -193,17 +194,16 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.mul(rhs),
             Math::Braces(b) => b.mul(rhs),
             Math::Fraction(f) => f.mul(rhs),
-            //         Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
     fn div(&self, rhs: &Math) -> Math {
         match self {
             Math::Polynom(p) => p.div(rhs),
-            //   Math::Braces(b)   => b*_rhs,
             Math::Variable(v) => v.div(rhs),
             Math::Fraction(f) => f.div(rhs),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -213,6 +213,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.math.simplify(),
             Math::Root(r) => r.take_root(),
             Math::Absolute(a) => a.simplify(),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             s => s.clone(),
         }
     }
@@ -221,6 +222,9 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.negative(),
             Math::Braces(b) => b.math.negative(),
             Math::Variable(v) => v.negative(),
+            Math::Equation(e) => e.negative(),
+            Math::Fraction(f) => f.negative(),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             s => s.clone(),
         }
     }
@@ -229,8 +233,19 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.substitute(suffix, math),
             Math::Polynom(p) => p.substitute(suffix, math),
             Math::Braces(b) => b.substitute(suffix, math),
-            //            Math::Equation(e) => e.map_value(suffix, math),
+            Math::Equation(e) => e.substitute(suffix, math),
             s => todo!(),
+        }
+    }
+
+    fn get_all_suffixes(&self) -> Vec<String> {
+        match self {
+            Math::Variable(v) => v.get_all_suffixes(),
+            Math::Polynom(p) => p.get_all_suffixes(),
+            Math::Braces(b) => b.get_all_suffixes(),
+            Math::Equation(e) => e.get_all_suffixes(),
+            Math::Fraction(f) => f.get_all_suffixes(),
+            _ => todo!(),
         }
     }
 }

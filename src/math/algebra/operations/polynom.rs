@@ -170,6 +170,16 @@ impl AlgebraOperations for Polynom {
             step,
         })
     }
+    fn get_all_suffixes(&self) -> Vec<String> {
+        let mut suf: Vec<String> = vec![];
+        for i in self.factors.iter() {
+            suf.extend(i.get_all_suffixes())
+        }
+        //TODO remove duplicates
+        suf.sort();
+        suf.dedup();
+        suf
+    }
 }
 
 //simplify helper functions
@@ -250,7 +260,7 @@ impl Polynom {
         #[cfg(feature = "step-tracking")]
         let mut steps: Vec<Step> = vec![];
 
-        for (i, _factor) in self.factors.iter().enumerate() {
+        for (i, _factor) in self.factors.iter().take(self.factors.len() - 1).enumerate() {
             match &self.operators[i] {
                 Operator::Algebra(AlgebraOperators::Multiplication)
                 | Operator::Algebra(AlgebraOperators::InvMulti) => {

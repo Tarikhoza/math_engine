@@ -312,6 +312,8 @@ impl AlgebraOperatons for Variable {
         match rhs {
             Math::Polynom(p) => self.as_polynom().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.addition(v),
+            Math::Braces(b) => self.add(&b.simplify()),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -320,6 +322,7 @@ impl AlgebraOperatons for Variable {
         match rhs {
             Math::Polynom(p) => self.as_polynom().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.subtraction(v),
+            Math::Braces(b) => self.sub(&b.simplify()),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -328,6 +331,7 @@ impl AlgebraOperatons for Variable {
     fn mul(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Polynom(p) => self.as_polynom().mul(&Math::Polynom(p.clone())),
+            Math::Braces(b) => self.mul(&b.simplify()),
             Math::Variable(v) => self.multiplication(v),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
@@ -373,8 +377,7 @@ impl AlgebraOperatons for Variable {
     }
 
     fn simplify(&self) -> Math {
-        //TODO: apply_exponent
-        todo!()
+        self.apply_exponent()
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
@@ -404,5 +407,12 @@ impl AlgebraOperatons for Variable {
             });
         }
         Math::Variable(self.clone())
+    }
+
+    fn get_all_suffixes(&self) -> Vec<String> {
+        if self.suffix != *"" {
+            return vec![self.suffix.clone()];
+        }
+        vec![]
     }
 }

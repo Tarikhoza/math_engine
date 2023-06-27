@@ -35,21 +35,25 @@ impl Parsable for Equation {
 
         let result: Vec<String> = RE
             .find_iter(tex)
-            .filter_map(|op| op.unwrap().as_str().parse().ok())
+            .filter_map(|op| op.expect("error parsing equation").as_str().parse().ok())
             .collect();
 
         let operators: Vec<EquationOperator> = result
             .iter()
-            .map(|op| match EquationOperator::from_tex(op).unwrap() {
-                Math::Operator(Operator::Equation(o)) => return o,
-                _ => panic!("error parsing equation operators"),
+            .map(|op| {
+                match EquationOperator::from_tex(op)
+                    .expect("error parsing text as equation operator")
+                {
+                    Math::Operator(Operator::Equation(o)) => o,
+                    _ => panic!("error parsing equation operators"),
+                }
             })
             .collect();
 
         let factors: Vec<Math> = RE
             .replace_all(tex, " ")
             .trim()
-            .split(" ")
+            .split(' ')
             .map(|f| match f {
                 "" => Math::Operator(Operator::default()),
                 other => return other.parse_math().expect("error parsing math of equation"),
@@ -66,7 +70,7 @@ impl Parsable for Equation {
     }
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(=|!=|\>|\<|>=|<=)").unwrap_or_else(|e| {
+            static ref RE: Regex = Regex::new(r"(=|!=|\>|\<|>=|<=)(.*)").unwrap_or_else(|e| {
                 panic!("Failed to compile regex for equation detection: {e}");
             });
         }
