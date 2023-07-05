@@ -27,4 +27,7 @@ impl Exponentable for Function {
     fn with_exponent(&self) -> Math {
         Math::Function(self.clone())
     }
+    fn is_exponentiable(&self) -> bool {
+        false
+    }
 }

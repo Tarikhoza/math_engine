@@ -26,4 +26,7 @@ impl Exponentable for Variable {
     fn with_exponent(&self) -> Math {
         Math::Variable(self.clone())
     }
+    fn is_exponentiable(&self) -> bool {
+        self.suffix.is_empty()
+    }
 }

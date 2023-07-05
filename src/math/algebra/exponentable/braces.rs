@@ -1,4 +1,5 @@
 use crate::math::algebra::exponentable::Exponentable;
+use crate::math::operator::algebra::Operations;
 use crate::math::Braces;
 use crate::math::Math;
 use crate::math::Variable;
@@ -20,11 +21,12 @@ impl Exponentable for Braces {
         }
     }
     fn without_exponent(&self) -> Math {
-        let mut value = self.clone();
-        value.exponent = None;
-        Math::Braces(value)
+        self.math.simplify()
     }
     fn with_exponent(&self) -> Math {
         Math::Braces(self.clone())
+    }
+    fn is_exponentiable(&self) -> bool {
+        true
     }
 }

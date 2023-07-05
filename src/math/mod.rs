@@ -209,8 +209,9 @@ impl AlgebraOperations for Math {
     }
     fn simplify(&self) -> Math {
         match self {
+            Math::Variable(v) => v.simplify(),
             Math::Polynom(p) => p.simplify(),
-            Math::Braces(b) => b.math.simplify(),
+            Math::Braces(b) => b.simplify(),
             Math::Root(r) => r.take_root(),
             Math::Absolute(a) => a.simplify(),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
