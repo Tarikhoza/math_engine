@@ -20,6 +20,13 @@ impl Descrete for Variable {
 
     fn primes_up_to(&self) -> Vec<Variable> {
         let mut primes: Vec<Variable> = vec![];
+        if !self.is_integer() {
+            return primes;
+        }
+        if self.is_prime() {
+            primes.push(self.clone());
+            return primes;
+        }
         for i in 2..self.value.to_i64().expect("converting to i64 failed") {
             let x = i.as_variable();
             if x.is_prime() {
@@ -56,5 +63,14 @@ impl Descrete for Variable {
             }
         }
         return 1.as_variable();
+    }
+
+    fn is_divisable(&self, other: &Variable) -> bool {
+        if self.is_integer() && other.is_integer() {
+            if other.value != dec!(0) {
+                return self.value % other.value == dec!(0);
+            }
+        }
+        return false;
     }
 }

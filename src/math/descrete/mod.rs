@@ -5,4 +5,5 @@ pub trait Descrete {
     fn primes_up_to(&self) -> Vec<Variable>;
     fn factorise_prime(&self) -> Vec<Variable>;
     fn lowest_common_denominator(&self, other: Variable) -> Variable;
+    fn is_divisable(&self, other: &Variable) -> bool;
 }

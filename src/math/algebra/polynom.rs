@@ -1,14 +1,14 @@
-use crate::math::operator::algebra::{
-    Operations as AlgebraOperations, Operator as AlgebraOperator,
-};
-
-use crate::math::operator::Operator;
-use crate::math::Math;
-
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::vector::Vector;
+use crate::math::operator::algebra::{
+    Operations as AlgebraOperations, Operator as AlgebraOperator,
+};
+use crate::math::operator::Operator;
+use crate::math::Math;
+
 use crate::parser::{Parsable, ParsableGenerics};
+
 use rust_decimal_macros::dec;
 
 #[cfg(feature = "step-tracking")]
@@ -37,6 +37,7 @@ impl Polynom {
     }
 
     pub fn morph_double_operator(&self) -> Math {
+        //TODO this is a hack
         let ret = self
             .to_tex()
             .replace("++", "+")

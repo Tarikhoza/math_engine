@@ -1,9 +1,14 @@
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
+use crate::math::algebra::variable::Variable;
+use crate::math::descrete::Descrete;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenericsAsVariable};
+
+use rust_decimal::prelude::*;
+use rust_decimal_macros::dec;
 
 impl AlgebraOperatons for Fraction {
     fn addition(&self, other: &Fraction) -> Math {
@@ -43,6 +48,8 @@ impl AlgebraOperatons for Fraction {
     fn add(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Fraction(f) => self.addition(f),
+            Math::Variable(v) => self.addition(&v.as_fraction()),
+            Math::Polynom(p) => self.addition(&p.as_fraction()),
             _ => todo!(),
         }
     }
@@ -50,6 +57,8 @@ impl AlgebraOperatons for Fraction {
     fn sub(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Fraction(f) => self.subtraction(f),
+            Math::Variable(v) => self.subtraction(&v.as_fraction()),
+            Math::Polynom(p) => self.subtraction(&p.as_fraction()),
             _ => todo!(),
         }
     }
@@ -57,6 +66,8 @@ impl AlgebraOperatons for Fraction {
     fn mul(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Fraction(f) => self.multiplication(f),
+            Math::Variable(v) => self.multiplication(&v.as_fraction()),
+            Math::Polynom(p) => self.multiplication(&p.as_fraction()),
             _ => todo!(),
         }
     }
@@ -64,6 +75,8 @@ impl AlgebraOperatons for Fraction {
     fn div(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Fraction(f) => self.division(f),
+            Math::Variable(v) => self.division(&v.as_fraction()),
+            Math::Polynom(p) => self.division(&p.as_fraction()),
             _ => todo!(),
         }
     }
@@ -73,7 +86,21 @@ impl AlgebraOperatons for Fraction {
     }
 
     fn simplify(&self) -> Math {
-        todo!();
+        if self.denominator.to_tex() == "1" {
+            return *self.numerator.clone();
+        }
+        if self.denominator.to_tex() == self.numerator.to_tex() {
+            return Math::Variable(1.as_variable());
+        }
+        if let Math::Variable(num) = *self.clone().numerator {
+            if let Math::Variable(den) = *self.clone().denominator {
+                if num.is_divisable(&den) {
+                    return num.division(&den);
+                }
+            }
+        }
+
+        return Math::Fraction(self.clone());
     }
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         Math::Fraction(Fraction {
@@ -86,7 +113,6 @@ impl AlgebraOperatons for Fraction {
         let mut suf: Vec<String> = vec![];
         suf.extend(self.denominator.get_all_suffixes());
         suf.extend(self.numerator.get_all_suffixes());
-        //TODO remove duplicates
         suf.sort();
         suf.dedup();
         suf
