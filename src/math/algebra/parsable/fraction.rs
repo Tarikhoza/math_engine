@@ -25,7 +25,7 @@ impl Parsable for Fraction {
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\d+)(\\frac)(.*)").unwrap_or_else(|e| {
+            static ref RE: Regex = Regex::new(r"(\d*)(\\frac)(.*)").unwrap_or_else(|e| {
                 panic!("Failed to compile regex for braces: {e}");
             });
         }
@@ -37,7 +37,7 @@ impl Parsable for Fraction {
         let whole_str = captures.get(1).map_or("", |m| m.as_str());
 
         let whole: Option<Decimal>;
-        if whole_str.is_empty() {
+        if !whole_str.is_empty() {
             whole = Some(Decimal::from_str(whole_str).unwrap());
         } else {
             whole = None;
