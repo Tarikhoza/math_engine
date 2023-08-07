@@ -5,12 +5,6 @@ pub mod linear_algebra;
 pub mod operator;
 pub mod trigonometry;
 
-use fancy_regex::Regex;
-use std::default;
-use std::ops;
-
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
-
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::equation::Equation;
@@ -24,15 +18,18 @@ use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
-
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
-
 use crate::math::operator::Operator;
+use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
+
+use fancy_regex::Regex;
+use std::default;
+use std::ops;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Math {
@@ -131,6 +128,7 @@ impl Math {
             },
         }
     }
+
     pub fn equal_bruteforce(&self, other: Math) -> bool {
         let mut suffixes = self.get_all_suffixes();
         suffixes.extend(other.get_all_suffixes());
@@ -181,15 +179,19 @@ impl AlgebraOperations for Math {
     fn addition(&self, other: &Math) -> Math {
         self.add(other)
     }
+
     fn subtraction(&self, other: &Math) -> Math {
         self.sub(other)
     }
+
     fn multiplication(&self, other: &Math) -> Math {
         self.mul(other)
     }
+
     fn division(&self, other: &Math) -> Math {
         self.div(other)
     }
+
     fn add(&self, rhs: &Math) -> Math {
         if or_zero(self, rhs) {
             return non_zero(self, rhs);
@@ -205,6 +207,7 @@ impl AlgebraOperations for Math {
             _ => todo!(),
         }
     }
+
     fn sub(&self, rhs: &Math) -> Math {
         if or_zero(self, rhs) {
             return non_zero(self, rhs);
@@ -220,6 +223,7 @@ impl AlgebraOperations for Math {
             _ => todo!(),
         }
     }
+
     fn mul(&self, rhs: &Math) -> Math {
         match self {
             Math::Polynom(p) => p.mul(rhs),
@@ -231,16 +235,18 @@ impl AlgebraOperations for Math {
             _ => todo!(),
         }
     }
+
     fn div(&self, rhs: &Math) -> Math {
         match self {
             Math::Polynom(p) => p.div(rhs),
             Math::Variable(v) => v.div(rhs),
             Math::Fraction(f) => f.div(rhs),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
             Math::Infinity(i) => i.div(rhs),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
+
     fn simplify(&self) -> Math {
         match self {
             Math::Variable(v) => v.simplify(),
@@ -251,9 +257,10 @@ impl AlgebraOperations for Math {
             Math::Fraction(a) => a.simplify(),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             Math::Infinity(i) => Math::Infinity(i.clone()),
-            s => s.clone(),
+            _ => todo!(),
         }
     }
+
     fn negative(&self) -> Math {
         match self {
             Math::Polynom(p) => p.negative(),
@@ -267,10 +274,10 @@ impl AlgebraOperations for Math {
             //Math::Matrix(m) => m.negative(),
             //Math::Undefined(u) => u.negative(),
             Math::Infinity(i) => i.negative(),
-
             _ => todo!(),
         }
     }
+
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         match self {
             Math::Variable(v) => v.substitute(suffix, math),

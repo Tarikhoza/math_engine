@@ -7,8 +7,10 @@ use crate::math::algebra::variable::Variable;
 use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
+
 use crate::parser::{Parsable, Parser};
 use crate::solver::step::{DetailedOperator, Step};
+
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 

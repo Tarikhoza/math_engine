@@ -203,7 +203,6 @@ impl Polynom {
         }
         let mut factors: Vec<Math> = vec![];
         let mut operators: Vec<Operator> = vec![];
-        //        let mut chan: bool = false;
 
         for (i, factor) in self.factors.iter().take(self.factors.len()).enumerate() {
             match factor {

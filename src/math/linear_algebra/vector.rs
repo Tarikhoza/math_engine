@@ -50,6 +50,7 @@ impl Vector {
             step: None,
         }
     }
+
     pub fn to_based_matrix(&self) -> Matrix {
         Matrix {
             factors: self
@@ -71,39 +72,5 @@ impl Vector {
             }
         }
         result
-    }
-}
-
-impl ops::Add<Math> for Vector {
-    type Output = Math;
-    fn add(self, rhs: Math) -> Math {
-        match rhs {
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Sub<Math> for Vector {
-    type Output = Math;
-    fn sub(self, rhs: Math) -> Math {
-        match rhs {
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Mul<Math> for Vector {
-    type Output = Math;
-    fn mul(self, rhs: Math) -> Math {
-        match rhs {
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Div<Math> for Vector {
-    type Output = Math;
-    fn div(self, _rhs: Math) -> Math {
-        todo!()
     }
 }

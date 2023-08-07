@@ -12,9 +12,11 @@ impl Operations for Braces {
     fn addition(&self, other: &Braces) -> Math {
         self.simplify().add(&other.simplify())
     }
+
     fn subtraction(&self, other: &Braces) -> Math {
         self.simplify().sub(&other.simplify())
     }
+
     fn multiplication(&self, other: &Braces) -> Math {
         self.simplify().mul(&other.simplify())
     }
@@ -22,6 +24,7 @@ impl Operations for Braces {
     fn division(&self, other: &Braces) -> Math {
         self.simplify().div(&other.simplify())
     }
+
     fn negative(&self) -> Math {
         match &self.exponent {
             Some(_has_exp) => Math::Braces(Braces {
@@ -83,6 +86,7 @@ impl Operations for Braces {
             exponent: Some(Box::new(new_exponent)),
         })
     }
+
     fn get_all_suffixes(&self) -> Vec<String> {
         let mut suf: Vec<String> = vec![];
         suf.extend_from_slice(&self.math.get_all_suffixes());

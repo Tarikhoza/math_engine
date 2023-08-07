@@ -68,6 +68,7 @@ impl Parsable for Equation {
 
         Ok(Math::Equation(Equation { factors, operators }))
     }
+
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"(=|!=|\>|\<|>=|<=)(.*)").unwrap_or_else(|e| {

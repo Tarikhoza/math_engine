@@ -1,6 +1,7 @@
 use crate::math::algebra::root::Root;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
+
 use fancy_regex::Regex;
 
 impl Parsable for Root {

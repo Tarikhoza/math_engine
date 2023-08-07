@@ -19,14 +19,17 @@ impl Exponentable for Function {
             Some(e) => *e.clone(),
         }
     }
+
     fn without_exponent(&self) -> Math {
         let mut value = self.clone();
         value.exponent = None;
         Math::Function(value)
     }
+
     fn with_exponent(&self) -> Math {
         Math::Function(self.clone())
     }
+
     fn is_exponentiable(&self) -> bool {
         false
     }

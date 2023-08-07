@@ -2,6 +2,7 @@ use crate::math::algebra::infinity::Infinity;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
+
 use fancy_regex::Regex;
 
 impl Parsable for Infinity {

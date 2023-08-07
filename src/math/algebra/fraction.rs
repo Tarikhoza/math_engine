@@ -14,6 +14,7 @@ impl Fraction {
             denominator: self.numerator.clone(),
         }
     }
+
     pub fn expand(&self, other: Math) -> Fraction {
         Fraction {
             numerator: Box::new(self.numerator.mul(&other)),

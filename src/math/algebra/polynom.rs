@@ -29,6 +29,7 @@ impl Polynom {
         }
         Math::Polynom(self.clone())
     }
+
     pub fn as_fraction(&self) -> Fraction {
         Fraction {
             numerator: Box::new(Math::Polynom(self.clone())),

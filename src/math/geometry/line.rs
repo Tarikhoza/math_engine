@@ -15,12 +15,14 @@ impl Line {
     pub fn length(&self) -> Math {
         self.point_a.distance(&self.point_b)
     }
+
     pub fn length_as_dec(&self) -> Decimal {
         if let Math::Variable(v) = self.point_a.distance(&self.point_b) {
             return v.value;
         }
-        return dec!(0.0);
+        return dec!(0);
     }
+
     pub fn swap_points(&self) -> Line {
         Line {
             point_a: self.point_b.clone(),

@@ -20,12 +20,15 @@ impl Exponentable for Braces {
             Some(e) => *e.clone(),
         }
     }
+
     fn without_exponent(&self) -> Math {
         self.math.simplify()
     }
+
     fn with_exponent(&self) -> Math {
         Math::Braces(self.clone())
     }
+
     fn is_exponentiable(&self) -> bool {
         true
     }

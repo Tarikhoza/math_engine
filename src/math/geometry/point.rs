@@ -38,6 +38,8 @@ impl Point {
             .unwrap()
             .simplify()
     }
+
+    //TODO rename to normalise_dimension
     pub fn normalise_system(&self, other: &Point) -> Point {
         let mut normalised = (*self).clone();
         while (normalised.coordinates.len() < other.coordinates.len()) {

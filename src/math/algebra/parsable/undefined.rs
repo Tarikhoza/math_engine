@@ -2,9 +2,10 @@ use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
+
 use fancy_regex::Regex;
 
-impl Parsable for Undefined{
+impl Parsable for Undefined {
     fn to_tex(&self) -> String {
         String::from(r"undefined")
     }

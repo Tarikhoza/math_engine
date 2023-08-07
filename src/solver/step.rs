@@ -53,6 +53,7 @@ impl Step {
             })
         }
     }
+
     pub fn steps(
         left: Math,
         right: Option<Math>,

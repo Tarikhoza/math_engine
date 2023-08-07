@@ -24,7 +24,7 @@ impl Angle {
         }
         return Self { line_a, line_b };
     }
-    //    pub fn degree(&self) -> Math {}
+
     pub fn slope(&self) -> Math {
         let points = self.get_points();
         let mut exp: Vec<String> = vec![];
@@ -39,11 +39,12 @@ impl Angle {
         exp.join("/").parse_math().unwrap().simplify()
     }
 
-    // return (joint_point, (other_point, other_point))
     pub fn get_points(&self) -> (Point, (Point, Point)) {
         return (
             self.line_a.point_a.clone(),
             (self.line_a.point_b.clone(), self.line_b.point_b.clone()),
         );
     }
+
+    //    pub fn degree(&self) -> Math {}
 }

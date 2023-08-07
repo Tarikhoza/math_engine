@@ -105,6 +105,7 @@ impl Root {
             }
         }
     }
+
     pub fn get_base(&self) -> Math {
         if self.base.is_none() {
             "2".parse_math().expect("parsing 2 as math failed")

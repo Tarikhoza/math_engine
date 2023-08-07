@@ -17,37 +17,3 @@ impl Matrix {
         result
     }
 }
-
-impl ops::Add<Math> for Matrix {
-    type Output = Math;
-    fn add(self, rhs: Math) -> Math {
-        match rhs {
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Sub<Math> for Matrix {
-    type Output = Math;
-    fn sub(self, rhs: Math) -> Math {
-        match rhs {
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Mul<Math> for Matrix {
-    type Output = Math;
-    fn mul(self, rhs: Math) -> Math {
-        match rhs {
-            _ => todo!(),
-        }
-    }
-}
-
-impl ops::Div<Math> for Matrix {
-    type Output = Math;
-    fn div(self, _rhs: Math) -> Math {
-        todo!()
-    }
-}

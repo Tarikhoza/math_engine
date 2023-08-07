@@ -18,14 +18,17 @@ impl Exponentable for Variable {
             Some(e) => *e.clone(),
         }
     }
+
     fn without_exponent(&self) -> Math {
         let mut value = self.clone();
         value.exponent = None;
         Math::Variable(value)
     }
+
     fn with_exponent(&self) -> Math {
         Math::Variable(self.clone())
     }
+
     fn is_exponentiable(&self) -> bool {
         self.suffix.is_empty()
     }

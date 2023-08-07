@@ -34,6 +34,7 @@ impl Equation {
             .parse_math()
             .expect("error parsing math for all_to_left")
     }
+
     pub fn decouple(&self) -> Math {
         self.factors
             .last()

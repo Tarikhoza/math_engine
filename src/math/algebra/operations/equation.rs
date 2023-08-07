@@ -26,6 +26,7 @@ impl AlgebraOperations for Equation {
         }
         Math::Equation(Equation { factors, operators })
     }
+
     fn subtraction(&self, other: &Equation) -> Math {
         let mut factors: Vec<Math> = vec![];
         let first = self.normalise_system(other);
@@ -72,6 +73,7 @@ impl AlgebraOperations for Equation {
             }
         }
     }
+
     fn mul(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Equation(e) => todo!(),

@@ -7,13 +7,13 @@ use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
 
-use crate::math::operator::Operator;
-
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
+use crate::math::operator::Operator;
 use crate::math::Math;
+
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 
 #[cfg(feature = "step-tracking")]

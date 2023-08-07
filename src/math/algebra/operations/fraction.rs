@@ -102,6 +102,7 @@ impl AlgebraOperatons for Fraction {
 
         return Math::Fraction(self.clone());
     }
+
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         Math::Fraction(Fraction {
             numerator: Box::new(self.numerator.substitute(suffix.clone(), math.clone())),

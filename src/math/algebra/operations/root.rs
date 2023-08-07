@@ -81,9 +81,11 @@ impl AlgebraOperatons for Root {
     fn simplify(&self) -> Math {
         todo!();
     }
+
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         todo!();
     }
+
     fn get_all_suffixes(&self) -> Vec<String> {
         todo!();
     }

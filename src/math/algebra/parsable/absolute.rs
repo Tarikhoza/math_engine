@@ -2,6 +2,7 @@ use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, Parser};
+
 use fancy_regex::Regex;
 use rust_decimal_macros::dec;
 

@@ -2,20 +2,22 @@ pub mod generics;
 pub mod math;
 pub mod operator;
 
-use crate::math::algebra::braces::Braces;
-use crate::math::operator::algebra::{
-    Operations as AlgebraOperations, Operator as AlgebraOperator,
-};
-use crate::math::operator::Operator;
-//use crate::math::algebra::equation::Equation;
 use crate::math::algebra::absolute::Absolute;
+use crate::math::algebra::braces::Braces;
 use crate::math::algebra::equation::Equation;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
 use crate::math::algebra::variable::Variable;
+
+use crate::math::operator::Operator;
 use crate::math::Math;
+
+use crate::math::operator::algebra::{
+    Operations as AlgebraOperations, Operator as AlgebraOperator,
+};
+
 use rust_decimal_macros::dec;
 
 pub struct Parser {
@@ -27,12 +29,15 @@ pub trait Parsable {
     fn on_begining(tex: String) -> Option<String> {
         Some(String::new())
     }
+
     fn to_tex(&self) -> String {
         String::new()
     }
+
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
         0.parse_math()
     }
+
     fn parse(tex: &str) -> Option<(usize, Math)> {
         if let Some(t) = Self::on_begining(tex.to_owned()) {
             let math = Self::from_tex(&t).unwrap_or(Math::default());
@@ -59,6 +64,7 @@ impl Parser {
             pos: 0,
         }
     }
+
     pub fn extract_brace(tex: &str, open_c: char, close_c: char) -> Result<String, &'static str> {
         let mut pos = 1;
         let mut close = 0;

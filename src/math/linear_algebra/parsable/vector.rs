@@ -18,7 +18,6 @@ impl Parsable for Vector {
         todo!()
     }
 
-    #[must_use]
     fn on_begining(_tex: String) -> Option<String> {
         None
     }

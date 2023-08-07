@@ -24,6 +24,7 @@ impl Parsable for Operator {
             Operator::LessOrEqual => String::from("<="),
         }
     }
+
     fn from_tex(op: &str) -> Result<Math, &'static str> {
         match op {
             x if x == "=" => Ok(Math::Operator(MainOperator::Equation(Operator::Equal))),
@@ -39,6 +40,7 @@ impl Parsable for Operator {
             _ => Err("Conversion from string to operator went wrong"),
         }
     }
+
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"^(=|!=|\>|\<|>=|<=)").unwrap_or_else(|e| {

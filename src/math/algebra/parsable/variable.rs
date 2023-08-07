@@ -1,6 +1,7 @@
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
+
 use fancy_regex::Regex;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
