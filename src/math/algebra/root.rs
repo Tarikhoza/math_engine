@@ -79,6 +79,7 @@ impl Root {
                     value: v.value,
                     suffix: v.suffix,
                     exponent: Some(Box::new(Math::Fraction(Fraction {
+                        whole: None,
                         denominator: Box::new(exponent),
                         numerator: Box::new(self.get_base()),
                     }))),
@@ -89,6 +90,7 @@ impl Root {
                 return Math::Braces(Braces {
                     math: b.math.clone(),
                     exponent: Some(Box::new(Math::Fraction(Fraction {
+                        whole: None,
                         denominator: Box::new(exponent),
                         numerator: Box::new(self.get_base()),
                     }))),
@@ -98,6 +100,7 @@ impl Root {
                 return Math::Braces(Braces {
                     math: Box::new(other.clone()),
                     exponent: Some(Box::new(Math::Fraction(Fraction {
+                        whole: None,
                         denominator: Box::new(exponent),
                         numerator: Box::new(self.get_base()),
                     }))),

@@ -1,16 +1,10 @@
-use fancy_regex::Regex;
-use rust_decimal::prelude::*;
-use rust_decimal_macros::dec;
-use std::default;
-
-use crate::math::operator::algebra::{
-    Operations as AlgebraOperations, Operator as AlgebraOperator,
-};
-
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
+use crate::math::operator::algebra::{
+    Operations as AlgebraOperations, Operator as AlgebraOperator,
+};
 use crate::math::operator::Operator;
 use crate::math::Math;
 
@@ -18,6 +12,11 @@ use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Pars
 
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
+
+use fancy_regex::Regex;
+use rust_decimal::prelude::*;
+use rust_decimal_macros::dec;
+use std::default;
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Variable {
@@ -54,6 +53,7 @@ impl Variable {
 
     pub fn as_fraction(&self) -> Fraction {
         Fraction {
+            whole: None,
             numerator: Box::new(Math::Variable(self.clone())),
             denominator: Box::new(1.parse_math().expect("error parsing 1 as math")),
         }

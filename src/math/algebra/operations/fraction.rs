@@ -13,10 +13,15 @@ use rust_decimal_macros::dec;
 impl AlgebraOperatons for Fraction {
     fn addition(&self, other: &Fraction) -> Math {
         if self.denominator.to_tex() == other.denominator.to_tex() {
-            return Math::Fraction(Fraction {
-                numerator: Box::new(self.numerator.add(&other.numerator)),
-                denominator: self.denominator.clone(),
-            });
+            if self.whole.is_none() || self.whole.unwrap_or(dec!(0)).is_zero() {
+                return Math::Fraction(Fraction {
+                    whole: None,
+                    numerator: Box::new(self.numerator.add(&other.numerator)),
+                    denominator: self.denominator.clone(),
+                });
+            } else {
+                todo!("convert whole to fraction before adding fractions")
+            }
         }
 
         Math::Fraction(self.expand(*other.denominator.clone()))
@@ -25,10 +30,15 @@ impl AlgebraOperatons for Fraction {
 
     fn subtraction(&self, other: &Fraction) -> Math {
         if self.denominator.to_tex() == other.denominator.to_tex() {
-            return Math::Fraction(Fraction {
-                numerator: Box::new(self.numerator.sub(&other.numerator)),
-                denominator: self.denominator.clone(),
-            });
+            if self.whole.is_none() || self.whole.unwrap_or(dec!(0)).is_zero() {
+                return Math::Fraction(Fraction {
+                    whole: None,
+                    numerator: Box::new(self.numerator.sub(&other.numerator)),
+                    denominator: self.denominator.clone(),
+                });
+            } else {
+                todo!("convert whole to fraction before subtraction fractions")
+            }
         }
         Math::Fraction(self.expand(*other.denominator.clone()))
             .sub(&Math::Fraction(other.expand(*self.denominator.clone())))
@@ -36,6 +46,7 @@ impl AlgebraOperatons for Fraction {
 
     fn multiplication(&self, other: &Fraction) -> Math {
         Math::Fraction(Fraction {
+            whole: None,
             numerator: Box::new(self.numerator.mul(&other.numerator)),
             denominator: Box::new(self.denominator.mul(&other.denominator)),
         })
@@ -97,6 +108,7 @@ impl AlgebraOperatons for Fraction {
                 let lcd = num.lowest_common_denominator(&den);
                 if lcd.to_tex() != "1" {
                     return Fraction {
+                        whole: self.whole.clone(),
                         numerator: Box::new(num.division(&lcd)),
                         denominator: Box::new(den.division(&lcd)),
                     }
@@ -113,6 +125,7 @@ impl AlgebraOperatons for Fraction {
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         Math::Fraction(Fraction {
+            whole: self.whole.clone(),
             numerator: Box::new(self.numerator.substitute(suffix.clone(), math.clone())),
             denominator: Box::new(self.denominator.substitute(suffix.clone(), math.clone())),
         })

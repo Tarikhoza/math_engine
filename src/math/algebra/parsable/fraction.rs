@@ -3,9 +3,19 @@ use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, Parser};
 
 use fancy_regex::Regex;
+use rust_decimal::prelude::*;
+use rust_decimal_macros::dec;
 
 impl Parsable for Fraction {
     fn to_tex(&self) -> String {
+        if self.whole.is_some() {
+            return format!(
+                "{}\\frac{{{}}}{{{}}}",
+                self.whole.expect("No whole found"),
+                self.numerator.to_tex(),
+                self.denominator.to_tex()
+            );
+        }
         format!(
             "\\frac{{{}}}{{{}}}",
             self.numerator.to_tex(),
@@ -15,7 +25,7 @@ impl Parsable for Fraction {
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\\frac)(.*)").unwrap_or_else(|e| {
+            static ref RE: Regex = Regex::new(r"(\d+)(\\frac)(.*)").unwrap_or_else(|e| {
                 panic!("Failed to compile regex for braces: {e}");
             });
         }
@@ -24,11 +34,20 @@ impl Parsable for Fraction {
             .expect("Error running regex")
             .expect("No match found");
 
+        let whole_str = captures.get(1).map_or("", |m| m.as_str());
+
+        let whole: Option<Decimal>;
+        if whole_str.is_empty() {
+            whole = Some(Decimal::from_str(whole_str).unwrap());
+        } else {
+            whole = None;
+        }
+
         let numerator =
-            Parser::extract_brace(captures.get(2).map_or("", |m| m.as_str()), '{', '}')?;
+            Parser::extract_brace(captures.get(3).map_or("", |m| m.as_str()), '{', '}')?;
         let denominator = Parser::extract_brace(
             captures
-                .get(2)
+                .get(3)
                 .map_or("", |m| m.as_str())
                 .get(numerator.len() + 2..)
                 .unwrap(),
@@ -44,6 +63,7 @@ impl Parsable for Fraction {
         }
 
         return Ok(Math::Fraction(Fraction {
+            whole,
             numerator: Box::new(numerator.parse_math()?),
             denominator: Box::new(denominator.parse_math()?),
         }));

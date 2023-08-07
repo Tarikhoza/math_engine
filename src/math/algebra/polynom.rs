@@ -32,6 +32,7 @@ impl Polynom {
 
     pub fn as_fraction(&self) -> Fraction {
         Fraction {
+            whole: None,
             numerator: Box::new(Math::Polynom(self.clone())),
             denominator: Box::new("1".parse_math().expect("error parsing 1 as math")),
         }
