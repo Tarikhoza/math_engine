@@ -5,6 +5,7 @@ use crate::math::operator::algebra::{
 use crate::math::operator::Operator;
 use crate::math::Math;
 
+use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::vector::Vector;
 use crate::parser::{Parsable, ParsableGenerics};
@@ -28,6 +29,13 @@ impl Polynom {
         }
         Math::Polynom(self.clone())
     }
+    pub fn as_fraction(&self) -> Fraction {
+        Fraction {
+            numerator: Box::new(Math::Polynom(self.clone())),
+            denominator: Box::new("1".parse_math().expect("error parsing 1 as math")),
+        }
+    }
+
     pub fn morph_double_operator(&self) -> Math {
         let ret = self
             .to_tex()
@@ -59,14 +67,4 @@ impl Polynom {
             step: None,
         }
     }
-    //   pub fn to_fraction(&self) -> Fraction {
-    //       Fraction {
-    //           denominator: Box::new(Math::Polynom(self.clone())),
-    //           numerator: Box::new(Math::Variable(Variable {
-    //               value: dec!(1),
-    //               suffix: String::new(),
-    //               exponent: None,
-    //           })),
-    //       }
-    //   }
 }

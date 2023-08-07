@@ -3,6 +3,9 @@ use rust_decimal_macros::dec;
 use std::default;
 
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::exponentable::Exponentable;
+use crate::math::algebra::fraction::Fraction;
+use crate::math::algebra::variable::Variable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
@@ -60,5 +63,53 @@ impl Root {
             }
         }
         return self.square_root();
+    }
+
+    pub fn exponential_form(&self) -> Math {
+        let exponent: Math = match *self.math.clone() {
+            Math::Variable(v) => v.get_exponent(),
+            Math::Braces(b) => b.get_exponent(),
+            Math::Function(f) => f.get_exponent(),
+            _ => "1".parse_math().unwrap(),
+        };
+
+        match *self.math.clone() {
+            Math::Variable(v) => {
+                return Math::Variable(Variable {
+                    value: v.value,
+                    suffix: v.suffix,
+                    exponent: Some(Box::new(Math::Fraction(Fraction {
+                        denominator: Box::new(exponent),
+                        numerator: Box::new(self.get_base()),
+                    }))),
+                    step: None,
+                })
+            }
+            Math::Braces(b) => {
+                return Math::Braces(Braces {
+                    math: b.math.clone(),
+                    exponent: Some(Box::new(Math::Fraction(Fraction {
+                        denominator: Box::new(exponent),
+                        numerator: Box::new(self.get_base()),
+                    }))),
+                })
+            }
+            other => {
+                return Math::Braces(Braces {
+                    math: Box::new(other.clone()),
+                    exponent: Some(Box::new(Math::Fraction(Fraction {
+                        denominator: Box::new(exponent),
+                        numerator: Box::new(self.get_base()),
+                    }))),
+                })
+            }
+        }
+    }
+    pub fn get_base(&self) -> Math {
+        if self.base.is_none() {
+            "2".parse_math().expect("parsing 2 as math failed")
+        } else {
+            *self.base.clone().expect("base is none")
+        }
     }
 }

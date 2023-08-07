@@ -9,7 +9,7 @@ use fancy_regex::Regex;
 use std::default;
 use std::ops;
 
-use crate::parser::{Parsable, Parser};
+use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
@@ -131,6 +131,36 @@ impl Math {
             },
         }
     }
+    pub fn equal_bruteforce(&self, other: Math) -> bool {
+        let mut suffixes = self.get_all_suffixes();
+        suffixes.extend(other.get_all_suffixes());
+        suffixes.sort();
+        suffixes.dedup();
+        let mut rounds = 0;
+        let mut eq = 0;
+        for i in (-10000..10000).step_by(30) {
+            rounds += 1;
+            let mut new_a = self.clone();
+            let mut new_b = other.clone();
+
+            //       let mut substitutions: Vec<String> = vec![];
+
+            for s in 0..suffixes.len() {
+                new_a =
+                    new_a.substitute(suffixes[s].as_ref(), (s as i64 + i).parse_math().unwrap());
+                new_b =
+                    new_b.substitute(suffixes[s].as_ref(), (s as i64 + i).parse_math().unwrap());
+                //            substitutions.push(format!("{} = {}", suffixes[s], s as i64 + i));
+            }
+            //TODO remove reparsing
+            if new_a.to_tex().parse_math().unwrap().simplify().to_tex()
+                == new_b.to_tex().parse_math().unwrap().simplify().to_tex()
+            {
+                eq += 1;
+            }
+        }
+        return eq == rounds;
+    }
 }
 
 fn or_zero(first: &Math, second: &Math) -> bool {
@@ -170,6 +200,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.add(rhs),
             Math::Fraction(f) => f.add(rhs),
             Math::Equation(e) => e.add(rhs),
+            Math::Infinity(i) => i.add(rhs),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -184,6 +215,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.sub(rhs),
             Math::Fraction(f) => f.sub(rhs),
             Math::Equation(e) => e.sub(rhs),
+            Math::Infinity(i) => i.sub(rhs),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -194,6 +226,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.mul(rhs),
             Math::Braces(b) => b.mul(rhs),
             Math::Fraction(f) => f.mul(rhs),
+            Math::Infinity(i) => i.mul(rhs),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -204,6 +237,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.div(rhs),
             Math::Fraction(f) => f.div(rhs),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Infinity(i) => i.div(rhs),
             _ => todo!(),
         }
     }
@@ -212,21 +246,29 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.simplify(),
             Math::Polynom(p) => p.simplify(),
             Math::Braces(b) => b.simplify(),
-            Math::Root(r) => r.take_root(),
+            Math::Root(r) => Math::Root(r.clone()),
             Math::Absolute(a) => a.simplify(),
+            Math::Fraction(a) => a.simplify(),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Infinity(i) => Math::Infinity(i.clone()),
             s => s.clone(),
         }
     }
     fn negative(&self) -> Math {
         match self {
             Math::Polynom(p) => p.negative(),
-            Math::Braces(b) => b.math.negative(),
+            Math::Braces(b) => b.negative(),
             Math::Variable(v) => v.negative(),
             Math::Equation(e) => e.negative(),
             Math::Fraction(f) => f.negative(),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
-            s => s.clone(),
+            //Math::Root(r) => r.negative(),
+            //Math::Absolute(a) => a.negative(),
+            //Math::Vector(v) => v.negative(),
+            //Math::Matrix(m) => m.negative(),
+            //Math::Undefined(u) => u.negative(),
+            Math::Infinity(i) => i.negative(),
+
+            _ => todo!(),
         }
     }
     fn substitute(&self, suffix: &str, math: Math) -> Math {
@@ -235,7 +277,14 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.substitute(suffix, math),
             Math::Braces(b) => b.substitute(suffix, math),
             Math::Equation(e) => e.substitute(suffix, math),
-            s => todo!(),
+            Math::Fraction(f) => f.substitute(suffix, math),
+            Math::Infinity(i) => Math::Infinity(i.clone()),
+            //Math::Root(r) => r.substitute(suffix, math),
+            //Math::Absolute(a) => a.substitute(suffix, math),
+            //Math::Vector(v) => v.substitute(suffix, math),
+            //Math::Matrix(m) => m.substitute(suffix, math),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            _ => todo!(),
         }
     }
 

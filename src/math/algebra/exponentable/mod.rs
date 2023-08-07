@@ -22,7 +22,7 @@ pub trait Exponentable {
             if exponent.value.is_one() {
                 return self.without_exponent();
             } else if exponent.value.is_zero() {
-                return "0".parse_math().expect("cannot parse 0 as math");
+                return "1".parse_math().expect("cannot parse 1 as math");
             }
             if exponent.is_integer() {
                 let orig = self.without_exponent().simplify();

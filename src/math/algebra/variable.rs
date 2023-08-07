@@ -11,6 +11,7 @@ use crate::math::operator::Operator;
 
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
+use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
@@ -48,6 +49,13 @@ impl Variable {
             operators: vec![],
             #[cfg(feature = "step-tracking")]
             step: None,
+        }
+    }
+
+    pub fn as_fraction(&self) -> Fraction {
+        Fraction {
+            numerator: Box::new(Math::Variable(self.clone())),
+            denominator: Box::new(1.parse_math().expect("error parsing 1 as math")),
         }
     }
 

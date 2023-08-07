@@ -1,6 +1,6 @@
-use crate::math::algebra::polynom::Polynom;
-//use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::exponentable::Exponentable;
+use crate::math::algebra::polynom::Polynom;
+use crate::math::algebra::undefined::Undefined;
 use crate::math::operator::algebra::{
     Operations as AlgebraOperations, Operator as AlgebraOperators,
 };
@@ -94,7 +94,8 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.addition(p),
             Math::Variable(v) => self.addition(&v.as_polynom()),
             Math::Braces(b) => self.add(&b.simplify()),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Fraction(f) => self.as_fraction().addition(f),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -104,7 +105,8 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.subtraction(p),
             Math::Variable(v) => self.subtraction(&v.as_polynom()),
             Math::Braces(b) => self.sub(&b.simplify()),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Fraction(f) => self.as_fraction().subtraction(f),
             _ => todo!(),
         }
     }
@@ -113,12 +115,16 @@ impl AlgebraOperations for Polynom {
             Math::Polynom(p) => self.multiplication(p),
             Math::Variable(v) => self.multiplication(&v.as_polynom()),
             Math::Braces(b) => self.mul(&b.simplify()),
-            //            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Fraction(f) => self.as_fraction().multiplication(f),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!("did not implement mul with polynom"),
         }
     }
-    fn div(&self, _rhs: &Math) -> Math {
-        todo!("you have to implement division between polynomes")
+    fn div(&self, rhs: &Math) -> Math {
+        match rhs {
+            Math::Fraction(f) => self.as_fraction().division(&f),
+            _ => todo!("did not implement div with polynom"),
+        }
     }
 
     fn negative(&self) -> Math {
