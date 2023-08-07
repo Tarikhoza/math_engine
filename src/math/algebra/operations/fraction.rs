@@ -94,6 +94,14 @@ impl AlgebraOperatons for Fraction {
         }
         if let Math::Variable(num) = *self.clone().numerator {
             if let Math::Variable(den) = *self.clone().denominator {
+                let lcd = num.lowest_common_denominator(&den);
+                if lcd.to_tex() != "1" {
+                    return Fraction {
+                        numerator: Box::new(num.division(&lcd)),
+                        denominator: Box::new(den.division(&lcd)),
+                    }
+                    .simplify();
+                }
                 if num.is_divisable(&den) {
                     return num.division(&den);
                 }

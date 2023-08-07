@@ -55,7 +55,7 @@ impl Descrete for Variable {
         factorised
     }
 
-    fn lowest_common_denominator(&self, other: Variable) -> Variable {
+    fn lowest_common_denominator(&self, other: &Variable) -> Variable {
         for i in self.factorise_prime() {
             for j in other.factorise_prime() {
                 if i.value == j.value {

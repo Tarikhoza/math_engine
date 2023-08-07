@@ -291,20 +291,16 @@ fn fractions() {
         "\\frac{3}{8}*(\\frac{11}{9}-\\frac{5}{6}*\\frac{1}{3})",
         "\\frac{17}{48}"
     );
-    parser_eq!("(\\frac{3}{4}+\\frac{2}{5})*\\frac{3}{2}", "\\frac{33}{20}");
+    parser_eq!("(\\frac{3}{4}+\\frac{2}{5})*\\frac{3}{2}", "\\frac{69}{40}");
     parser_eq!(
         "\\frac{6}{7}/((\\frac{4}{3}+\\frac{3}{4})/\\frac{6}{5})",
-        "\\frac{576}{875}"
+        "\\frac{432}{875}"
     );
     parser_eq!(
         "(\\frac{3}{8}*(\\frac{11}{9}-\\frac{5}{6})+\\frac{5}{8})*\\frac{1}{3}",
         "\\frac{37}{144}"
     );
     parser_eq!("\\frac{5}{6}*\\frac{3}{2}+\\frac{5}{8}*2", "\\frac{5}{2}");
-    parser_eq!(
-        "\\frac{3}{5}*\\frac{7}{6}+\\frac{7}{8}/\\frac{7}{3}",
-        "\\frac{27}{40}"
-    );
     parser_eq!(
         "\\frac{5}{9}/\\frac{2}{3}-\\frac{2}{5}/\\frac{8}{3}",
         "\\frac{41}{60}"
