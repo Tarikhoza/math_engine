@@ -55,10 +55,10 @@ impl Default for Math {
 }
 
 impl Math {
-    pub fn sort_score(&self) -> u32 {
+    pub fn sorting_score(&self) -> i64 {
         match self {
-            Math::Variable(v) => v.sort_score(),
-            _ => u32::MAX,
+            Math::Variable(v) => v.sorting_score(),
+            _ => i64::MAX,
         }
     }
 

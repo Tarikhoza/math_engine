@@ -27,14 +27,6 @@ pub struct Variable {
     pub step: Option<Step>,
 }
 
-fn ascii_score(s: &str) -> u32 {
-    let mut score = 0;
-    for (i, c) in s.chars().enumerate() {
-        score = c.to_digit(10).unwrap_or(1000) / (i + 1) as u32;
-    }
-    score
-}
-
 impl Variable {
     pub fn is_integer(&self) -> bool {
         self.value.abs() - self.value.abs().round() == dec!(0)
@@ -72,13 +64,33 @@ impl Variable {
         )
     }
 
-    pub fn sort_score(&self) -> u32 {
-        u32::MAX - (ascii_score(&self.suffix) + ascii_score(&self.get_exponent().to_tex()))
-    }
-
     pub fn add_sub_base(&self) -> String {
+        if self.value.is_zero() {
+            return String::from("");
+        }
         let mut x = self.clone();
         x.value = dec!(1);
         x.to_tex()
+    }
+
+    pub fn sorting_score(&self) -> i64 {
+        let mut suffix_score: i64 = 0;
+        if !self.suffix.is_empty() {
+            for (i, c) in self.suffix.chars().rev().enumerate() {
+                suffix_score += (c as i64).pow((i + 1) as u32);
+            }
+            if self.value.is_sign_negative() {
+                suffix_score += 255;
+            }
+        } else {
+            suffix_score = u16::MAX as i64;
+        }
+        if self.exponent.is_some() {
+            if self.get_exponent().to_tex() != "1" {
+                suffix_score -= self.get_exponent().sorting_score() - 200;
+            }
+        }
+
+        suffix_score
     }
 }

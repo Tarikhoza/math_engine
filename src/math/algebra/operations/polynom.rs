@@ -326,6 +326,15 @@ impl Polynom {
     //  AS - Addition and Subtraction (left-to-right)
 
     pub fn simplify_add_sub(&self) -> Polynom {
-        self.to_vector().to_based_matrix().add_all().as_polynom()
+        let mut vec = self
+            .to_vector()
+            .to_based_matrix()
+            .add_all()
+            .as_polynom()
+            .to_vector();
+
+        vec.factors
+            .sort_by(|a, b| a.sorting_score().cmp(&b.sorting_score()));
+        vec.add_all().as_polynom()
     }
 }

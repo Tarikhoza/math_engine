@@ -65,11 +65,11 @@ impl Vector {
         if self.factors.len() == 0 {
             return Math::Variable(Variable::default());
         }
-        let mut result: Math = self.factors.get(0).unwrap().clone();
-        for factor in self.factors.iter().skip(1) {
-            if factor.clone().to_tex() != "0" {
-                result = result.add(factor);
-            }
+        let mut factors: Vec<Math> = self.factors.clone();
+
+        let mut result: Math = factors.get(0).unwrap().clone();
+        for factor in factors.iter().skip(1) {
+            result = result.add(factor);
         }
         result
     }

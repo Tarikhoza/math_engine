@@ -8,6 +8,9 @@ use rust_decimal_macros::dec;
 
 impl Parsable for Variable {
     fn to_tex(&self) -> String {
+        if self.value.is_zero() {
+            return String::from("0");
+        }
         let mut val = self.value.normalize().to_string();
         if (val == "1.0" || val == "1") && !self.suffix.is_empty() {
             val = String::new();
