@@ -1,10 +1,12 @@
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::infinity::Infinity;
+use crate::math::algebra::operations::{
+    Operations as AlgebraOperatons, Operator as AlgebraOperator,
+};
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
-use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
 
@@ -15,7 +17,7 @@ use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
 impl AlgebraOperatons for Variable {
-    fn addition(&self, other: &Variable) -> Math {
+    fn add_self(&self, other: &Variable) -> Math {
         //if suffix and exponent are the same
         if self.suffix == other.suffix
             && self.get_exponent().to_tex() == other.get_exponent().to_tex()
@@ -41,7 +43,7 @@ impl AlgebraOperatons for Variable {
         })
     }
 
-    fn subtraction(&self, other: &Variable) -> Math {
+    fn sub_self(&self, other: &Variable) -> Math {
         //if suffix and exponent are the same
         if self.suffix == other.suffix
             && self.get_exponent().to_tex() == other.get_exponent().to_tex()
@@ -67,7 +69,7 @@ impl AlgebraOperatons for Variable {
         })
     }
 
-    fn multiplication(&self, other: &Variable) -> Math {
+    fn mul_self(&self, other: &Variable) -> Math {
         #[cfg(feature = "step-tracking")]
         let mul_two_var = Step::step(
             Math::Variable(self.clone()),
@@ -197,7 +199,7 @@ impl AlgebraOperatons for Variable {
             ),
         })
     }
-    fn division(&self, other: &Variable) -> Math {
+    fn div_self(&self, other: &Variable) -> Math {
         //Handle 0/0 and 0/x
         if self.value.is_zero() {
             if other.value.is_zero() {
@@ -313,9 +315,9 @@ impl AlgebraOperatons for Variable {
     fn add(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Polynom(p) => self.as_polynom().add(&Math::Polynom(p.clone())),
-            Math::Variable(v) => self.addition(v),
+            Math::Variable(v) => self.add_self(v),
             Math::Braces(b) => self.add(&b.simplify()),
-            Math::Fraction(f) => self.as_fraction().addition(&f),
+            Math::Fraction(f) => self.as_fraction().add_self(&f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -324,9 +326,9 @@ impl AlgebraOperatons for Variable {
     fn sub(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Polynom(p) => self.as_polynom().sub(&Math::Polynom(p.clone())),
-            Math::Variable(v) => self.subtraction(v),
+            Math::Variable(v) => self.sub_self(v),
             Math::Braces(b) => self.sub(&b.simplify()),
-            Math::Fraction(f) => self.as_fraction().subtraction(&f),
+            Math::Fraction(f) => self.as_fraction().sub_self(&f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -336,8 +338,8 @@ impl AlgebraOperatons for Variable {
         match rhs {
             Math::Polynom(p) => self.as_polynom().mul(&Math::Polynom(p.clone())),
             Math::Braces(b) => self.mul(&b.simplify()),
-            Math::Variable(v) => self.multiplication(v),
-            Math::Fraction(f) => self.as_fraction().multiplication(&f),
+            Math::Variable(v) => self.mul_self(v),
+            Math::Fraction(f) => self.as_fraction().mul_self(&f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -347,8 +349,8 @@ impl AlgebraOperatons for Variable {
         match rhs {
             //  Math::Polynom(p)  => self.as_polynom()*Math::Polynom(p),
             //
-            Math::Fraction(f) => self.as_fraction().division(&f),
-            Math::Variable(v) => self.division(v),
+            Math::Fraction(f) => self.as_fraction().div_self(&f),
+            Math::Variable(v) => self.div_self(v),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }

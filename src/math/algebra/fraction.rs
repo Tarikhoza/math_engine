@@ -1,5 +1,5 @@
+use crate::math::algebra::operations::Operations;
 use crate::math::algebra::variable::Variable;
-use crate::math::operator::algebra::Operations;
 use crate::math::Math;
 
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};

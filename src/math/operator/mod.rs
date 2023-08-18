@@ -1,7 +1,7 @@
 pub mod algebra;
 pub mod equation;
 
-use crate::math::operator::algebra::Operator as AlgebraOperator;
+use crate::math::algebra::operations::Operator as AlgebraOperator;
 use crate::math::operator::equation::Operator as EquationOperator;
 use crate::math::Math;
 use crate::parser::Parsable;

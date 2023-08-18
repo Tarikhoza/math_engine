@@ -1,12 +1,14 @@
+use crate::math::algebra::operations::{
+    Operations as AlgebraOperatons, Operator as AlgebraOperator,
+};
 use crate::math::algebra::polynom::Polynom;
-use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::math::Root;
 use crate::parser::{Parsable, ParsableGenerics};
 
 impl AlgebraOperatons for Root {
-    fn addition(&self, other: &Root) -> Math {
+    fn add_self(&self, other: &Root) -> Math {
         if self.to_tex() == other.to_tex() {
             Math::Polynom(Polynom {
                 factors: vec![
@@ -25,7 +27,7 @@ impl AlgebraOperatons for Root {
         }
     }
 
-    fn subtraction(&self, other: &Root) -> Math {
+    fn sub_self(&self, other: &Root) -> Math {
         if self.to_tex() == other.to_tex() {
             "0".parse_math().expect("error parsing 0 as math")
         } else {
@@ -37,7 +39,7 @@ impl AlgebraOperatons for Root {
         }
     }
 
-    fn multiplication(&self, other: &Root) -> Math {
+    fn mul_self(&self, other: &Root) -> Math {
         todo!();
         if self.get_base().to_tex() == other.get_base().to_tex() {
             Math::Root(Root {
@@ -53,7 +55,7 @@ impl AlgebraOperatons for Root {
         }
     }
 
-    fn division(&self, other: &Root) -> Math {
+    fn div_self(&self, other: &Root) -> Math {
         todo!();
     }
 

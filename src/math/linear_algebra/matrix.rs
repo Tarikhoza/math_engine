@@ -1,5 +1,5 @@
+use crate::math::algebra::operations::{Operations, Operator};
 use crate::math::linear_algebra::vector::Vector;
-use crate::math::operator::algebra::{Operations, Operator};
 use crate::math::Math;
 use std::ops;
 

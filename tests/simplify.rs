@@ -1,4 +1,4 @@
-use math_engine::math::operator::algebra::Operations;
+use math_engine::math::algebra::operations::Operations;
 use math_engine::parser::{Parsable, ParsableGenerics};
 
 macro_rules! parser_eq {

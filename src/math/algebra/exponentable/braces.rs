@@ -1,5 +1,5 @@
 use crate::math::algebra::exponentable::Exponentable;
-use crate::math::operator::algebra::Operations;
+use crate::math::algebra::operations::Operations;
 use crate::math::Braces;
 use crate::math::Math;
 use crate::math::Variable;

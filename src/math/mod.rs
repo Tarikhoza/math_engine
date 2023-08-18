@@ -12,15 +12,15 @@ use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::infinity::Infinity;
+use crate::math::algebra::operations::{
+    Operations as AlgebraOperations, Operator as AlgebraOperator,
+};
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
-use crate::math::operator::algebra::{
-    Operations as AlgebraOperations, Operator as AlgebraOperator,
-};
 use crate::math::operator::Operator;
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 
@@ -176,19 +176,19 @@ fn non_zero(first: &Math, second: &Math) -> Math {
 }
 
 impl AlgebraOperations for Math {
-    fn addition(&self, other: &Math) -> Math {
+    fn add_self(&self, other: &Math) -> Math {
         self.add(other)
     }
 
-    fn subtraction(&self, other: &Math) -> Math {
+    fn sub_self(&self, other: &Math) -> Math {
         self.sub(other)
     }
 
-    fn multiplication(&self, other: &Math) -> Math {
+    fn mul_self(&self, other: &Math) -> Math {
         self.mul(other)
     }
 
-    fn division(&self, other: &Math) -> Math {
+    fn div_self(&self, other: &Math) -> Math {
         self.div(other)
     }
 
@@ -248,6 +248,7 @@ impl AlgebraOperations for Math {
     }
 
     fn simplify(&self) -> Math {
+        //TODO recursive simplify until no change
         match self {
             Math::Variable(v) => v.simplify(),
             Math::Polynom(p) => p.simplify(),

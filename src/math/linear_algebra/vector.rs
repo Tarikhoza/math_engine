@@ -1,6 +1,6 @@
+use crate::math::algebra::operations::{Operations, Operator};
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
-use crate::math::operator::algebra::{Operations, Operator};
 use crate::math::Math;
 use crate::parser::Parsable;
 use itertools::Itertools;

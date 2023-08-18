@@ -14,7 +14,7 @@ use crate::math::algebra::variable::Variable;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use crate::math::operator::algebra::{
+use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
 
@@ -161,9 +161,7 @@ impl Parser {
                 if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
                     let o = Operator::from_tex(&tex)?;
                     self.pos += o.to_tex().len();
-                    if let Math::Operator(o) = o {
-                        operators.push(o);
-                    }
+                    operators.push(o);
                 } else {
                     operators.push(Operator::Algebra(AlgebraOperator::InvMulti));
                 }

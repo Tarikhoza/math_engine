@@ -1,9 +1,9 @@
 use crate::math::algebra::exponentable::Exponentable;
-use crate::math::algebra::polynom::Polynom;
-use crate::math::algebra::undefined::Undefined;
-use crate::math::operator::algebra::{
+use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperators,
 };
+use crate::math::algebra::polynom::Polynom;
+use crate::math::algebra::undefined::Undefined;
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
@@ -12,7 +12,7 @@ use crate::parser::{Parsable, Parser};
 use crate::solver::step::{DetailedOperator, Step};
 
 impl AlgebraOperations for Polynom {
-    fn addition(&self, other: &Polynom) -> Math {
+    fn add_self(&self, other: &Polynom) -> Math {
         Math::Polynom(Polynom {
             factors: {
                 let mut factors = self.factors.clone();
@@ -34,7 +34,7 @@ impl AlgebraOperations for Polynom {
             ),
         })
     }
-    fn subtraction(&self, other: &Polynom) -> Math {
+    fn sub_self(&self, other: &Polynom) -> Math {
         Math::Polynom(Polynom {
             factors: {
                 let mut factors = self.factors.clone();
@@ -57,7 +57,7 @@ impl AlgebraOperations for Polynom {
         })
     }
 
-    fn multiplication(&self, other: &Polynom) -> Math {
+    fn mul_self(&self, other: &Polynom) -> Math {
         let mut factors: Vec<Math> = vec![];
         #[cfg(feature = "step-tracking")]
         let mut steps: Vec<Step> = vec![];
@@ -85,16 +85,16 @@ impl AlgebraOperations for Polynom {
         })
     }
 
-    fn division(&self, _other: &Polynom) -> Math {
+    fn div_self(&self, _other: &Polynom) -> Math {
         todo!("you have to implement division between polynomes")
     }
 
     fn add(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Polynom(p) => self.addition(p),
-            Math::Variable(v) => self.addition(&v.as_polynom()),
+            Math::Polynom(p) => self.add_self(p),
+            Math::Variable(v) => self.add_self(&v.as_polynom()),
             Math::Braces(b) => self.add(&b.simplify()),
-            Math::Fraction(f) => self.as_fraction().addition(f),
+            Math::Fraction(f) => self.as_fraction().add_self(f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -102,27 +102,27 @@ impl AlgebraOperations for Polynom {
 
     fn sub(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Polynom(p) => self.subtraction(p),
-            Math::Variable(v) => self.subtraction(&v.as_polynom()),
+            Math::Polynom(p) => self.sub_self(p),
+            Math::Variable(v) => self.sub_self(&v.as_polynom()),
             Math::Braces(b) => self.sub(&b.simplify()),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
-            Math::Fraction(f) => self.as_fraction().subtraction(f),
+            Math::Fraction(f) => self.as_fraction().sub_self(f),
             _ => todo!(),
         }
     }
     fn mul(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Polynom(p) => self.multiplication(p),
-            Math::Variable(v) => self.multiplication(&v.as_polynom()),
+            Math::Polynom(p) => self.mul_self(p),
+            Math::Variable(v) => self.mul_self(&v.as_polynom()),
             Math::Braces(b) => self.mul(&b.simplify()),
-            Math::Fraction(f) => self.as_fraction().multiplication(f),
+            Math::Fraction(f) => self.as_fraction().mul_self(f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!("did not implement mul with polynom"),
         }
     }
     fn div(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Fraction(f) => self.as_fraction().division(&f),
+            Math::Fraction(f) => self.as_fraction().div_self(&f),
             _ => todo!("did not implement div with polynom"),
         }
     }

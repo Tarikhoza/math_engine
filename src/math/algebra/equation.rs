@@ -1,5 +1,5 @@
+use crate::math::algebra::operations::Operations as AlgebraOperations;
 use crate::math::operator::equation::Operator as EquationOperator;
-use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, Parser};
 

@@ -1,5 +1,5 @@
+use crate::math::algebra::operations::Operator as AlgebraOperator;
 use crate::math::algebra::polynom::Polynom;
-use crate::math::operator::algebra::Operator as AlgebraOperator;
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;

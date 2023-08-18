@@ -1,12 +1,12 @@
-use crate::math::operator::algebra::Operator as AlgebraOperator;
+use crate::math::algebra::operations::Operator as AlgebraOperator;
 use crate::math::operator::equation::Operator as EquationOperator;
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::Parsable;
 use crate::solver::step::DetailedOperator;
 
-impl Parsable for Operator {
-    fn to_tex(&self) -> String {
+impl Operator {
+    pub fn to_tex(&self) -> String {
         match self {
             Operator::Algebra(o) => o.to_tex(),
             Operator::Equation(o) => o.to_tex(),
@@ -15,11 +15,13 @@ impl Parsable for Operator {
         }
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        AlgebraOperator::from_tex(tex)
+    pub fn from_tex(tex: &str) -> Result<Operator, &'static str> {
+        Ok(Operator::Algebra(
+            AlgebraOperator::from_tex(tex).expect("failed creating operator from tex"),
+        ))
     }
 
-    fn on_begining(tex: String) -> Option<String> {
+    pub fn on_begining(tex: String) -> Option<String> {
         AlgebraOperator::on_begining(tex)
     }
 }

@@ -1,8 +1,10 @@
 use crate::math::algebra::fraction::Fraction;
+use crate::math::algebra::operations::{
+    Operations as AlgebraOperatons, Operator as AlgebraOperator,
+};
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::variable::Variable;
 use crate::math::descrete::Descrete;
-use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenericsAsVariable};
@@ -11,7 +13,7 @@ use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
 impl AlgebraOperatons for Fraction {
-    fn addition(&self, other: &Fraction) -> Math {
+    fn add_self(&self, other: &Fraction) -> Math {
         if self.denominator.to_tex() == other.denominator.to_tex() {
             if self.whole.is_none() || self.whole.unwrap_or(dec!(0)).is_zero() {
                 return Math::Fraction(Fraction {
@@ -28,7 +30,7 @@ impl AlgebraOperatons for Fraction {
             .add(&Math::Fraction(other.expand(*self.denominator.clone())))
     }
 
-    fn subtraction(&self, other: &Fraction) -> Math {
+    fn sub_self(&self, other: &Fraction) -> Math {
         if self.denominator.to_tex() == other.denominator.to_tex() {
             if self.whole.is_none() || self.whole.unwrap_or(dec!(0)).is_zero() {
                 return Math::Fraction(Fraction {
@@ -44,7 +46,7 @@ impl AlgebraOperatons for Fraction {
             .sub(&Math::Fraction(other.expand(*self.denominator.clone())))
     }
 
-    fn multiplication(&self, other: &Fraction) -> Math {
+    fn mul_self(&self, other: &Fraction) -> Math {
         Math::Fraction(Fraction {
             whole: None,
             numerator: Box::new(self.numerator.mul(&other.numerator)),
@@ -52,42 +54,42 @@ impl AlgebraOperatons for Fraction {
         })
     }
 
-    fn division(&self, other: &Fraction) -> Math {
-        self.multiplication(&other.inverse())
+    fn div_self(&self, other: &Fraction) -> Math {
+        self.mul_self(&other.inverse())
     }
 
     fn add(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Fraction(f) => self.addition(f),
-            Math::Variable(v) => self.addition(&v.as_fraction()),
-            Math::Polynom(p) => self.addition(&p.as_fraction()),
+            Math::Fraction(f) => self.add_self(f),
+            Math::Variable(v) => self.add_self(&v.as_fraction()),
+            Math::Polynom(p) => self.add_self(&p.as_fraction()),
             _ => todo!(),
         }
     }
 
     fn sub(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Fraction(f) => self.subtraction(f),
-            Math::Variable(v) => self.subtraction(&v.as_fraction()),
-            Math::Polynom(p) => self.subtraction(&p.as_fraction()),
+            Math::Fraction(f) => self.sub_self(f),
+            Math::Variable(v) => self.sub_self(&v.as_fraction()),
+            Math::Polynom(p) => self.sub_self(&p.as_fraction()),
             _ => todo!(),
         }
     }
 
     fn mul(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Fraction(f) => self.multiplication(f),
-            Math::Variable(v) => self.multiplication(&v.as_fraction()),
-            Math::Polynom(p) => self.multiplication(&p.as_fraction()),
+            Math::Fraction(f) => self.mul_self(f),
+            Math::Variable(v) => self.mul_self(&v.as_fraction()),
+            Math::Polynom(p) => self.mul_self(&p.as_fraction()),
             _ => todo!(),
         }
     }
 
     fn div(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Fraction(f) => self.division(f),
-            Math::Variable(v) => self.division(&v.as_fraction()),
-            Math::Polynom(p) => self.division(&p.as_fraction()),
+            Math::Fraction(f) => self.div_self(f),
+            Math::Variable(v) => self.div_self(&v.as_fraction()),
+            Math::Polynom(p) => self.div_self(&p.as_fraction()),
             _ => todo!(),
         }
     }
@@ -109,13 +111,13 @@ impl AlgebraOperatons for Fraction {
                 if lcd.to_tex() != "1" {
                     return Fraction {
                         whole: self.whole.clone(),
-                        numerator: Box::new(num.division(&lcd)),
-                        denominator: Box::new(den.division(&lcd)),
+                        numerator: Box::new(num.div_self(&lcd)),
+                        denominator: Box::new(den.div_self(&lcd)),
                     }
                     .simplify();
                 }
                 if num.is_divisable(&den) {
-                    return num.division(&den);
+                    return num.div_self(&den);
                 }
             }
         }

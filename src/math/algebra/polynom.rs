@@ -1,9 +1,9 @@
 use crate::math::algebra::fraction::Fraction;
-use crate::math::algebra::variable::Variable;
-use crate::math::linear_algebra::vector::Vector;
-use crate::math::operator::algebra::{
+use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+use crate::math::algebra::variable::Variable;
+use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
 use crate::math::Math;
 

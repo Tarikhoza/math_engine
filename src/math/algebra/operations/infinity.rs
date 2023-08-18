@@ -1,23 +1,25 @@
-use crate::math::operator::algebra::{Operations as AlgebraOperatons, Operator as AlgebraOperator};
+use crate::math::algebra::operations::{
+    Operations as AlgebraOperatons, Operator as AlgebraOperator,
+};
 use crate::math::operator::Operator;
 use crate::math::Infinity;
 use crate::math::Math;
 use crate::parser::Parsable;
 
 impl AlgebraOperatons for Infinity {
-    fn addition(&self, other: &Infinity) -> Math {
+    fn add_self(&self, other: &Infinity) -> Math {
         todo!();
     }
 
-    fn subtraction(&self, other: &Infinity) -> Math {
+    fn sub_self(&self, other: &Infinity) -> Math {
         todo!();
     }
 
-    fn multiplication(&self, other: &Infinity) -> Math {
+    fn mul_self(&self, other: &Infinity) -> Math {
         todo!();
     }
 
-    fn division(&self, other: &Infinity) -> Math {
+    fn div_self(&self, other: &Infinity) -> Math {
         //TODO check what to do when infinity is divided
         todo!();
     }

@@ -1,27 +1,27 @@
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
+use crate::math::algebra::operations::Operations;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
-use crate::math::operator::algebra::{Operations, Operator};
 use std::ops;
 
 use crate::math::Math;
 use rust_decimal_macros::dec;
 
 impl Operations for Braces {
-    fn addition(&self, other: &Braces) -> Math {
+    fn add_self(&self, other: &Braces) -> Math {
         self.simplify().add(&other.simplify())
     }
 
-    fn subtraction(&self, other: &Braces) -> Math {
+    fn sub_self(&self, other: &Braces) -> Math {
         self.simplify().sub(&other.simplify())
     }
 
-    fn multiplication(&self, other: &Braces) -> Math {
+    fn mul_self(&self, other: &Braces) -> Math {
         self.simplify().mul(&other.simplify())
     }
 
-    fn division(&self, other: &Braces) -> Math {
+    fn div_self(&self, other: &Braces) -> Math {
         self.simplify().div(&other.simplify())
     }
 
@@ -46,7 +46,7 @@ impl Operations for Braces {
         match rhs {
             Math::Polynom(p) => self.simplify().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().add(&Math::Variable(v.clone())),
-            Math::Braces(b) => self.addition(&b),
+            Math::Braces(b) => self.add_self(&b),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -56,7 +56,7 @@ impl Operations for Braces {
         match rhs {
             Math::Polynom(p) => self.simplify().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().sub(&Math::Variable(v.clone())),
-            Math::Braces(b) => self.subtraction(&b),
+            Math::Braces(b) => self.sub_self(&b),
             //           Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -66,7 +66,7 @@ impl Operations for Braces {
         match rhs {
             Math::Polynom(p) => self.simplify().mul(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().mul(&Math::Variable(v.clone())),
-            Math::Braces(b) => self.multiplication(&b),
+            Math::Braces(b) => self.mul_self(&b),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             Math::Fraction(f) => self.simplify().mul(&Math::Fraction(f.clone())),
             _ => todo!(),

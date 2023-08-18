@@ -1,10 +1,10 @@
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
-use crate::math::algebra::polynom::Polynom;
-use crate::math::operator::algebra::{
+use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
