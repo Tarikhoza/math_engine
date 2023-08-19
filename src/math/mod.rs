@@ -7,7 +7,6 @@ pub mod trigonometry;
 
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
-use crate::math::algebra::equation::Equation;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
@@ -34,7 +33,6 @@ use std::ops;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Math {
     Variable(Variable),
-    Equation(Equation),
     Polynom(Polynom),
     Fraction(Fraction),
     Braces(Braces),
@@ -45,7 +43,6 @@ pub enum Math {
     Matrix(Matrix),
     Infinity(Infinity),
     Undefined(Undefined),
-    Operator(Operator),
 }
 
 impl Default for Math {
@@ -201,7 +198,6 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.add(rhs),
             Math::Braces(b) => b.add(rhs),
             Math::Fraction(f) => f.add(rhs),
-            Math::Equation(e) => e.add(rhs),
             Math::Infinity(i) => i.add(rhs),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
@@ -217,7 +213,6 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.sub(rhs),
             Math::Braces(b) => b.sub(rhs),
             Math::Fraction(f) => f.sub(rhs),
-            Math::Equation(e) => e.sub(rhs),
             Math::Infinity(i) => i.sub(rhs),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
@@ -267,7 +262,6 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.negative(),
             Math::Braces(b) => b.negative(),
             Math::Variable(v) => v.negative(),
-            Math::Equation(e) => e.negative(),
             Math::Fraction(f) => f.negative(),
             //Math::Root(r) => r.negative(),
             //Math::Absolute(a) => a.negative(),
@@ -284,7 +278,6 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.substitute(suffix, math),
             Math::Polynom(p) => p.substitute(suffix, math),
             Math::Braces(b) => b.substitute(suffix, math),
-            Math::Equation(e) => e.substitute(suffix, math),
             Math::Fraction(f) => f.substitute(suffix, math),
             Math::Infinity(i) => Math::Infinity(i.clone()),
             //Math::Root(r) => r.substitute(suffix, math),
@@ -301,7 +294,6 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.get_all_suffixes(),
             Math::Polynom(p) => p.get_all_suffixes(),
             Math::Braces(b) => b.get_all_suffixes(),
-            Math::Equation(e) => e.get_all_suffixes(),
             Math::Fraction(f) => f.get_all_suffixes(),
             _ => todo!(),
         }

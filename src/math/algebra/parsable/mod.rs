@@ -1,6 +1,5 @@
 pub mod absolute;
 pub mod braces;
-pub mod equation;
 pub mod fraction;
 pub mod function;
 pub mod infinity;

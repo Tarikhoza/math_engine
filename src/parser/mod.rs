@@ -4,7 +4,6 @@ pub mod operator;
 
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
-use crate::math::algebra::equation::Equation;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::polynom::Polynom;
@@ -134,10 +133,6 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Result<Math, &'static str> {
-        if let Some(eq) = Equation::on_begining(self.input.clone()) {
-            return Equation::from_tex(&self.input);
-        }
-
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
             Function::parse,

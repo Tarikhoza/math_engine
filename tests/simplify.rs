@@ -4,6 +4,7 @@ use math_engine::parser::{Parsable, ParsableGenerics};
 macro_rules! parser_eq {
     ($input:expr, $expected:expr) => {
         assert_eq!(
+            //TODO remove double simplify
             $input.parse_math().unwrap().simplify().simplify().to_tex(),
             $expected
         );
@@ -219,6 +220,12 @@ fn double_operator() {
 }
 
 #[test]
+fn multi_operator() {
+    parser_eq!("3x----1x", "4x");
+    parser_eq!("3x---1x", "3x");
+}
+
+#[test]
 fn basic_operations_with_suffix() {
     parser_eq!("a-a", "0");
     parser_eq!("3x+2x", "5x");
@@ -233,7 +240,6 @@ fn basic_operations_with_suffix() {
     parser_eq!("12x+8y+23z-5y+13z-9x", "3x+3y+36z");
     parser_eq!("4y+8x+3x-7x+15y", "4x+19y");
     parser_eq!("6k-7u+11k+14u-2k", "15k+7u");
-
     parser_eq!("6a+5d-3a", "3a+5d");
     parser_eq!("14y+8x-10y-3x", "5x+4y");
     parser_eq!("7g-14h-4g-5h", "3g-19h");

@@ -1,8 +1,4 @@
-pub mod algebra;
-pub mod equation;
-
 use crate::math::algebra::operations::Operator as AlgebraOperator;
-use crate::math::operator::equation::Operator as EquationOperator;
 use crate::math::Math;
 use crate::parser::Parsable;
 use crate::solver::step::DetailedOperator;
@@ -11,7 +7,6 @@ use std::default;
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum Operator {
     Algebra(AlgebraOperator),
-    Equation(EquationOperator),
     Detail(DetailedOperator),
     #[default]
     Empty,
