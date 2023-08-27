@@ -49,7 +49,7 @@ impl Operations for Braces {
         match rhs {
             Math::Polynom(p) => self.simplify().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().add(&Math::Variable(v.clone())),
-            Math::Braces(b) => self.add_self(&b),
+            Math::Braces(b) => self.add_self(b),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -59,7 +59,7 @@ impl Operations for Braces {
         match rhs {
             Math::Polynom(p) => self.simplify().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().sub(&Math::Variable(v.clone())),
-            Math::Braces(b) => self.sub_self(&b),
+            Math::Braces(b) => self.sub_self(b),
             //           Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -69,7 +69,7 @@ impl Operations for Braces {
         match rhs {
             Math::Polynom(p) => self.simplify().mul(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().mul(&Math::Variable(v.clone())),
-            Math::Braces(b) => self.mul_self(&b),
+            Math::Braces(b) => self.mul_self(b),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             Math::Fraction(f) => self.simplify().mul(&Math::Fraction(f.clone())),
             _ => todo!(),
@@ -82,7 +82,7 @@ impl Operations for Braces {
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         let new_math = Box::new(self.math.substitute(suffix, math.clone()));
-        let new_exponent = self.get_exponent().substitute(suffix, math.clone());
+        let new_exponent = self.get_exponent().substitute(suffix, math);
 
         Math::Braces(Braces {
             math: new_math,

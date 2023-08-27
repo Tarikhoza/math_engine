@@ -26,7 +26,7 @@ impl Simplifiable for Fraction {
                 let lcd = num.lowest_common_denominator(&den);
                 if lcd.to_tex() != "1" {
                     return Fraction {
-                        whole: self.whole.clone(),
+                        whole: self.whole,
                         numerator: Box::new(num.div_self(&lcd)),
                         denominator: Box::new(den.div_self(&lcd)),
                     }
@@ -38,7 +38,7 @@ impl Simplifiable for Fraction {
             }
         }
 
-        return Math::Fraction(self.clone());
+        Math::Fraction(self.clone())
     }
 }
 impl AlgebraOperatons for Fraction {
@@ -124,14 +124,14 @@ impl AlgebraOperatons for Fraction {
     }
 
     fn negative(&self) -> Math {
-        self.mul(&Math::Variable((-1 as i32).as_variable()))
+        self.mul(&Math::Variable((-1).as_variable()))
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         Math::Fraction(Fraction {
-            whole: self.whole.clone(),
-            numerator: Box::new(self.numerator.substitute(suffix.clone(), math.clone())),
-            denominator: Box::new(self.denominator.substitute(suffix.clone(), math.clone())),
+            whole: self.whole,
+            numerator: Box::new(self.numerator.substitute(suffix, math.clone())),
+            denominator: Box::new(self.denominator.substitute(suffix, math)),
         })
     }
 

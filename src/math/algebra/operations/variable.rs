@@ -324,7 +324,7 @@ impl AlgebraOperatons for Variable {
             Math::Polynom(p) => self.as_polynom().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.add_self(v),
             Math::Braces(b) => self.add(&b.simplify()),
-            Math::Fraction(f) => self.as_fraction().add_self(&f),
+            Math::Fraction(f) => self.as_fraction().add_self(f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -335,7 +335,7 @@ impl AlgebraOperatons for Variable {
             Math::Polynom(p) => self.as_polynom().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.sub_self(v),
             Math::Braces(b) => self.sub(&b.simplify()),
-            Math::Fraction(f) => self.as_fraction().sub_self(&f),
+            Math::Fraction(f) => self.as_fraction().sub_self(f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -346,7 +346,7 @@ impl AlgebraOperatons for Variable {
             Math::Polynom(p) => self.as_polynom().mul(&Math::Polynom(p.clone())),
             Math::Braces(b) => self.mul(&b.simplify()),
             Math::Variable(v) => self.mul_self(v),
-            Math::Fraction(f) => self.as_fraction().mul_self(&f),
+            Math::Fraction(f) => self.as_fraction().mul_self(f),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
@@ -356,7 +356,7 @@ impl AlgebraOperatons for Variable {
         match rhs {
             //  Math::Polynom(p)  => self.as_polynom()*Math::Polynom(p),
             //
-            Math::Fraction(f) => self.as_fraction().div_self(&f),
+            Math::Fraction(f) => self.as_fraction().div_self(f),
             Math::Variable(v) => self.div_self(v),
             Math::Undefined(u) => Math::Undefined(Undefined {}),
             _ => todo!(),

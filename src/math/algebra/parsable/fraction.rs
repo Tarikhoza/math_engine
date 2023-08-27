@@ -36,12 +36,11 @@ impl Parsable for Fraction {
 
         let whole_str = captures.get(1).map_or("", |m| m.as_str());
 
-        let whole: Option<Decimal>;
-        if !whole_str.is_empty() {
-            whole = Some(Decimal::from_str(whole_str).unwrap());
+        let whole: Option<Decimal> = if !whole_str.is_empty() {
+            Some(Decimal::from_str(whole_str).expect("failed converting string to decimal"))
         } else {
-            whole = None;
-        }
+            None
+        };
 
         let numerator =
             Parser::extract_brace(captures.get(3).map_or("", |m| m.as_str()), '{', '}')?;
@@ -50,7 +49,7 @@ impl Parsable for Fraction {
                 .get(3)
                 .map_or("", |m| m.as_str())
                 .get(numerator.len() + 2..)
-                .unwrap(),
+                .expect("falied to execute regex"),
             '{',
             '}',
         )?;
@@ -62,11 +61,11 @@ impl Parsable for Fraction {
             return Err("While parsing denominator was empty");
         }
 
-        return Ok(Math::Fraction(Fraction {
+        Ok(Math::Fraction(Fraction {
             whole,
             numerator: Box::new(numerator.parse_math()?),
             denominator: Box::new(denominator.parse_math()?),
-        }));
+        }))
     }
 
     fn on_begining(tex: String) -> Option<String> {

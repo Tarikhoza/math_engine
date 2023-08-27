@@ -10,7 +10,7 @@ impl Parsable for Function {
         let mut ret = "";
         let exponent = self.get_exponent();
 
-        if exponent.to_tex() != String::from("1") && exponent.to_tex() != String::from("") {
+        if exponent.to_tex() != *"1" && exponent.to_tex() != *"" {
             return format!(
                 "\\mathrm{{{}}}({})^{{{}}}",
                 self.label,
@@ -61,21 +61,25 @@ impl Parsable for Function {
 
         if !exponent.is_empty() {
             Ok(Math::Function(Function {
-                label: label.to_string(),
+                label,
                 args: arguments
-                    .replace(" ", "")
-                    .split(",")
+                    .replace(' ', "")
+                    .split(',')
                     .map(|s| s.to_string())
                     .collect(),
                 definition: None,
-                exponent: Some(Box::new(exponent.parse_math().unwrap())),
+                exponent: Some(Box::new(
+                    exponent
+                        .parse_math()
+                        .expect("failed parsing exponent as math"),
+                )),
             }))
         } else {
             Ok(Math::Function(Function {
-                label: label.to_string(),
+                label,
                 args: arguments
-                    .replace(" ", "")
-                    .split(",")
+                    .replace(' ', "")
+                    .split(',')
                     .map(|s| s.to_string())
                     .collect(),
                 definition: None,

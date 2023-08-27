@@ -12,7 +12,7 @@ impl Point {
         let ret = Math::default();
         let mut exp = String::new();
 
-        let first = self.normalise_system(&other);
+        let first = self.normalise_system(other);
         let second = other.normalise_system(&first);
 
         for i in 0..first.coordinates.len() {
@@ -35,7 +35,7 @@ impl Point {
         }
         format!("\\sqrt[2]{{{}}}", exp)
             .parse_math()
-            .unwrap()
+            .expect("failed parsing math")
             .simplify()
     }
 
@@ -43,7 +43,9 @@ impl Point {
     pub fn normalise_system(&self, other: &Point) -> Point {
         let mut normalised = (*self).clone();
         while (normalised.coordinates.len() < other.coordinates.len()) {
-            normalised.coordinates.push(0.parse_math().unwrap());
+            normalised
+                .coordinates
+                .push(0.parse_math().expect("failed parsing math"));
         }
         normalised
     }

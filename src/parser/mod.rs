@@ -44,7 +44,7 @@ pub trait Parsable {
         Ok((len, math))
     }
     fn parse(tex: &str) -> Option<(usize, Math)> {
-        if let Some(t) = Self::on_begining(tex.replace(' ', "").to_owned()) {
+        if let Some(t) = Self::on_begining(tex.replace(' ', "")) {
             let (len, math) = Self::from_tex_len(&t).unwrap_or((0, Math::default()));
             return Some((len, math));
         }
@@ -102,7 +102,7 @@ impl Parser {
         let mut pos = open_s.len();
         let mut close = 0;
         let mut open = 1;
-        if tex.strip_prefix(&open_s).is_some() {
+        if tex.starts_with(open_s) {
             return Ok(String::new());
         }
         while pos < tex.len() {
@@ -110,11 +110,11 @@ impl Parser {
                 .get(pos..)
                 .expect("while extracting brace something unexpected happened")
             {
-                x if x.strip_prefix(&open_s).is_some() => {
+                x if x.starts_with(open_s) => {
                     open += 1;
                     pos += open_s.len()
                 }
-                x if x.strip_prefix(&close_s).is_some() => {
+                x if x.starts_with(close_s) => {
                     close += 1;
                     pos += close_s.len()
                 }

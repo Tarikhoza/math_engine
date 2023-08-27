@@ -10,7 +10,12 @@ pub struct Matrix {
 
 impl Matrix {
     pub fn add_all(&self) -> Math {
-        let mut result: Math = self.factors.get(0).unwrap().clone().add_all();
+        let mut result: Math = self
+            .factors
+            .get(0)
+            .expect("failed getting first element of matrix")
+            .clone()
+            .add_all();
         for factor in self.factors.iter().skip(1) {
             result = result.add(&factor.add_all());
         }

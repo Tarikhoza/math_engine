@@ -151,20 +151,38 @@ impl Math {
             //       let mut substitutions: Vec<String> = vec![];
 
             for s in 0..suffixes.len() {
-                new_a =
-                    new_a.substitute(suffixes[s].as_ref(), (s as i64 + i).parse_math().unwrap());
-                new_b =
-                    new_b.substitute(suffixes[s].as_ref(), (s as i64 + i).parse_math().unwrap());
+                new_a = new_a.substitute(
+                    suffixes[s].as_ref(),
+                    (s as i64 + i)
+                        .parse_math()
+                        .expect("failed parsing math for equal_bruteforce"),
+                );
+                new_b = new_b.substitute(
+                    suffixes[s].as_ref(),
+                    (s as i64 + i)
+                        .parse_math()
+                        .expect("failed parsing math for equal_bruteforce"),
+                );
                 //            substitutions.push(format!("{} = {}", suffixes[s], s as i64 + i));
             }
             //TODO remove reparsing
-            if new_a.to_tex().parse_math().unwrap().simplify().to_tex()
-                == new_b.to_tex().parse_math().unwrap().simplify().to_tex()
+            if new_a
+                .to_tex()
+                .parse_math()
+                .expect("failed parsing math for equal_bruteforce")
+                .simplify()
+                .to_tex()
+                == new_b
+                    .to_tex()
+                    .parse_math()
+                    .expect("failed parsing math for equal_bruteforce")
+                    .simplify()
+                    .to_tex()
             {
                 eq += 1;
             }
         }
-        return eq == rounds;
+        eq == rounds
     }
 }
 

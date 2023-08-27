@@ -17,7 +17,7 @@ pub struct Fraction {
 impl Fraction {
     pub fn inverse(&self) -> Fraction {
         Fraction {
-            whole: self.whole.clone(),
+            whole: self.whole,
             numerator: self.denominator.clone(),
             denominator: self.numerator.clone(),
         }
@@ -25,7 +25,7 @@ impl Fraction {
 
     pub fn expand(&self, other: Math) -> Fraction {
         Fraction {
-            whole: self.whole.clone(),
+            whole: self.whole,
             numerator: Box::new(self.numerator.mul(&other)),
             denominator: Box::new(self.denominator.mul(&other)),
         }

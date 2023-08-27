@@ -85,10 +85,8 @@ impl Variable {
         } else {
             suffix_score = u16::MAX as i64;
         }
-        if self.exponent.is_some() {
-            if self.get_exponent().to_tex() != "1" {
-                suffix_score -= self.get_exponent().sorting_score() - 200;
-            }
+        if self.exponent.is_some() && self.get_exponent().to_tex() != "1" {
+            suffix_score -= self.get_exponent().sorting_score() - 200;
         }
 
         suffix_score

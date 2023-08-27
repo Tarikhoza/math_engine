@@ -11,7 +11,10 @@ impl Parsable for Root {
         } else {
             format!(
                 "\\sqrt[{}]{{{}}}",
-                self.base.clone().unwrap().to_tex(),
+                self.base
+                    .clone()
+                    .expect("root base is nonexistent")
+                    .to_tex(),
                 self.math.to_tex()
             )
         }
@@ -33,7 +36,7 @@ impl Parsable for Root {
                 .get(2)
                 .map_or("", |m| m.as_str())
                 .get(base.len() + 2..)
-                .unwrap(),
+                .expect("failed to execute regex"),
             '{',
             '}',
         )?;

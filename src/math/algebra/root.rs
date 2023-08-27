@@ -45,14 +45,14 @@ impl Root {
             result = math.div(&guess);
             guess = format!("({}+{})/{}", guess.to_tex(), result.to_tex(), 2)
                 .parse_math()
-                .unwrap()
+                .expect("failed parsing guess as math")
                 .simplify();
             if last_result.to_tex() == result.to_tex() {
                 break;
             }
             last_result = result.clone();
         }
-        return result;
+        result
     }
 
     pub fn take_root(&self) -> Math {
@@ -63,7 +63,7 @@ impl Root {
                 todo!("implement derivatives to take any root")
             }
         }
-        return self.square_root();
+        self.square_root()
     }
 
     pub fn exponential_form(&self) -> Math {
@@ -71,43 +71,37 @@ impl Root {
             Math::Variable(v) => v.get_exponent(),
             Math::Braces(b) => b.get_exponent(),
             Math::Function(f) => f.get_exponent(),
-            _ => "1".parse_math().unwrap(),
+            _ => "1".parse_math().expect("failed parsing 1 as math"),
         };
 
         match *self.math.clone() {
-            Math::Variable(v) => {
-                return Math::Variable(Variable {
-                    value: v.value,
-                    suffix: v.suffix,
-                    exponent: Some(Box::new(Math::Fraction(Fraction {
-                        whole: None,
-                        denominator: Box::new(exponent),
-                        numerator: Box::new(self.get_base()),
-                    }))),
-                    #[cfg(feature = "step-tracking")]
-                    step: None,
-                })
-            }
-            Math::Braces(b) => {
-                return Math::Braces(Braces {
-                    math: b.math.clone(),
-                    exponent: Some(Box::new(Math::Fraction(Fraction {
-                        whole: None,
-                        denominator: Box::new(exponent),
-                        numerator: Box::new(self.get_base()),
-                    }))),
-                })
-            }
-            other => {
-                return Math::Braces(Braces {
-                    math: Box::new(other.clone()),
-                    exponent: Some(Box::new(Math::Fraction(Fraction {
-                        whole: None,
-                        denominator: Box::new(exponent),
-                        numerator: Box::new(self.get_base()),
-                    }))),
-                })
-            }
+            Math::Variable(v) => Math::Variable(Variable {
+                value: v.value,
+                suffix: v.suffix,
+                exponent: Some(Box::new(Math::Fraction(Fraction {
+                    whole: None,
+                    denominator: Box::new(exponent),
+                    numerator: Box::new(self.get_base()),
+                }))),
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            }),
+            Math::Braces(b) => Math::Braces(Braces {
+                math: b.math,
+                exponent: Some(Box::new(Math::Fraction(Fraction {
+                    whole: None,
+                    denominator: Box::new(exponent),
+                    numerator: Box::new(self.get_base()),
+                }))),
+            }),
+            other => Math::Braces(Braces {
+                math: Box::new(other),
+                exponent: Some(Box::new(Math::Fraction(Fraction {
+                    whole: None,
+                    denominator: Box::new(exponent),
+                    numerator: Box::new(self.get_base()),
+                }))),
+            }),
         }
     }
 

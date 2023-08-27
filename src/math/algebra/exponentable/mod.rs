@@ -29,13 +29,21 @@ pub trait Exponentable {
                 let orig = self.without_exponent().simplify();
                 let mut value = orig.clone();
                 if exponent.value.is_sign_positive() {
-                    for i in 1..exponent.value.to_i64().unwrap() {
+                    for i in 1..exponent
+                        .value
+                        .to_i64()
+                        .expect("failed casting Decimal to i64")
+                    {
                         value = value.mul(&orig);
                     }
                 }
                 if exponent.value.is_sign_negative() {
                     todo!("implement negative exponent");
-                    for i in 1..exponent.value.to_i64().unwrap() {
+                    for i in 1..exponent
+                        .value
+                        .to_i64()
+                        .expect("failed casting Decimal to i64")
+                    {
                         value = value.mul(&orig);
                     }
                 }

@@ -133,7 +133,7 @@ impl AlgebraOperations for Polynom {
     }
     fn div(&self, rhs: &Math) -> Math {
         match rhs {
-            Math::Fraction(f) => self.as_fraction().div_self(&f),
+            Math::Fraction(f) => self.as_fraction().div_self(f),
             _ => todo!("did not implement div with polynom"),
         }
     }
@@ -326,8 +326,7 @@ impl Polynom {
             .as_polynom()
             .to_vector();
 
-        vec.factors
-            .sort_by(|a, b| a.sorting_score().cmp(&b.sorting_score()));
+        vec.factors.sort_by_key(|m| m.sorting_score());
         vec.add_all().as_polynom()
     }
 }

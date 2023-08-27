@@ -62,12 +62,15 @@ impl Vector {
     }
 
     pub fn add_all(&self) -> Math {
-        if self.factors.len() == 0 {
+        if self.factors.is_empty() {
             return Math::Variable(Variable::default());
         }
         let mut factors: Vec<Math> = self.factors.clone();
 
-        let mut result: Math = factors.get(0).unwrap().clone();
+        let mut result: Math = factors
+            .get(0)
+            .expect("failed getting first element of Vector")
+            .clone();
         for factor in factors.iter().skip(1) {
             result = result.add(factor);
         }

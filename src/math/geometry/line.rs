@@ -20,7 +20,7 @@ impl Line {
         if let Math::Variable(v) = self.point_a.distance(&self.point_b) {
             return v.value;
         }
-        return dec!(0);
+        dec!(0)
     }
 
     pub fn swap_points(&self) -> Line {

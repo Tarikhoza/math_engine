@@ -17,13 +17,13 @@ impl Angle {
                 line_a: line_a.swap_points(),
                 line_b,
             };
-        } else if line_a.point_b != line_b.point_b {
+        } else {
             return Self {
-                line_a: line_a.swap_points(),
+                line_a: line_b.swap_points(),
                 line_b,
             };
         }
-        return Self { line_a, line_b };
+        Self { line_a, line_b }
     }
 
     pub fn slope(&self) -> Math {
@@ -36,14 +36,17 @@ impl Angle {
                 points.1 .1.coordinates[i].to_tex()
             ));
         }
-        exp.join("/").parse_math().unwrap().simplify()
+        exp.join("/")
+            .parse_math()
+            .expect("failed parsing math")
+            .simplify()
     }
 
     pub fn get_points(&self) -> (Point, (Point, Point)) {
-        return (
+        (
             self.line_a.point_a.clone(),
             (self.line_a.point_b.clone(), self.line_b.point_b.clone()),
-        );
+        )
     }
 
     //    pub fn degree(&self) -> Math {}
