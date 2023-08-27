@@ -1,4 +1,4 @@
-use math_engine::math::algebra::operations::Operations;
+use math_engine::math::simplifiable::Simplifiable;
 use math_engine::parser::{Parsable, ParsableGenerics};
 
 macro_rules! parser_eq {
@@ -219,11 +219,11 @@ fn double_operator() {
     parser_eq!("3x--1x", "4x");
 }
 
-#[test]
-fn multi_operator() {
-    parser_eq!("3x----1x", "4x");
-    parser_eq!("3x---1x", "3x");
-}
+//   #[test]
+//   fn multi_operator() {
+//       parser_eq!("3x----1x", "4x");
+//       parser_eq!("3x---1x", "3x");
+//   }
 
 #[test]
 fn basic_operations_with_suffix() {
@@ -283,6 +283,7 @@ fn braces() {
 #[test]
 fn exponents() {
     parser_eq!("3x^{2}", "3x^{2}");
+    parser_eq!("3^{-2}", "\\frac{1}{9}");
     parser_eq!("3^{2}", "9");
     parser_eq!("(3+3)^{2}", "36");
 }

@@ -6,6 +6,7 @@ pub mod root;
 pub mod undefined;
 pub mod variable;
 
+use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 
 use crate::math::operator::Operator as MainOperator;
@@ -22,16 +23,12 @@ pub enum Operator {
     AddSub,
 }
 
-pub trait Operations {
+pub trait Operations: Simplifiable {
     fn add_self(&self, other: &Self) -> Math;
     fn sub_self(&self, other: &Self) -> Math;
     fn div_self(&self, other: &Self) -> Math;
     fn mul_self(&self, other: &Self) -> Math;
 
-    fn simplify(&self) -> Math;
-    fn simplify_force_number(&self) -> Math {
-        todo!()
-    }
     fn negative(&self) -> Math;
     fn substitute(&self, suffix: &str, value: Math) -> Math;
 

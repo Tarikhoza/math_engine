@@ -9,6 +9,8 @@ use crate::math::algebra::function::Function;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
 use crate::math::algebra::variable::Variable;
+use crate::math::calculus::product::Product;
+use crate::math::calculus::sum::Sum;
 
 use crate::math::operator::Operator;
 use crate::math::Math;
@@ -36,11 +38,14 @@ pub trait Parsable {
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
         0.parse_math()
     }
-
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+        let math = Self::from_tex(tex)?;
+        let len = math.to_tex().len();
+        Ok((len, math))
+    }
     fn parse(tex: &str) -> Option<(usize, Math)> {
-        if let Some(t) = Self::on_begining(tex.to_owned()) {
-            let math = Self::from_tex(&t).unwrap_or(Math::default());
-            let len = math.to_tex().len();
+        if let Some(t) = Self::on_begining(tex.replace(' ', "").to_owned()) {
+            let (len, math) = Self::from_tex_len(&t).unwrap_or((0, Math::default()));
             return Some((len, math));
         }
         None
@@ -88,13 +93,6 @@ impl Parser {
         Err("extract_between: Brace never closed")
     }
 
-    pub fn at_start(tex: &str, str: &str) -> bool {
-        if tex.strip_prefix(&str).is_some() {
-            return true;
-        }
-        false
-    }
-
     pub fn extract_between(tex: &str, open_s: &str, close_s: &str) -> Result<String, &'static str> {
         //throw compile time error if open_s and close_s are the same
         if open_s == close_s {
@@ -104,7 +102,7 @@ impl Parser {
         let mut pos = open_s.len();
         let mut close = 0;
         let mut open = 1;
-        if !Parser::at_start(tex, &open_s) {
+        if tex.strip_prefix(&open_s).is_some() {
             return Ok(String::new());
         }
         while pos < tex.len() {
@@ -112,11 +110,11 @@ impl Parser {
                 .get(pos..)
                 .expect("while extracting brace something unexpected happened")
             {
-                x if Parser::at_start(x, &open_s) => {
+                x if x.strip_prefix(&open_s).is_some() => {
                     open += 1;
                     pos += open_s.len()
                 }
-                x if Parser::at_start(x, &close_s) => {
+                x if x.strip_prefix(&close_s).is_some() => {
                     close += 1;
                     pos += close_s.len()
                 }
@@ -135,6 +133,8 @@ impl Parser {
     pub fn parse(&mut self) -> Result<Math, &'static str> {
         type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
         let to_parse: Vec<ParseFn> = vec![
+            Sum::parse,
+            Product::parse,
             Function::parse,
             Braces::parse,
             Fraction::parse,

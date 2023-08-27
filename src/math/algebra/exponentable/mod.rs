@@ -2,6 +2,7 @@ pub mod braces;
 pub mod function;
 pub mod variable;
 
+use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::math::Variable;

@@ -1,4 +1,5 @@
 use crate::math::algebra::braces::Braces;
+use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
@@ -45,6 +46,46 @@ impl Parsable for Braces {
             math: Box::new(Parser::new(&math).parse()?),
             exponent,
         }))
+    }
+
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+        lazy_static! {
+            static ref RE: Regex = Regex::new(r"(?<!_)\((.+)").unwrap_or_else(|e| {
+                panic!("Failed to compile regex for braces: {e}");
+            });
+        }
+
+        let mut len = 0;
+        let result = RE.captures(tex);
+        let captures = result
+            .expect("Error running regex")
+            .expect("No match found");
+        let math = Parser::extract_brace(captures.get(0).map_or("", |m| m.as_str()), '(', ')')?;
+        let exponent_str = tex.split_at(math.len() + 2).1;
+
+        len += math.len() + 2;
+
+        let exponent: Option<Box<Math>> = if !exponent_str.is_empty()
+            && exponent_str.starts_with('^')
+            && exponent_str.chars().nth(1) == Some('{')
+        {
+            let exp = Parser::extract_brace(&exponent_str[1..], '{', '}')?;
+            len += exp.len() + 3;
+
+            Some(Box::new(Parser::new(&exp).parse()?))
+        } else {
+            None
+        };
+
+        dbg!(tex.get(0..len), tex);
+
+        Ok((
+            len,
+            Math::Braces(Braces {
+                math: Box::new(Parser::new(&math).parse()?),
+                exponent,
+            }),
+        ))
     }
 
     fn on_begining(tex: String) -> Option<String> {

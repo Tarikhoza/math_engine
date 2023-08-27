@@ -6,12 +6,41 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::variable::Variable;
 use crate::math::descrete::Descrete;
 use crate::math::operator::Operator;
+use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenericsAsVariable};
 
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
+impl Simplifiable for Fraction {
+    fn simplify(&self) -> Math {
+        if self.denominator.to_tex() == "1" {
+            return *self.numerator.clone();
+        }
+        if self.denominator.to_tex() == self.numerator.to_tex() {
+            return Math::Variable(1.as_variable());
+        }
+        if let Math::Variable(num) = *self.clone().numerator {
+            if let Math::Variable(den) = *self.clone().denominator {
+                let lcd = num.lowest_common_denominator(&den);
+                if lcd.to_tex() != "1" {
+                    return Fraction {
+                        whole: self.whole.clone(),
+                        numerator: Box::new(num.div_self(&lcd)),
+                        denominator: Box::new(den.div_self(&lcd)),
+                    }
+                    .simplify();
+                }
+                if num.is_divisable(&den) {
+                    return num.div_self(&den);
+                }
+            }
+        }
+
+        return Math::Fraction(self.clone());
+    }
+}
 impl AlgebraOperatons for Fraction {
     fn add_self(&self, other: &Fraction) -> Math {
         if self.denominator.to_tex() == other.denominator.to_tex() {
@@ -96,33 +125,6 @@ impl AlgebraOperatons for Fraction {
 
     fn negative(&self) -> Math {
         self.mul(&Math::Variable((-1 as i32).as_variable()))
-    }
-
-    fn simplify(&self) -> Math {
-        if self.denominator.to_tex() == "1" {
-            return *self.numerator.clone();
-        }
-        if self.denominator.to_tex() == self.numerator.to_tex() {
-            return Math::Variable(1.as_variable());
-        }
-        if let Math::Variable(num) = *self.clone().numerator {
-            if let Math::Variable(den) = *self.clone().denominator {
-                let lcd = num.lowest_common_denominator(&den);
-                if lcd.to_tex() != "1" {
-                    return Fraction {
-                        whole: self.whole.clone(),
-                        numerator: Box::new(num.div_self(&lcd)),
-                        denominator: Box::new(den.div_self(&lcd)),
-                    }
-                    .simplify();
-                }
-                if num.is_divisable(&den) {
-                    return num.div_self(&den);
-                }
-            }
-        }
-
-        return Math::Fraction(self.clone());
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {

@@ -3,10 +3,17 @@ use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::Operations;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
+use crate::math::simplifiable::Simplifiable;
 use std::ops;
 
 use crate::math::Math;
 use rust_decimal_macros::dec;
+
+impl Simplifiable for Braces {
+    fn simplify(&self) -> Math {
+        self.apply_exponent()
+    }
+}
 
 impl Operations for Braces {
     fn add_self(&self, other: &Braces) -> Math {
@@ -36,10 +43,6 @@ impl Operations for Braces {
                 exponent: None,
             }),
         }
-    }
-
-    fn simplify(&self) -> Math {
-        self.apply_exponent()
     }
 
     fn add(&self, rhs: &Math) -> Math {
@@ -79,7 +82,7 @@ impl Operations for Braces {
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         let new_math = Box::new(self.math.substitute(suffix, math.clone()));
-        let new_exponent = self.get_exponent().substitute(suffix, math);
+        let new_exponent = self.get_exponent().substitute(suffix, math.clone());
 
         Math::Braces(Braces {
             math: new_math,
@@ -90,8 +93,9 @@ impl Operations for Braces {
     fn get_all_suffixes(&self) -> Vec<String> {
         let mut suf: Vec<String> = vec![];
         suf.extend_from_slice(&self.math.get_all_suffixes());
-        suf.extend_from_slice(&self.get_exponent().get_all_suffixes());
-
+        if let Some(exp) = self.exponent.clone() {
+            suf.extend_from_slice(&exp.get_all_suffixes());
+        }
         suf.sort();
         suf.dedup();
         suf

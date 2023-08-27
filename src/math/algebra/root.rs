@@ -6,6 +6,7 @@ use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::variable::Variable;
+use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
@@ -83,6 +84,7 @@ impl Root {
                         denominator: Box::new(exponent),
                         numerator: Box::new(self.get_base()),
                     }))),
+                    #[cfg(feature = "step-tracking")]
                     step: None,
                 })
             }

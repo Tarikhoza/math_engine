@@ -30,6 +30,23 @@ impl Polynom {
         Math::Polynom(self.clone())
     }
 
+    pub fn push(&mut self, math: Math, op: Operator) {
+        match math {
+            Math::Polynom(poly) => {
+                let mut operators = poly.operators.clone();
+                operators.push(op);
+                for (factor, operator) in poly.factors.iter().zip(operators) {
+                    self.factors.push(factor.clone());
+                    self.operators.push(operator.clone());
+                }
+            }
+            _ => {
+                self.operators.push(op);
+                self.factors.push(math);
+            }
+        }
+    }
+
     pub fn as_fraction(&self) -> Fraction {
         Fraction {
             whole: None,

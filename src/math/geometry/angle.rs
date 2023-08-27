@@ -1,5 +1,6 @@
 use crate::math::geometry::line::Line;
 use crate::math::geometry::point::Point;
+use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsableGenerics};
@@ -35,7 +36,6 @@ impl Angle {
                 points.1 .1.coordinates[i].to_tex()
             ));
         }
-        dbg!(exp.clone().join("/"));
         exp.join("/").parse_math().unwrap().simplify()
     }
 

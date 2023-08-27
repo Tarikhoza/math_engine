@@ -1,8 +1,10 @@
 pub mod algebra;
+pub mod calculus;
 pub mod descrete;
 pub mod geometry;
 pub mod linear_algebra;
 pub mod operator;
+pub mod simplifiable;
 pub mod trigonometry;
 
 use crate::math::algebra::absolute::Absolute;
@@ -18,9 +20,12 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
+use crate::math::calculus::product::Product;
+use crate::math::calculus::sum::Sum;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
+use crate::math::simplifiable::Simplifiable;
 use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 
 #[cfg(feature = "step-tracking")]
@@ -32,17 +37,22 @@ use std::ops;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Math {
+    //Algebra
     Variable(Variable),
     Polynom(Polynom),
     Fraction(Fraction),
     Braces(Braces),
     Function(Function),
     Absolute(Absolute),
-    Vector(Vector),
     Root(Root),
-    Matrix(Matrix),
     Infinity(Infinity),
     Undefined(Undefined),
+    //Linear Algebra
+    Matrix(Matrix),
+    Vector(Vector),
+    //Calculus
+    Sum(Sum),
+    Product(Product),
 }
 
 impl Default for Math {
@@ -172,6 +182,25 @@ fn non_zero(first: &Math, second: &Math) -> Math {
     second.clone()
 }
 
+impl Simplifiable for Math {
+    fn simplify(&self) -> Math {
+        //TODO recursive simplify until no change
+        match self {
+            Math::Variable(v) => v.simplify(),
+            Math::Polynom(p) => p.simplify(),
+            Math::Braces(b) => b.simplify(),
+            Math::Root(r) => Math::Root(r.clone()),
+            Math::Absolute(a) => a.simplify(),
+            Math::Fraction(a) => a.simplify(),
+            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Infinity(i) => Math::Infinity(i.clone()),
+            Math::Sum(s) => s.simplify(),
+            Math::Product(p) => p.simplify(),
+            _ => todo!(),
+        }
+    }
+}
+
 impl AlgebraOperations for Math {
     fn add_self(&self, other: &Math) -> Math {
         self.add(other)
@@ -242,21 +271,6 @@ impl AlgebraOperations for Math {
         }
     }
 
-    fn simplify(&self) -> Math {
-        //TODO recursive simplify until no change
-        match self {
-            Math::Variable(v) => v.simplify(),
-            Math::Polynom(p) => p.simplify(),
-            Math::Braces(b) => b.simplify(),
-            Math::Root(r) => Math::Root(r.clone()),
-            Math::Absolute(a) => a.simplify(),
-            Math::Fraction(a) => a.simplify(),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
-            Math::Infinity(i) => Math::Infinity(i.clone()),
-            _ => todo!(),
-        }
-    }
-
     fn negative(&self) -> Math {
         match self {
             Math::Polynom(p) => p.negative(),
@@ -275,11 +289,11 @@ impl AlgebraOperations for Math {
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         match self {
-            Math::Variable(v) => v.substitute(suffix, math),
-            Math::Polynom(p) => p.substitute(suffix, math),
-            Math::Braces(b) => b.substitute(suffix, math),
-            Math::Fraction(f) => f.substitute(suffix, math),
-            Math::Infinity(i) => Math::Infinity(i.clone()),
+            Math::Variable(v) => v.substitute(suffix, math).as_polynom().unpack(),
+            Math::Polynom(p) => p.substitute(suffix, math).as_polynom().unpack(),
+            Math::Braces(b) => b.substitute(suffix, math).as_polynom().unpack(),
+            Math::Fraction(f) => f.substitute(suffix, math).as_polynom().unpack(),
+            Math::Infinity(i) => Math::Infinity(i.clone()).as_polynom().unpack(),
             //Math::Root(r) => r.substitute(suffix, math),
             //Math::Absolute(a) => a.substitute(suffix, math),
             //Math::Vector(v) => v.substitute(suffix, math),

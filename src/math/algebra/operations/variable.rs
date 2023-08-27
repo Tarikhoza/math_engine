@@ -10,11 +10,18 @@ use crate::math::algebra::variable::Variable;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use crate::parser::{Parsable, Parser};
+use crate::math::simplifiable::Simplifiable;
+use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
 use crate::solver::step::{DetailedOperator, Step};
 
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
+
+impl Simplifiable for Variable {
+    fn simplify(&self) -> Math {
+        self.apply_exponent()
+    }
+}
 
 impl AlgebraOperatons for Variable {
     fn add_self(&self, other: &Variable) -> Math {
@@ -385,26 +392,15 @@ impl AlgebraOperatons for Variable {
         }
     }
 
-    fn simplify(&self) -> Math {
-        self.apply_exponent()
-    }
-
     fn substitute(&self, suffix: &str, math: Math) -> Math {
-        if self.suffix == suffix {
+        if self.get_all_suffixes().contains(&suffix.to_string()) {
             return Math::Polynom(Polynom {
                 factors: vec![
-                    Math::Variable(Variable {
-                        value: self.value,
-                        suffix: String::new(),
-                        exponent: None,
-                        #[cfg(feature = "step-tracking")]
-                        step: Step::step(
-                            Math::Variable(self.clone()),
-                            Some(math.clone()),
-                            Operator::Detail(DetailedOperator::MapTo),
-                            String::from("Map to"),
-                        ),
-                    }),
+                    self.value
+                        .to_f64()
+                        .expect("failed pasing dec as f64")
+                        .parse_math()
+                        .expect("failed parsing dec as math"),
                     Math::Braces(Braces {
                         math: Box::new(math.clone()),
                         exponent: Some(Box::new(self.get_exponent().substitute(suffix, math))),
@@ -419,9 +415,15 @@ impl AlgebraOperatons for Variable {
     }
 
     fn get_all_suffixes(&self) -> Vec<String> {
-        if self.suffix != *"" {
-            return vec![self.suffix.clone()];
+        let mut suffixes: Vec<String> = Vec::new();
+        dbg!("{}", self.to_tex());
+        if let Some(exp) = &self.exponent {
+            suffixes.extend(exp.get_all_suffixes())
         }
-        vec![]
+        if !self.suffix.is_empty() {
+            suffixes.push(self.suffix.clone());
+        }
+
+        suffixes
     }
 }

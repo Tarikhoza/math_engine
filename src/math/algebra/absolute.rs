@@ -1,3 +1,4 @@
+use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 
@@ -6,14 +7,18 @@ pub struct Absolute {
     pub math: Box<Math>,
 }
 
-impl Absolute {
-    pub fn simplify(&self) -> Math {
+impl Simplifiable for Absolute {
+    fn simplify(&self) -> Math {
         match self.math.simplify() {
             Math::Variable(v) => {
-                if v.value.is_sign_negative() {
-                    v.negative()
+                if v.is_integer() {
+                    if v.value.is_sign_negative() {
+                        v.negative()
+                    } else {
+                        Math::Variable(v)
+                    }
                 } else {
-                    Math::Variable(v)
+                    Math::Absolute(self.clone())
                 }
             }
             _ => todo!(),

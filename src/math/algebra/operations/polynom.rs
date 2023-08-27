@@ -5,12 +5,23 @@ use crate::math::algebra::operations::{
 use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::operator::Operator;
+use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
+impl Simplifiable for Polynom {
+    //  PEMDAS
+    fn simplify(&self) -> Math {
+        self.simplify_par()
+            .simplify_exp()
+            .simplify_mul_div()
+            .simplify_add_sub()
+            .morph_double_operator()
+    }
+}
 impl AlgebraOperations for Polynom {
     fn add_self(&self, other: &Polynom) -> Math {
         Math::Polynom(Polynom {
@@ -145,43 +156,25 @@ impl AlgebraOperations for Polynom {
         })
     }
 
-    //  PEMDAS
-    fn simplify(&self) -> Math {
-        self.simplify_par()
-            .simplify_exp()
-            .simplify_mul_div()
-            .simplify_add_sub()
-            .morph_double_operator()
-    }
-
     fn substitute(&self, suffix: &str, math: Math) -> Math {
-        let mut factors: Vec<Math> = vec![];
-        let operators = self.operators.clone();
-
-        for factor in self.factors.iter() {
-            factors.push(factor.substitute(suffix.clone(), math.clone()));
+        let mut new_poly = Polynom {
+            factors: vec![],
+            operators: vec![],
+        };
+        let mut operators = self.operators.clone();
+        operators.push(Operator::Algebra(AlgebraOperators::Addition));
+        for (factor, operator) in self.factors.iter().zip(&operators) {
+            dbg!(factor.to_tex());
+            dbg!(factor.substitute(suffix, math.clone()).to_tex());
+            new_poly.push(factor.substitute(suffix, math.clone()), operator.clone());
         }
-
-        #[cfg(feature = "step-tracking")]
-        let step = Step::step(
-            Math::Polynom(self.clone()),
-            Some(math),
-            Operator::Detail(crate::solver::step::DetailedOperator::MapTo),
-            String::from("Map every member to value"),
-        );
-        Math::Polynom(Polynom {
-            factors,
-            operators,
-            #[cfg(feature = "step-tracking")]
-            step,
-        })
+        new_poly.unpack()
     }
     fn get_all_suffixes(&self) -> Vec<String> {
         let mut suf: Vec<String> = vec![];
         for i in self.factors.iter() {
             suf.extend(i.get_all_suffixes())
         }
-        //TODO remove duplicates
         suf.sort();
         suf.dedup();
         suf

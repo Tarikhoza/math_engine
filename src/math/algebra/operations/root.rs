@@ -3,9 +3,16 @@ use crate::math::algebra::operations::{
 };
 use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::Operator;
+use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::math::Root;
 use crate::parser::{Parsable, ParsableGenerics};
+
+impl Simplifiable for Root {
+    fn simplify(&self) -> Math {
+        todo!();
+    }
+}
 
 impl AlgebraOperatons for Root {
     fn add_self(&self, other: &Root) -> Math {
@@ -16,12 +23,14 @@ impl AlgebraOperatons for Root {
                     Math::Root(self.clone()),
                 ],
                 operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
+                #[cfg(feature = "step-tracking")]
                 step: None,
             })
         } else {
             Math::Polynom(Polynom {
                 factors: vec![Math::Root(self.clone()), Math::Root(other.clone())],
                 operators: vec![Operator::Algebra(AlgebraOperator::Addition)],
+                #[cfg(feature = "step-tracking")]
                 step: None,
             })
         }
@@ -34,6 +43,7 @@ impl AlgebraOperatons for Root {
             Math::Polynom(Polynom {
                 factors: vec![Math::Root(self.clone()), Math::Root(other.clone())],
                 operators: vec![Operator::Algebra(AlgebraOperator::Subtraction)],
+                #[cfg(feature = "step-tracking")]
                 step: None,
             })
         }
@@ -46,6 +56,7 @@ impl AlgebraOperatons for Root {
                 math: Box::new(Math::Polynom(Polynom {
                     factors: vec![*self.math.clone(), *other.math.clone()],
                     operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
+                    #[cfg(feature = "step-tracking")]
                     step: None,
                 })),
                 base: self.base.clone(),
@@ -77,10 +88,6 @@ impl AlgebraOperatons for Root {
     }
 
     fn negative(&self) -> Math {
-        todo!();
-    }
-
-    fn simplify(&self) -> Math {
         todo!();
     }
 

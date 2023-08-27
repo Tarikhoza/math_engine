@@ -13,7 +13,9 @@ impl Parsable for Math {
             Math::Root(s) => s.to_tex(),
             Math::Function(s) => s.to_tex(),
             Math::Absolute(s) => s.to_tex(),
-            _ => todo!("Parsing is not implemented for this"),
+            Math::Sum(s) => s.to_tex(),
+            Math::Product(s) => s.to_tex(),
+            _ => todo!("Parsing is not implemented"),
         }
     }
 
