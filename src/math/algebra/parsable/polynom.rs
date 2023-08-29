@@ -28,6 +28,10 @@ impl Parsable for Polynom {
         Math::from_tex(tex)
     }
 
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+        Math::from_tex_len(tex)
+    }
+
     fn on_begining(_tex: String) -> Option<String> {
         None
     }

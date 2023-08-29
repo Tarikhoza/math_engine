@@ -38,11 +38,12 @@ pub trait Parsable {
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
         0.parse_math()
     }
-    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
-        let math = Self::from_tex(tex)?;
-        let len = math.to_tex().len();
-        Ok((len, math))
-    }
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str>;
+    //   {
+    //       let math = Self::from_tex(tex)?;
+    //       let len = math.to_tex().len();
+    //       Ok((len, math))
+    //   }
     fn parse(tex: &str) -> Option<(usize, Math)> {
         if let Some(t) = Self::on_begining(tex.replace(' ', "")) {
             let (len, math) = Self::from_tex_len(&t).unwrap_or((0, Math::default()));

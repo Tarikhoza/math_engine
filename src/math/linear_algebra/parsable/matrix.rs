@@ -21,4 +21,8 @@ impl Parsable for Matrix {
     fn on_begining(_tex: String) -> Option<String> {
         None
     }
+
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+        todo!()
+    }
 }

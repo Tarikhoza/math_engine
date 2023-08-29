@@ -14,7 +14,11 @@ impl Parsable for Infinity {
     }
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        Ok(Math::Variable(Variable::default()))
+        todo!()
+    }
+
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+        todo!()
     }
 
     fn on_begining(tex: String) -> Option<String> {

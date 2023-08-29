@@ -68,6 +68,63 @@ impl Parsable for Fraction {
         }))
     }
 
+    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+        lazy_static! {
+            static ref RE: Regex = Regex::new(r"(\d*)(\\frac)(.*)").unwrap_or_else(|e| {
+                panic!("Failed to compile regex for braces: {e}");
+            });
+        }
+
+        let mut len = 5;
+
+        let result = RE.captures(tex);
+        let captures = result
+            .expect("Error running regex")
+            .expect("No match found");
+
+        let whole_str = captures.get(1).map_or("", |m| m.as_str());
+        len += whole_str.len();
+
+        let whole: Option<Decimal> = if !whole_str.is_empty() {
+            Some(Decimal::from_str(whole_str).expect("failed converting string to decimal"))
+        } else {
+            None
+        };
+
+        let numerator =
+            Parser::extract_brace(captures.get(3).map_or("", |m| m.as_str()), '{', '}')?;
+
+        len += numerator.len() + 2;
+
+        let denominator = Parser::extract_brace(
+            captures
+                .get(3)
+                .map_or("", |m| m.as_str())
+                .get(numerator.len() + 2..)
+                .expect("falied to execute regex"),
+            '{',
+            '}',
+        )?;
+
+        len += denominator.len() + 2;
+
+        if numerator.is_empty() {
+            return Err("While parsing numerator was empty");
+        }
+        if denominator.is_empty() {
+            return Err("While parsing denominator was empty");
+        }
+
+        Ok((
+            len,
+            Math::Fraction(Fraction {
+                whole,
+                numerator: Box::new(numerator.parse_math()?),
+                denominator: Box::new(denominator.parse_math()?),
+            }),
+        ))
+    }
+
     fn on_begining(tex: String) -> Option<String> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"^(\\frac)(.*)").unwrap_or_else(|e| {
