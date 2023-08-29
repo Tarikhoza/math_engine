@@ -1,3 +1,4 @@
+pub mod factorial;
 pub mod operations;
 pub mod parsable;
 pub mod product;

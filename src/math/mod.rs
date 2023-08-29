@@ -20,6 +20,7 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::algebra::root::Root;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::algebra::variable::Variable;
+use crate::math::calculus::factorial::Factorial;
 use crate::math::calculus::product::Product;
 use crate::math::calculus::sum::Sum;
 use crate::math::linear_algebra::matrix::Matrix;
@@ -53,6 +54,7 @@ pub enum Math {
     //Calculus
     Sum(Sum),
     Product(Product),
+    Factorial(Factorial),
 }
 
 impl Default for Math {
@@ -221,6 +223,7 @@ impl Simplifiable for Math {
             Math::Infinity(i) => Math::Infinity(i.clone()),
             Math::Sum(s) => s.simplify(),
             Math::Product(p) => p.simplify(),
+            Math::Factorial(f) => f.simplify(),
             _ => todo!(),
         }
     }

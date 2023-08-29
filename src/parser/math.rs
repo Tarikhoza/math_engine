@@ -23,6 +23,7 @@ impl Parsable for Math {
             Math::Absolute(s) => s.to_tex(),
             Math::Sum(s) => s.to_tex(),
             Math::Product(s) => s.to_tex(),
+            Math::Factorial(s) => s.to_tex(),
             _ => todo!("Parsing is not implemented"),
         }
     }

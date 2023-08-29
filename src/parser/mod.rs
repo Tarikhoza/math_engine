@@ -2,22 +2,19 @@ pub mod generics;
 pub mod math;
 pub mod operator;
 
-use crate::math::algebra::absolute::Absolute;
-use crate::math::algebra::braces::Braces;
-use crate::math::algebra::fraction::Fraction;
-use crate::math::algebra::function::Function;
-use crate::math::algebra::polynom::Polynom;
-use crate::math::algebra::root::Root;
-use crate::math::algebra::variable::Variable;
-use crate::math::calculus::product::Product;
-use crate::math::calculus::sum::Sum;
-
-use crate::math::operator::Operator;
-use crate::math::Math;
-
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
+
+use crate::math::algebra::{
+    absolute::Absolute, braces::Braces, fraction::Fraction, function::Function, polynom::Polynom,
+    root::Root, variable::Variable,
+};
+
+use crate::math::calculus::{factorial::Factorial, product::Product, sum::Sum};
+
+use crate::math::operator::Operator;
+use crate::math::Math;
 
 use rust_decimal_macros::dec;
 
@@ -36,7 +33,8 @@ pub trait Parsable {
     }
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        0.parse_math()
+        let (len, math) = Self::from_tex_len(tex)?;
+        Ok(math)
     }
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str>;
 
@@ -150,6 +148,24 @@ impl Parser {
                 return Err("Error while parsing");
             }
             if op_search {
+                //Search for suffixes like factorial etc.
+                if Factorial::on_begining((*remaining_input).to_string()).is_some()
+                    && !factors.is_empty()
+                {
+                    let last = Math::Factorial(Factorial {
+                        math: Box::new(
+                            factors
+                                .last()
+                                .expect("couldn't get last member of factors")
+                                .clone(),
+                        ),
+                    });
+                    factors.pop();
+                    factors.push(last);
+                    self.pos += 1;
+                    continue 'outer;
+                }
+
                 if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
                     let o = Operator::from_tex(&tex)?;
                     self.pos += o.to_tex().len();
@@ -212,6 +228,24 @@ impl Parser {
                 return Err("Error while parsing");
             }
             if op_search {
+                //Search for suffixes like factorial etc.
+                if Factorial::on_begining((*remaining_input).to_string()).is_some()
+                    && !factors.is_empty()
+                {
+                    let last = Math::Factorial(Factorial {
+                        math: Box::new(
+                            factors
+                                .last()
+                                .expect("couldn't get last member of factors")
+                                .clone(),
+                        ),
+                    });
+                    factors.pop();
+                    factors.push(last);
+                    self.pos += 1;
+                    continue 'outer;
+                }
+
                 if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
                     let o = Operator::from_tex(&tex)?;
                     self.pos += o.to_tex().len();
@@ -242,6 +276,7 @@ impl Parser {
         if factors.len() <= operators.len() {
             return Err("To many operators");
         }
+
         Ok((
             self.pos,
             Polynom {
