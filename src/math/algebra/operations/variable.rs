@@ -416,14 +416,15 @@ impl AlgebraOperatons for Variable {
 
     fn get_all_suffixes(&self) -> Vec<String> {
         let mut suffixes: Vec<String> = Vec::new();
-        dbg!("{}", self.to_tex());
-        if let Some(exp) = &self.exponent {
-            suffixes.extend(exp.get_all_suffixes())
-        }
         if !self.suffix.is_empty() {
             suffixes.push(self.suffix.clone());
         }
-
+        if self.exponent.is_some() {
+            let exp = self.get_exponent();
+            if exp.to_tex() != "1" && exp.to_tex() != "1.0" {
+                suffixes.extend_from_slice(&exp.get_all_suffixes())
+            }
+        }
         suffixes
     }
 }

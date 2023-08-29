@@ -11,7 +11,9 @@ use rust_decimal_macros::dec;
 
 impl Simplifiable for Braces {
     fn simplify(&self) -> Math {
-        self.apply_exponent()
+        let mut new = self.clone();
+        new.exponent = Some(Box::new(self.get_exponent().simplify()));
+        new.apply_exponent()
     }
 }
 
