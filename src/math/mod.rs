@@ -136,6 +136,13 @@ impl Math {
         }
     }
 
+    pub fn in_brackets(&self) -> Math {
+        Math::Braces(Braces {
+            math: Box::new(self.clone()),
+            exponent: None,
+        })
+    }
+
     pub fn equal_bruteforce(&self, other: Math) -> bool {
         let mut suffixes = self.get_all_suffixes();
         suffixes.extend(other.get_all_suffixes());

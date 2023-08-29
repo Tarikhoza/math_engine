@@ -2,7 +2,7 @@ use crate::math::algebra::operations::Operator as AlgebraOperator;
 use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::Operator;
 use crate::math::Math;
-use crate::parser::Parsable;
+use crate::parser::{Parsable, Parser};
 
 impl Parsable for Polynom {
     fn to_tex(&self) -> String {
@@ -25,11 +25,11 @@ impl Parsable for Polynom {
     }
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        Math::from_tex(tex)
+        Parser::new(tex).parse()
     }
 
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
-        Math::from_tex_len(tex)
+        Parser::new(tex).parse_len()
     }
 
     fn on_begining(_tex: String) -> Option<String> {

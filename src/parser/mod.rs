@@ -39,11 +39,7 @@ pub trait Parsable {
         0.parse_math()
     }
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str>;
-    //   {
-    //       let math = Self::from_tex(tex)?;
-    //       let len = math.to_tex().len();
-    //       Ok((len, math))
-    //   }
+
     fn parse(tex: &str) -> Option<(usize, Math)> {
         if let Some(t) = Self::on_begining(tex.replace(' ', "")) {
             let (len, math) = Self::from_tex_len(&t).unwrap_or((0, Math::default()));
@@ -191,5 +187,70 @@ impl Parser {
             step: None,
         }
         .unpack())
+    }
+
+    pub fn parse_len(&mut self) -> Result<(usize, Math), &'static str> {
+        type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
+        let to_parse: Vec<ParseFn> = vec![
+            Sum::parse,
+            Product::parse,
+            Function::parse,
+            Braces::parse,
+            Fraction::parse,
+            Root::parse,
+            Absolute::parse,
+            Variable::parse,
+        ];
+
+        let mut factors: Vec<Math> = vec![];
+        let mut operators: Vec<Operator> = vec![];
+        let mut op_search: bool = false;
+
+        'outer: while self.pos < self.input.len() {
+            let remaining_input = self.input.get(self.pos..).unwrap_or("");
+            if remaining_input.is_empty() {
+                return Err("Error while parsing");
+            }
+            if op_search {
+                if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
+                    let o = Operator::from_tex(&tex)?;
+                    self.pos += o.to_tex().len();
+                    operators.push(o);
+                } else {
+                    operators.push(Operator::Algebra(AlgebraOperator::InvMulti));
+                }
+                op_search = false;
+            } else {
+                for parsing in to_parse.iter() {
+                    if let Some(pair) = parsing(remaining_input) {
+                        self.pos += pair.0;
+                        factors.push(pair.1);
+                        op_search = true;
+                        continue 'outer;
+                    }
+                }
+
+                println!(
+                    "Invalid character at position {}: '{}'",
+                    self.pos,
+                    self.input.chars().nth(self.pos).unwrap_or(' '),
+                );
+
+                return Err("While parsing found invalid character");
+            }
+        }
+        if factors.len() <= operators.len() {
+            return Err("To many operators");
+        }
+        Ok((
+            self.pos,
+            Polynom {
+                factors,
+                operators,
+                #[cfg(feature = "step-tracking")]
+                step: None,
+            }
+            .unpack(),
+        ))
     }
 }

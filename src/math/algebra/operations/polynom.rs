@@ -15,6 +15,7 @@ use crate::solver::step::{DetailedOperator, Step};
 impl Simplifiable for Polynom {
     //  PEMDAS
     fn simplify(&self) -> Math {
+        dbg!(self.to_tex());
         self.simplify_par()
             .simplify_exp()
             .simplify_mul_div()
@@ -186,6 +187,7 @@ impl AlgebraOperations for Polynom {
 impl Polynom {
     //  P - Parentheses first
     pub fn simplify_par(&self) -> Polynom {
+        dbg!(self.to_tex());
         if self.factors.len() <= 1 {
             return Polynom {
                 factors: self.factors.clone(),
@@ -198,7 +200,7 @@ impl Polynom {
         let mut operators: Vec<Operator> = vec![];
 
         for (i, factor) in self.factors.iter().take(self.factors.len()).enumerate() {
-            match factor {
+            match factor.as_polynom().unpack() {
                 Math::Braces(b) => {
                     factors.push(b.simplify());
                 }
@@ -223,7 +225,7 @@ impl Polynom {
     pub fn simplify_exp(&self) -> Polynom {
         let mut factors: Vec<Math> = vec![];
         for i in self.factors.iter() {
-            match i {
+            match i.as_polynom().unpack() {
                 Math::Braces(b) => factors.push(b.apply_exponent()),
                 Math::Variable(v) => factors.push(v.apply_exponent()),
                 s => factors.push(s.clone()),
@@ -239,6 +241,7 @@ impl Polynom {
 
     //  MD - Multiplication and Division (left-to-right)
     pub fn simplify_mul_div(&self) -> Polynom {
+        dbg!(self.to_tex());
         if self.factors.len() <= 1
             || (!self
                 .operators
@@ -319,12 +322,15 @@ impl Polynom {
     //  AS - Addition and Subtraction (left-to-right)
 
     pub fn simplify_add_sub(&self) -> Polynom {
+        dbg!(self.to_tex());
         let mut vec = self
             .to_vector()
             .to_based_matrix()
             .add_all()
             .as_polynom()
             .to_vector();
+
+        println!("{}", vec.to_tex());
 
         vec.factors.sort_by_key(|m| m.sorting_score());
         vec.add_all().as_polynom()

@@ -69,15 +69,13 @@ impl Parsable for Sum {
 
         len += up.len() + 3;
 
-        let (math_len, math) = Math::from_tex_len(
-            my_tex
-                .get(down.len() + 2 + up.len() + 3..)
-                .expect("failed extracting math from sum"),
-        )?;
-
-        dbg!(len);
         dbg!(tex.get(0..len));
+        let (math_len, math) =
+            Math::from_tex_len(tex.get(len..).expect("failed extracting math from sum"))?;
+
+        dbg!(tex.get(len..));
         len += math_len;
+
         dbg!(tex.get(0..len));
 
         Ok((

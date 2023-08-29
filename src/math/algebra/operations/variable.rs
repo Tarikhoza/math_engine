@@ -19,7 +19,11 @@ use rust_decimal_macros::dec;
 
 impl Simplifiable for Variable {
     fn simplify(&self) -> Math {
-        self.apply_exponent()
+        let mut new = self.clone();
+        if let Some(exp) = self.exponent.clone() {
+            new.exponent = Some(Box::new(exp.simplify()));
+        }
+        new.apply_exponent()
     }
 }
 
@@ -394,22 +398,28 @@ impl AlgebraOperatons for Variable {
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         if self.get_all_suffixes().contains(&suffix.to_string()) {
-            return Math::Polynom(Polynom {
-                factors: vec![
-                    self.value
-                        .to_f64()
-                        .expect("failed pasing dec as f64")
-                        .parse_math()
-                        .expect("failed parsing dec as math"),
-                    Math::Braces(Braces {
-                        math: Box::new(math.clone()),
-                        exponent: Some(Box::new(self.get_exponent().substitute(suffix, math))),
-                    }),
-                ],
-                operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            });
+            if self.suffix == suffix {
+                return Math::Polynom(Polynom {
+                    factors: vec![
+                        self.value
+                            .to_f64()
+                            .expect("failed pasing dec as f64")
+                            .parse_math()
+                            .expect("failed parsing dec as math"),
+                        Math::Braces(Braces {
+                            math: Box::new(math.clone()),
+                            exponent: Some(Box::new(self.get_exponent().substitute(suffix, math))),
+                        }),
+                    ],
+                    operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
+                    #[cfg(feature = "step-tracking")]
+                    step: None,
+                });
+            } else {
+                let mut ret = self.clone();
+                ret.exponent = Some(Box::new(self.get_exponent().substitute(suffix, math)));
+                return Math::Variable(ret);
+            }
         }
         Math::Variable(self.clone())
     }

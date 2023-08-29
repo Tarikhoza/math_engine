@@ -1,3 +1,5 @@
+use std::ops::AddAssign;
+
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::operations::{Operations, Operator as AlgebraOperator};
 use crate::math::algebra::polynom::Polynom;
@@ -17,22 +19,28 @@ impl Simplifiable for Sum {
         );
         let mut factors: Vec<Math> = vec![];
 
+        let mut new_poly: Polynom = Polynom {
+            factors: Vec::new(),
+            operators: Vec::new(),
+        };
+
         while (n.to_tex() != end.to_tex()) {
-            dbg!(&self.math.to_tex(), &n.to_tex());
-            dbg!(self.math.substitute(&self.iter_suffix, n.clone()).to_tex());
-            factors.push(self.math.substitute(&self.iter_suffix, n.clone()));
+            dbg!(self.math.to_tex());
+            let i_n = self.math.substitute(&self.iter_suffix, n.clone());
+            dbg!(i_n.to_tex());
+            if new_poly.factors.is_empty() {
+                new_poly.factors.push(i_n.in_brackets());
+            } else {
+                new_poly.push(
+                    i_n.in_brackets(),
+                    Operator::Algebra(AlgebraOperator::Addition),
+                );
+            }
             n = n
                 .add(&1_i64.parse_math().expect("failed parsing 1 as math"))
                 .simplify();
         }
 
-        let operators: Vec<Operator> =
-            vec![Operator::Algebra(AlgebraOperator::Addition); factors.len()];
-        Math::Polynom(Polynom {
-            factors,
-            operators,
-            #[cfg(feature = "step-tracking")]
-            step: None,
-        })
+        new_poly.unpack()
     }
 }

@@ -42,9 +42,7 @@ impl Parsable for Math {
             x if Infinity::on_begining(x.clone()).is_some() => Infinity::from_tex_len(tex),
             x if Fraction::on_begining(x.clone()).is_some() => Fraction::from_tex_len(tex),
             x if Braces::on_begining(x.clone()).is_some() => Braces::from_tex_len(tex),
-            x if Variable::on_begining(x.clone()).is_some() => Variable::from_tex_len(tex),
-            x if Polynom::on_begining(x.clone()).is_some() => Polynom::from_tex_len(tex),
-            _ => todo!(),
+            _ => Polynom::from_tex_len(tex),
         }
     }
 
