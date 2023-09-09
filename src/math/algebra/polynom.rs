@@ -7,7 +7,7 @@ use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use crate::parser::{Parsable, ParsableGenerics};
+use crate::parser::{Parsable, ParsablePrimitive};
 
 use rust_decimal_macros::dec;
 

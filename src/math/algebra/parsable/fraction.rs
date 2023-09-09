@@ -1,6 +1,6 @@
 use crate::math::algebra::fraction::Fraction;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, Parser};
 
 use fancy_regex::Regex;
 use rust_decimal::prelude::*;

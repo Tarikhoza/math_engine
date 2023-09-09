@@ -11,7 +11,7 @@ use crate::math::operator::Operator;
 use crate::math::Math;
 
 use crate::math::simplifiable::Simplifiable;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 use crate::solver::step::{DetailedOperator, Step};
 
 use rust_decimal::prelude::*;

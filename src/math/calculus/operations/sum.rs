@@ -7,7 +7,7 @@ use crate::math::calculus::sum::Sum;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Sum {
     fn simplify(&self) -> Math {

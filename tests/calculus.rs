@@ -1,5 +1,5 @@
 use math_engine::math::simplifiable::Simplifiable;
-use math_engine::parser::{Parsable, ParsableGenerics};
+use math_engine::parser::{Parsable, ParsablePrimitive};
 
 macro_rules! parser_eq {
     ($input:expr, $expected:expr) => {

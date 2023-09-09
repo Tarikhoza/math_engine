@@ -8,7 +8,7 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};

@@ -1,6 +1,6 @@
 use crate::math::calculus::sum::Sum;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, Parser};
 //\sum_{n=1}^{\infty} 2^{-n}
 
 impl Parsable for Sum {

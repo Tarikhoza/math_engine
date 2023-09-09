@@ -8,7 +8,7 @@ use crate::math::descrete::Descrete;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenericsAsVariable};
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;

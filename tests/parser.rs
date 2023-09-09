@@ -1,4 +1,4 @@
-use math_engine::parser::{Parsable, ParsableGenerics};
+use math_engine::parser::{Parsable, ParsablePrimitive};
 
 macro_rules! should_error {
     ($input:expr ) => {

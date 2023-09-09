@@ -1,6 +1,6 @@
-pub mod generics;
 pub mod math;
 pub mod operator;
+pub mod primitive;
 
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
@@ -47,11 +47,11 @@ pub trait Parsable {
     }
 }
 
-pub trait ParsableGenerics {
+pub trait ParsablePrimitive {
     fn parse_math(&self) -> Result<Math, &'static str>;
 }
 
-pub trait ParsableGenericsAsVariable {
+pub trait ParsablePrimitiveAsVariable {
     fn parse_math(&self) -> Result<Math, &'static str>;
     fn as_variable(&self) -> Variable;
 }

@@ -1,6 +1,6 @@
 use crate::math::algebra::variable::Variable;
 use crate::math::descrete::Descrete;
-use crate::parser::ParsableGenericsAsVariable;
+use crate::parser::ParsablePrimitiveAsVariable;
 
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;

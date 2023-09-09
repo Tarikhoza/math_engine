@@ -4,7 +4,7 @@ use crate::math::calculus::product::Product;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Product {
     fn simplify(&self) -> Math {

@@ -1,6 +1,6 @@
 use crate::math::calculus::product::Product;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, Parser};
 
 impl Parsable for Product {
     fn to_tex(&self) -> String {

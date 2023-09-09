@@ -1,22 +1,22 @@
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
-use crate::parser::{ParsableGenerics, ParsableGenericsAsVariable, Parser};
+use crate::parser::{ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 
 use rust_decimal::Decimal;
 
-impl ParsableGenerics for String {
+impl ParsablePrimitive for String {
     fn parse_math(&self) -> Result<Math, &'static str> {
         Parser::new(self).parse()
     }
 }
 
-impl ParsableGenerics for str {
+impl ParsablePrimitive for str {
     fn parse_math(&self) -> Result<Math, &'static str> {
         Parser::new(self).parse()
     }
 }
 
-impl ParsableGenericsAsVariable for usize {
+impl ParsablePrimitiveAsVariable for usize {
     fn parse_math(&self) -> Result<Math, &'static str> {
         self.to_string().parse_math()
     }
@@ -29,7 +29,7 @@ impl ParsableGenericsAsVariable for usize {
     }
 }
 
-impl ParsableGenericsAsVariable for i64 {
+impl ParsablePrimitiveAsVariable for i64 {
     fn parse_math(&self) -> Result<Math, &'static str> {
         self.to_string().parse_math()
     }
@@ -42,7 +42,7 @@ impl ParsableGenericsAsVariable for i64 {
     }
 }
 
-impl ParsableGenericsAsVariable for f32 {
+impl ParsablePrimitiveAsVariable for f32 {
     fn parse_math(&self) -> Result<Math, &'static str> {
         self.to_string().parse_math()
     }
@@ -55,7 +55,7 @@ impl ParsableGenericsAsVariable for f32 {
     }
 }
 
-impl ParsableGenericsAsVariable for i32 {
+impl ParsablePrimitiveAsVariable for i32 {
     fn parse_math(&self) -> Result<Math, &'static str> {
         self.to_string().parse_math()
     }
@@ -68,7 +68,7 @@ impl ParsableGenericsAsVariable for i32 {
     }
 }
 
-impl ParsableGenericsAsVariable for f64 {
+impl ParsablePrimitiveAsVariable for f64 {
     fn parse_math(&self) -> Result<Math, &'static str> {
         self.to_string().parse_math()
     }
@@ -81,7 +81,7 @@ impl ParsableGenericsAsVariable for f64 {
     }
 }
 
-impl ParsableGenericsAsVariable for Decimal {
+impl ParsablePrimitiveAsVariable for Decimal {
     fn parse_math(&self) -> Result<Math, &'static str> {
         self.to_string().parse_math()
     }

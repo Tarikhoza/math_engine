@@ -9,7 +9,7 @@ use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 //use crate::variable::Variable;
 //use std::ops;
 

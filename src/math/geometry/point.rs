@@ -1,7 +1,7 @@
 use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 #[derive(Debug, Clone, PartialEq)]
 pub struct Point {
     pub coordinates: Vec<Math>,

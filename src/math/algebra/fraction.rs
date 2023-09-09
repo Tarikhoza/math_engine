@@ -2,7 +2,7 @@ use crate::math::algebra::operations::Operations;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;

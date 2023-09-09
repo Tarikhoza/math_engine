@@ -1,6 +1,6 @@
 use crate::math::calculus::factorial::Factorial;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, Parser};
 use fancy_regex::Regex;
 
 impl Parsable for Factorial {

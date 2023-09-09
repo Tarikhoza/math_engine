@@ -6,7 +6,7 @@ use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
 use crate::math::Variable;
-use crate::parser::{Parsable, ParsableGenerics};
+use crate::parser::{Parsable, ParsablePrimitive};
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 

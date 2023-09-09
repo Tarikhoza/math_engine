@@ -1,7 +1,7 @@
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::function::Function;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 
 use fancy_regex::Regex;
 

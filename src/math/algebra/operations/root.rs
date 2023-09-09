@@ -6,7 +6,7 @@ use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::math::Root;
-use crate::parser::{Parsable, ParsableGenerics};
+use crate::parser::{Parsable, ParsablePrimitive};
 
 impl Simplifiable for Root {
     fn simplify(&self) -> Math {

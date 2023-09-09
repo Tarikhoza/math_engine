@@ -3,7 +3,7 @@ use crate::math::geometry::point::Point;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics};
+use crate::parser::{Parsable, ParsablePrimitive};
 
 pub struct Angle {
     pub line_a: Line,

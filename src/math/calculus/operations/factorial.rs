@@ -4,7 +4,7 @@ use crate::math::calculus::factorial::Factorial;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Factorial {
     fn simplify(&self) -> Math {

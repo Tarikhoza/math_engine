@@ -27,7 +27,7 @@ use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
-use crate::parser::{Parsable, ParsableGenerics, ParsableGenericsAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
