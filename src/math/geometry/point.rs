@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
@@ -43,9 +44,7 @@ impl Point {
     pub fn normalise_system(&self, other: &Point) -> Point {
         let mut normalised = (*self).clone();
         while (normalised.coordinates.len() < other.coordinates.len()) {
-            normalised
-                .coordinates
-                .push(0.parse_math().expect("failed parsing math"));
+            normalised.coordinates.push(0_i64.as_variable().as_math());
         }
         normalised
     }

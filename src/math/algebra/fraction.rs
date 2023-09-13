@@ -32,12 +32,7 @@ impl Fraction {
     }
 
     pub fn split_whole(&self) -> (Variable, Fraction) {
-        let whole: Variable = self
-            .whole
-            .unwrap_or(dec!(0))
-            .to_f64()
-            .expect("error converting whole to number")
-            .as_variable();
+        let whole: Variable = self.whole.unwrap_or(dec!(0)).as_variable();
         let mut fraction = self.clone();
 
         fraction.whole = None;

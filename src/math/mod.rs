@@ -7,6 +7,7 @@ pub mod operator;
 pub mod simplifiable;
 pub mod trigonometry;
 
+use crate::castable::Castable;
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
@@ -160,18 +161,10 @@ impl Math {
             //       let mut substitutions: Vec<String> = vec![];
 
             for s in 0..suffixes.len() {
-                new_a = new_a.substitute(
-                    suffixes[s].as_ref(),
-                    (s as i64 + i)
-                        .parse_math()
-                        .expect("failed parsing math for equal_bruteforce"),
-                );
-                new_b = new_b.substitute(
-                    suffixes[s].as_ref(),
-                    (s as i64 + i)
-                        .parse_math()
-                        .expect("failed parsing math for equal_bruteforce"),
-                );
+                new_a =
+                    new_a.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
+                new_b =
+                    new_b.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
                 //            substitutions.push(format!("{} = {}", suffixes[s], s as i64 + i));
             }
             //TODO remove reparsing

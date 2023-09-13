@@ -52,7 +52,6 @@ pub trait ParsablePrimitive {
 }
 
 pub trait ParsablePrimitiveAsVariable {
-    fn parse_math(&self) -> Result<Math, &'static str>;
     fn as_variable(&self) -> Variable;
 }
 

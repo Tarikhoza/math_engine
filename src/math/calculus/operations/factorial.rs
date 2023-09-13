@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::algebra::operations::{Operations, Operator as AlgebraOperator};
 use crate::math::algebra::polynom::Polynom;
 use crate::math::calculus::factorial::Factorial;
@@ -8,12 +9,8 @@ use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Factorial {
     fn simplify(&self) -> Math {
-        let mut n = 1_i64.parse_math().expect("failed parsing 1 as math");
-        let end = self.math.clone().add(
-            &1_i64
-                .parse_math()
-                .expect("failed parsing 1 as math for end"),
-        );
+        let mut n = 1_i64.as_variable().as_math();
+        let end = self.math.clone().add(&1_i64.as_variable().as_math());
         let mut factors: Vec<Math> = vec![];
 
         let mut new_poly: Polynom = Polynom {
@@ -30,9 +27,7 @@ impl Simplifiable for Factorial {
                     Operator::Algebra(AlgebraOperator::Multiplication),
                 );
             }
-            n = n
-                .add(&1_i64.parse_math().expect("failed parsing 1 as math"))
-                .simplify();
+            n = n.add(&1_i64.as_variable().as_math()).simplify();
         }
 
         new_poly.unpack()

@@ -10,6 +10,7 @@ use crate::math::algebra::variable::Variable;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
+use crate::castable::Castable;
 use crate::math::simplifiable::Simplifiable;
 use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 use crate::solver::step::{DetailedOperator, Step};
@@ -401,11 +402,7 @@ impl AlgebraOperatons for Variable {
             if self.suffix == suffix {
                 return Math::Polynom(Polynom {
                     factors: vec![
-                        self.value
-                            .to_f64()
-                            .expect("failed pasing dec as f64")
-                            .parse_math()
-                            .expect("failed parsing dec as math"),
+                        self.value.as_variable().as_math(),
                         Math::Braces(Braces {
                             math: Box::new(math.clone()),
                             exponent: Some(Box::new(self.get_exponent().substitute(suffix, math))),

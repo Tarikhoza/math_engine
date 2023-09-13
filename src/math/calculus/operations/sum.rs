@@ -1,5 +1,6 @@
 use std::ops::AddAssign;
 
+use crate::castable::Castable;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::operations::{Operations, Operator as AlgebraOperator};
 use crate::math::algebra::polynom::Polynom;
@@ -12,11 +13,7 @@ use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 impl Simplifiable for Sum {
     fn simplify(&self) -> Math {
         let mut n = *self.begining.clone();
-        let end = self.end.clone().add(
-            &1_i64
-                .parse_math()
-                .expect("failed parsing 1 as math for end"),
-        );
+        let end = self.end.clone().add(&1_i64.as_variable().as_math());
         let mut factors: Vec<Math> = vec![];
 
         let mut new_poly: Polynom = Polynom {
@@ -36,9 +33,7 @@ impl Simplifiable for Sum {
                     Operator::Algebra(AlgebraOperator::Addition),
                 );
             }
-            n = n
-                .add(&1_i64.parse_math().expect("failed parsing 1 as math"))
-                .simplify();
+            n = n.add(&1_i64.as_variable().as_math()).simplify();
         }
 
         new_poly.unpack()

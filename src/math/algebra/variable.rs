@@ -8,8 +8,8 @@ use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
+use crate::castable::Castable;
 use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
-
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
@@ -47,7 +47,7 @@ impl Variable {
         Fraction {
             whole: None,
             numerator: Box::new(Math::Variable(self.clone())),
-            denominator: Box::new(1.parse_math().expect("error parsing 1 as math")),
+            denominator: Box::new(1.as_variable().as_math()),
         }
     }
 
