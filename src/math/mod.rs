@@ -146,46 +146,46 @@ impl Math {
         })
     }
 
-    pub fn equal_bruteforce(&self, other: Math) -> bool {
-        let mut suffixes = self.get_all_suffixes();
-        suffixes.extend(other.get_all_suffixes());
-        suffixes.sort();
-        suffixes.dedup();
-        let mut rounds = 0;
-        let mut eq = 0;
-        for i in (-10000..10000).step_by(30) {
-            rounds += 1;
-            let mut new_a = self.clone();
-            let mut new_b = other.clone();
-
-            //       let mut substitutions: Vec<String> = vec![];
-
-            for s in 0..suffixes.len() {
-                new_a =
-                    new_a.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
-                new_b =
-                    new_b.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
-                //            substitutions.push(format!("{} = {}", suffixes[s], s as i64 + i));
-            }
-            //TODO remove reparsing
-            if new_a
-                .to_tex()
-                .parse_math()
-                .expect("failed parsing math for equal_bruteforce")
-                .simplify()
-                .to_tex()
-                == new_b
-                    .to_tex()
-                    .parse_math()
-                    .expect("failed parsing math for equal_bruteforce")
-                    .simplify()
-                    .to_tex()
-            {
-                eq += 1;
-            }
-        }
-        eq == rounds
-    }
+    //   pub fn equal_bruteforce(&self, other: Math) -> bool {
+    //       let mut suffixes = self.get_all_suffixes();
+    //       suffixes.extend(other.get_all_suffixes());
+    //       suffixes.sort();
+    //       suffixes.dedup();
+    //       let mut rounds = 0;
+    //       let mut eq = 0;
+    //       for i in (-10000..10000).step_by(30) {
+    //           rounds += 1;
+    //           let mut new_a = self.clone();
+    //           let mut new_b = other.clone();
+    //
+    //           //       let mut substitutions: Vec<String> = vec![];
+    //
+    //           for s in 0..suffixes.len() {
+    //               new_a =
+    //                   new_a.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
+    //               new_b =
+    //                   new_b.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
+    //               //            substitutions.push(format!("{} = {}", suffixes[s], s as i64 + i));
+    //           }
+    //           //TODO remove reparsing
+    //           if new_a
+    //               .to_tex()
+    //               .parse_math()
+    //               .expect("failed parsing math for equal_bruteforce")
+    //               .simplify()
+    //               .to_tex()
+    //               == new_b
+    //                   .to_tex()
+    //                   .parse_math()
+    //                   .expect("failed parsing math for equal_bruteforce")
+    //                   .simplify()
+    //                   .to_tex()
+    //           {
+    //               eq += 1;
+    //           }
+    //       }
+    //       eq == rounds
+    //   }
 }
 
 fn or_zero(first: &Math, second: &Math) -> bool {

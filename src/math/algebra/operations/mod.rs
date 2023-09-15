@@ -62,7 +62,7 @@ impl Operator {
             x if x == "-" => Ok(Operator::Subtraction),
             x if x == "*" => Ok(Operator::Multiplication),
             x if x == "/" => Ok(Operator::Division),
-            x if x == "" => Ok(Operator::InvMulti),
+            x if x.is_empty() => Ok(Operator::InvMulti),
             x if x == "\\pm" => Ok(Operator::AddSub),
             _ => Err("Conversion from string to operator went wrong"),
         }

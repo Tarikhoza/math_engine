@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperatons, Operator as AlgebraOperator,
 };
@@ -6,7 +7,7 @@ use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::math::Root;
-use crate::parser::{Parsable, ParsablePrimitive};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Root {
     fn simplify(&self) -> Math {
@@ -18,10 +19,7 @@ impl AlgebraOperatons for Root {
     fn add_self(&self, other: &Root) -> Math {
         if self.to_tex() == other.to_tex() {
             Math::Polynom(Polynom {
-                factors: vec![
-                    "2".parse_math().expect("error parsing 2 as math"),
-                    Math::Root(self.clone()),
-                ],
+                factors: vec![2_i64.as_variable().as_math(), Math::Root(self.clone())],
                 operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
                 #[cfg(feature = "step-tracking")]
                 step: None,
@@ -38,7 +36,7 @@ impl AlgebraOperatons for Root {
 
     fn sub_self(&self, other: &Root) -> Math {
         if self.to_tex() == other.to_tex() {
-            "0".parse_math().expect("error parsing 0 as math")
+            0_i64.as_variable().as_math()
         } else {
             Math::Polynom(Polynom {
                 factors: vec![Math::Root(self.clone()), Math::Root(other.clone())],

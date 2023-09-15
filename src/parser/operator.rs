@@ -14,9 +14,7 @@ impl Operator {
     }
 
     pub fn from_tex(tex: &str) -> Result<Operator, &'static str> {
-        Ok(Operator::Algebra(
-            AlgebraOperator::from_tex(tex).expect("failed creating operator from tex"),
-        ))
+        Ok(Operator::Algebra(AlgebraOperator::from_tex(tex)?))
     }
 
     pub fn on_begining(tex: String) -> Option<String> {

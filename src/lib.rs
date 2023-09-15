@@ -1,6 +1,7 @@
 #![warn(
     clippy::all,
     clippy::unwrap_used,
+    clippy::expect_used,
     clippy::style,
     clippy::panicking_unwrap
 )]

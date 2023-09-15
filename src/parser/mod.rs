@@ -2,6 +2,7 @@ pub mod math;
 pub mod operator;
 pub mod primitive;
 
+use crate::castable::Castable;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
@@ -77,10 +78,11 @@ impl Parser {
                 _ => {}
             }
             if open == close {
-                return Ok(tex
-                    .get(1..pos)
-                    .expect("while extracting brace something unexpected happened")
-                    .to_string());
+                return if let Some(inner) = tex.get(1..pos) {
+                    Ok(inner.to_string())
+                } else {
+                    Err("extract_between: could not extract inner")
+                };
             }
             pos += 1;
         }
@@ -88,120 +90,40 @@ impl Parser {
     }
 
     pub fn extract_between(tex: &str, open_s: &str, close_s: &str) -> Result<String, &'static str> {
-        //throw compile time error if open_s and close_s are the same
-        if open_s == close_s {
-            panic!("open_s and close_s are the same");
-        }
-
         let mut pos = open_s.len();
         let mut close = 0;
         let mut open = 1;
         if tex.starts_with(open_s) {
             return Ok(String::new());
         }
+
         while pos < tex.len() {
-            match tex
-                .get(pos..)
-                .expect("while extracting brace something unexpected happened")
-            {
-                x if x.starts_with(open_s) => {
-                    open += 1;
-                    pos += open_s.len()
+            if let Some(current_tex) = tex.get(pos..) {
+                match current_tex {
+                    x if x.starts_with(open_s) => {
+                        open += 1;
+                        pos += open_s.len()
+                    }
+                    x if x.starts_with(close_s) => {
+                        close += 1;
+                        pos += close_s.len()
+                    }
+                    _ => pos += 1,
                 }
-                x if x.starts_with(close_s) => {
-                    close += 1;
-                    pos += close_s.len()
-                }
-                _ => pos += 1,
             }
             if open == close {
-                return Ok(tex
-                    .get(open_s.len()..(pos - close_s.len()))
-                    .expect("while extracting between something unexpected happened")
-                    .to_string());
+                return if let Some(inner) = tex.get(open_s.len()..(pos - close_s.len())) {
+                    Ok(inner.to_string())
+                } else {
+                    Err("Could not extract inner")
+                };
             }
         }
         Err("Brace never closed")
     }
 
     pub fn parse(&mut self) -> Result<Math, &'static str> {
-        type ParseFn = fn(tex: &str) -> Option<(usize, Math)>;
-        let to_parse: Vec<ParseFn> = vec![
-            Sum::parse,
-            Product::parse,
-            Function::parse,
-            Braces::parse,
-            Fraction::parse,
-            Root::parse,
-            Absolute::parse,
-            Variable::parse,
-        ];
-
-        let mut factors: Vec<Math> = vec![];
-        let mut operators: Vec<Operator> = vec![];
-        let mut op_search: bool = false;
-
-        'outer: while self.pos < self.input.len() {
-            let remaining_input = self.input.get(self.pos..).unwrap_or("");
-            if remaining_input.is_empty() {
-                return Err("Error while parsing");
-            }
-            if op_search {
-                //Search for suffixes like factorial etc.
-                if Factorial::on_begining((*remaining_input).to_string()).is_some()
-                    && !factors.is_empty()
-                {
-                    let last = Math::Factorial(Factorial {
-                        math: Box::new(
-                            factors
-                                .last()
-                                .expect("couldn't get last member of factors")
-                                .clone(),
-                        ),
-                    });
-                    factors.pop();
-                    factors.push(last);
-                    self.pos += 1;
-                    continue 'outer;
-                }
-
-                if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
-                    let o = Operator::from_tex(&tex)?;
-                    self.pos += o.to_tex().len();
-                    operators.push(o);
-                } else {
-                    operators.push(Operator::Algebra(AlgebraOperator::InvMulti));
-                }
-                op_search = false;
-            } else {
-                for parsing in to_parse.iter() {
-                    if let Some(pair) = parsing(remaining_input) {
-                        self.pos += pair.0;
-                        factors.push(pair.1);
-                        op_search = true;
-                        continue 'outer;
-                    }
-                }
-
-                println!(
-                    "Invalid character at position {}: '{}'",
-                    self.pos,
-                    self.input.chars().nth(self.pos).unwrap_or(' '),
-                );
-
-                return Err("While parsing found invalid character");
-            }
-        }
-        if factors.len() <= operators.len() {
-            return Err("To many operators");
-        }
-        Ok(Polynom {
-            factors,
-            operators,
-            #[cfg(feature = "step-tracking")]
-            step: None,
-        }
-        .unpack())
+        Ok(Self::parse_len(self)?.1)
     }
 
     pub fn parse_len(&mut self) -> Result<(usize, Math), &'static str> {
@@ -231,16 +153,16 @@ impl Parser {
                 if Factorial::on_begining((*remaining_input).to_string()).is_some()
                     && !factors.is_empty()
                 {
-                    let last = Math::Factorial(Factorial {
-                        math: Box::new(
-                            factors
-                                .last()
-                                .expect("couldn't get last member of factors")
-                                .clone(),
-                        ),
-                    });
-                    factors.pop();
-                    factors.push(last);
+                    if let Some(last) = factors.pop() {
+                        factors.push(
+                            Factorial {
+                                math: Box::new(last),
+                            }
+                            .as_math(),
+                        )
+                    } else {
+                        return Err("Error while parsing factorial without Math in front");
+                    }
                     self.pos += 1;
                     continue 'outer;
                 }

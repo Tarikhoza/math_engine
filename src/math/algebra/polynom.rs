@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
@@ -7,7 +8,7 @@ use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use crate::parser::{Parsable, ParsablePrimitive};
+use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
 use rust_decimal_macros::dec;
 
@@ -51,23 +52,24 @@ impl Polynom {
         Fraction {
             whole: None,
             numerator: Box::new(Math::Polynom(self.clone())),
-            denominator: Box::new("1".parse_math().expect("error parsing 1 as math")),
+            denominator: Box::new(1_i64.as_variable().as_math()),
         }
     }
 
     pub fn morph_double_operator(&self) -> Math {
         //TODO this is a hack
-        let ret = self
-            .to_tex()
-            .replace("++", "+")
-            .replace("--", "+")
-            .replace("+-", "-")
-            .replace("-+", "-");
-        if ret != self.to_tex() {
-            return ret
-                .parse_math()
-                .expect("an error happened while morphing double operators");
-        }
+        todo!("morph double operator");
+        //       let ret = self
+        //           .to_tex()
+        //           .replace("++", "+")
+        //           .replace("--", "+")
+        //           .replace("+-", "-")
+        //           .replace("-+", "-");
+        //       if ret != self.to_tex() {
+        //           return ret
+        //               .parse_math()
+        //               .expect("an error happened while morphing double operators");
+        //       }
         self.unpack()
     }
 

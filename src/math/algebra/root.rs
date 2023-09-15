@@ -2,6 +2,7 @@ use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 use std::default;
 
+use crate::castable::Castable;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
@@ -41,17 +42,17 @@ impl Root {
         //    }
         //    last_result = result.clone();
         //}
-        for i in 1..100 {
-            result = math.div(&guess);
-            guess = format!("({}+{})/{}", guess.to_tex(), result.to_tex(), 2)
-                .parse_math()
-                .expect("failed parsing guess as math")
-                .simplify();
-            if last_result.to_tex() == result.to_tex() {
-                break;
-            }
-            last_result = result.clone();
-        }
+        //       for i in 1..100 {
+        //           result = math.div(&guess);
+        //           guess = format!("({}+{})/{}", guess.to_tex(), result.to_tex(), 2)
+        //               .parse_math()
+        //               .expect("failed parsing guess as math")
+        //               .simplify();
+        //           if last_result.to_tex() == result.to_tex() {
+        //               break;
+        //           }
+        //           last_result = result.clone();
+        //       }
         result
     }
 
@@ -71,7 +72,7 @@ impl Root {
             Math::Variable(v) => v.get_exponent(),
             Math::Braces(b) => b.get_exponent(),
             Math::Function(f) => f.get_exponent(),
-            _ => "1".parse_math().expect("failed parsing 1 as math"),
+            _ => 1_i64.as_variable().as_math(),
         };
 
         match *self.math.clone() {
@@ -106,10 +107,10 @@ impl Root {
     }
 
     pub fn get_base(&self) -> Math {
-        if self.base.is_none() {
-            "2".parse_math().expect("parsing 2 as math failed")
+        if let Some(base) = self.base.clone() {
+            *base
         } else {
-            *self.base.clone().expect("base is none")
+            2_i64.as_variable().as_math()
         }
     }
 }

@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperators,
@@ -20,7 +21,8 @@ impl Simplifiable for Polynom {
             .simplify_exp()
             .simplify_mul_div()
             .simplify_add_sub()
-            .morph_double_operator()
+            .as_math()
+        //            .morph_double_operator()
     }
 }
 impl AlgebraOperations for Polynom {
