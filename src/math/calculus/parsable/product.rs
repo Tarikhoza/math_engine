@@ -13,93 +13,59 @@ impl Parsable for Product {
         )
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        let my_tex = tex
-            .strip_prefix("\\prod_")
-            .expect("failed to strip prefix from prod");
-
-        let down = Parser::extract_brace(my_tex, '{', '}')?;
-
-        let up = Parser::extract_brace(
-            my_tex
-                .get(down.len() + 3..)
-                .expect("failed extracting upper from prod"),
-            '{',
-            '}',
-        )?;
-
-        let math = my_tex
-            .get(down.len() + 3 + up.len() + 2..)
-            .expect("failed extracting math from prod");
-
-        Ok(Math::Product(Product {
-            iter_suffix: down
-                .split('=')
-                .collect::<Vec<&str>>()
-                .get(0)
-                .expect("failed extracting iter_suffix from prod")
-                .to_string(),
-            begining: Box::new(
-                down.split('=')
-                    .collect::<Vec<&str>>()
-                    .get(1)
-                    .expect("failed extracting begining from prod")
-                    .parse_math()?,
-            ),
-            end: Box::new(up.parse_math()?),
-            math: Box::new(math.parse_math()?),
-        }))
-    }
-
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
-        let my_tex = tex
-            .strip_prefix("\\prod_")
-            .expect("failed to strip prefix from prod");
+        if let Some(tex) = tex.strip_prefix("\\prod_") {
+            let mut len = 6;
 
-        let mut len = 6;
+            let down_str = Parser::extract_brace(tex, '{', '}')?;
 
-        let down = Parser::extract_brace(my_tex, '{', '}')?;
+            len += down_str.len() + 2;
 
-        len += down.len() + 2;
+            let iter_suffix;
+            if let Some(suffix) = down_str.split('=').collect::<Vec<&str>>().first() {
+                iter_suffix = suffix.to_string();
+            } else {
+                return Err("Failed extracting iter_suffix for product");
+            }
 
-        let up = Parser::extract_brace(
-            my_tex
-                .get(down.len() + 3..)
-                .expect("failed extracting upper from prod"),
-            '{',
-            '}',
-        )?;
+            let begining;
 
-        len += up.len() + 3;
+            if let Some(b) = down_str.split('=').collect::<Vec<&str>>().get(1) {
+                begining = Box::new(b.parse_math()?)
+            } else {
+                return Err("Failed extracting begining for product");
+            }
 
-        let (math_len, math) = Math::from_tex_len(
-            my_tex
-                .get(down.len() + 3 + up.len() + 2..)
-                .expect("failed extracting math from prod"),
-        )?;
+            let up_str;
+            if let Some(u) = tex.get(down_str.len() + 3..) {
+                up_str = Parser::extract_brace(u, '{', '}')?;
+            } else {
+                return Err("Failed capturing upper part of product");
+            }
 
-        len += math_len;
+            len += up_str.len() + 3;
 
-        Ok((
-            len,
-            Math::Product(Product {
-                iter_suffix: down
-                    .split('=')
-                    .collect::<Vec<&str>>()
-                    .get(0)
-                    .expect("failed extracting iter_suffix from prod")
-                    .to_string(),
-                begining: Box::new(
-                    down.split('=')
-                        .collect::<Vec<&str>>()
-                        .get(1)
-                        .expect("failed extracting begining from prod")
-                        .parse_math()?,
-                ),
-                end: Box::new(up.parse_math()?),
-                math: Box::new(math),
-            }),
-        ))
+            let (math_len, math);
+            if let Some(math_str) = tex.get(down_str.len() + 3 + up_str.len() + 2..) {
+                (math_len, math) = Math::from_tex_len(math_str)?;
+            } else {
+                return Err("Failed extracting math from product");
+            }
+
+            len += math_len;
+
+            Ok((
+                len,
+                Math::Product(Product {
+                    iter_suffix,
+                    begining,
+                    end: Box::new(up_str.parse_math()?),
+                    math: Box::new(math),
+                }),
+            ))
+        } else {
+            Err("Failed capturing input for product")
+        }
     }
 
     fn on_begining(tex: String) -> Option<String> {

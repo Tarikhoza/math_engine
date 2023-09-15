@@ -21,73 +21,6 @@ impl Parsable for Function {
         format!("\\mathrm{{{}}}({})", self.label, self.args.join(","))
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\\mathrm)(.*)").unwrap_or_else(|e| {
-                panic!("Failed to compile regex for braces: {e}");
-            });
-        }
-
-        let result = RE.captures(tex);
-        let captures = result
-            .expect("Error running regex")
-            .expect("No match found");
-
-        let label = Parser::extract_brace(captures.get(2).map_or("", |m| m.as_str()), '{', '}')?;
-
-        let arguments = Parser::extract_brace(
-            captures
-                .get(2)
-                .map_or("", |m| m.as_str())
-                .get(label.len() + 2..)
-                .ok_or("Error parsing argument of function")?,
-            '(',
-            ')',
-        )?;
-
-        let mut exponent_braces = captures
-            .get(2)
-            .map_or("", |m| m.as_str())
-            .get(label.len() + 2 + arguments.len() + 3..);
-
-        let mut exponent = String::from("");
-        if let Some(brac) = exponent_braces {
-            exponent = Parser::extract_brace(brac, '{', '}')?;
-        }
-
-        //TODO check in function database if there is a function with the same label
-        //If yes overwrite definition with database definition
-        //else await an definition after exponent
-
-        if !exponent.is_empty() {
-            Ok(Math::Function(Function {
-                label,
-                args: arguments
-                    .replace(' ', "")
-                    .split(',')
-                    .map(|s| s.to_string())
-                    .collect(),
-                definition: None,
-                exponent: Some(Box::new(
-                    exponent
-                        .parse_math()
-                        .expect("failed parsing exponent as math"),
-                )),
-            }))
-        } else {
-            Ok(Math::Function(Function {
-                label,
-                args: arguments
-                    .replace(' ', "")
-                    .split(',')
-                    .map(|s| s.to_string())
-                    .collect(),
-                definition: None,
-                exponent: None,
-            }))
-        }
-    }
-
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"(\\mathrm)(.*)").unwrap_or_else(|e| {
@@ -98,73 +31,70 @@ impl Parsable for Function {
         let mut len = 7;
 
         let result = RE.captures(tex);
-        let captures = result
-            .expect("Error running regex")
-            .expect("No match found");
+        if let Ok(Some(captures)) = result {
+            let label =
+                Parser::extract_brace(captures.get(2).map_or("", |m| m.as_str()), '{', '}')?;
 
-        let label = Parser::extract_brace(captures.get(2).map_or("", |m| m.as_str()), '{', '}')?;
+            len += label.len() + 2;
 
-        len += label.len() + 2;
+            let arguments = Parser::extract_brace(
+                captures
+                    .get(2)
+                    .map_or("", |m| m.as_str())
+                    .get(label.len() + 2..)
+                    .ok_or("Error parsing argument of function")?,
+                '(',
+                ')',
+            )?;
 
-        let arguments = Parser::extract_brace(
-            captures
+            len += arguments.len() + 2;
+
+            let mut exponent_braces = captures
                 .get(2)
                 .map_or("", |m| m.as_str())
-                .get(label.len() + 2..)
-                .ok_or("Error parsing argument of function")?,
-            '(',
-            ')',
-        )?;
+                .get(label.len() + 2 + arguments.len() + 3..);
 
-        len += arguments.len() + 2;
+            let mut exponent = String::from("");
+            if let Some(brac) = exponent_braces {
+                len += brac.len();
+                exponent = Parser::extract_brace(brac, '{', '}')?;
+            }
 
-        let mut exponent_braces = captures
-            .get(2)
-            .map_or("", |m| m.as_str())
-            .get(label.len() + 2 + arguments.len() + 3..);
+            //TODO check in function database if there is a function with the same label
+            //If yes overwrite definition with database definition
+            //else await an definition after exponent
 
-        let mut exponent = String::from("");
-        if let Some(brac) = exponent_braces {
-            len += brac.len();
-            exponent = Parser::extract_brace(brac, '{', '}')?;
-        }
-
-        //TODO check in function database if there is a function with the same label
-        //If yes overwrite definition with database definition
-        //else await an definition after exponent
-
-        if !exponent.is_empty() {
-            Ok((
-                len,
-                Math::Function(Function {
-                    label,
-                    args: arguments
-                        .replace(' ', "")
-                        .split(',')
-                        .map(|s| s.to_string())
-                        .collect(),
-                    definition: None,
-                    exponent: Some(Box::new(
-                        exponent
-                            .parse_math()
-                            .expect("failed parsing exponent as math"),
-                    )),
-                }),
-            ))
+            if !exponent.is_empty() {
+                Ok((
+                    len,
+                    Math::Function(Function {
+                        label,
+                        args: arguments
+                            .replace(' ', "")
+                            .split(',')
+                            .map(|s| s.to_string())
+                            .collect(),
+                        definition: None,
+                        exponent: Some(Box::new(exponent.parse_math()?)),
+                    }),
+                ))
+            } else {
+                Ok((
+                    len,
+                    Math::Function(Function {
+                        label,
+                        args: arguments
+                            .replace(' ', "")
+                            .split(',')
+                            .map(|s| s.to_string())
+                            .collect(),
+                        definition: None,
+                        exponent: None,
+                    }),
+                ))
+            }
         } else {
-            Ok((
-                len,
-                Math::Function(Function {
-                    label,
-                    args: arguments
-                        .replace(' ', "")
-                        .split(',')
-                        .map(|s| s.to_string())
-                        .collect(),
-                    definition: None,
-                    exponent: None,
-                }),
-            ))
+            Err("Failed capturing input of function")
         }
     }
 

@@ -13,10 +13,6 @@ impl Parsable for Infinity {
         String::from(r"\infty")
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        todo!()
-    }
-
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
         todo!()
     }

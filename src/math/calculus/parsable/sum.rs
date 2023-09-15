@@ -14,90 +14,59 @@ impl Parsable for Sum {
         )
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        let my_tex = tex
-            .strip_prefix("\\sum_")
-            .expect("failed to strip prefix from sum");
-        let down = Parser::extract_brace(my_tex, '{', '}')?;
-        let up = Parser::extract_brace(
-            my_tex
-                .get(down.len() + 3..)
-                .expect("failed extracting upper from sum"),
-            '{',
-            '}',
-        )?;
-        let math = my_tex
-            .get(down.len() + 3 + up.len() + 2..)
-            .expect("failed extracting math from sum");
-        Ok(Math::Sum(Sum {
-            iter_suffix: down
-                .split('=')
-                .collect::<Vec<&str>>()
-                .get(0)
-                .expect("failed extracting iter_suffix from sum")
-                .to_string(),
-            begining: Box::new(
-                down.split('=')
-                    .collect::<Vec<&str>>()
-                    .get(1)
-                    .expect("failed extracting begining from sum")
-                    .parse_math()?,
-            ),
-            end: Box::new(up.parse_math()?),
-            math: Box::new(format!("({})", math).parse_math()?),
-        }))
-    }
-
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
-        let my_tex = tex
-            .strip_prefix("\\sum_")
-            .expect("failed to strip prefix from sum");
+        if let Some(tex) = tex.strip_prefix("\\sum_") {
+            let mut len = 5;
 
-        let mut len = 5;
+            let down_str = Parser::extract_brace(tex, '{', '}')?;
 
-        let down = Parser::extract_brace(my_tex, '{', '}')?;
+            len += down_str.len() + 2;
 
-        len += down.len() + 2;
+            let iter_suffix;
+            if let Some(suffix) = down_str.split('=').collect::<Vec<&str>>().first() {
+                iter_suffix = suffix.to_string();
+            } else {
+                return Err("Failed extracting iter_suffix for sum");
+            }
 
-        let up = Parser::extract_brace(
-            my_tex
-                .get(down.len() + 3..)
-                .expect("failed extracting upper from sum"),
-            '{',
-            '}',
-        )?;
+            let begining;
 
-        len += up.len() + 3;
+            if let Some(b) = down_str.split('=').collect::<Vec<&str>>().get(1) {
+                begining = Box::new(b.parse_math()?)
+            } else {
+                return Err("Failed extracting begining for sum");
+            }
 
-        dbg!(tex.get(0..len));
-        let (math_len, math) =
-            Math::from_tex_len(tex.get(len..).expect("failed extracting math from sum"))?;
+            let up_str;
+            if let Some(u) = tex.get(down_str.len() + 3..) {
+                up_str = Parser::extract_brace(u, '{', '}')?;
+            } else {
+                return Err("Failed capturing upper part of sum");
+            }
 
-        dbg!(tex.get(len..));
-        len += math_len;
+            len += up_str.len() + 3;
 
-        dbg!(tex.get(0..len));
+            let (math_len, math);
+            if let Some(math_str) = tex.get(down_str.len() + 3 + up_str.len() + 2..) {
+                (math_len, math) = Math::from_tex_len(math_str)?;
+            } else {
+                return Err("Failed extracting math from sum");
+            }
 
-        Ok((
-            len,
-            Math::Sum(Sum {
-                iter_suffix: down
-                    .split('=')
-                    .collect::<Vec<&str>>()
-                    .get(0)
-                    .expect("failed extracting iter_suffix from sum")
-                    .to_string(),
-                begining: Box::new(
-                    down.split('=')
-                        .collect::<Vec<&str>>()
-                        .get(1)
-                        .expect("failed extracting begining from sum")
-                        .parse_math()?,
-                ),
-                end: Box::new(up.parse_math()?),
-                math: Box::new(math),
-            }),
-        ))
+            len += math_len;
+
+            Ok((
+                len,
+                Math::Sum(Sum {
+                    iter_suffix,
+                    begining,
+                    end: Box::new(up_str.parse_math()?),
+                    math: Box::new(math),
+                }),
+            ))
+        } else {
+            Err("Failed capturing input for sum")
+        }
     }
 
     fn on_begining(tex: String) -> Option<String> {

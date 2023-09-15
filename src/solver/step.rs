@@ -1,8 +1,9 @@
+use crate::castable::Castable;
 use crate::math::algebra::operations::Operator as AlgebraOperator;
 use crate::math::algebra::variable::Variable;
 use crate::math::operator::Operator;
 use crate::math::Math;
-use crate::parser::Parsable;
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 use std::default;
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -88,7 +89,7 @@ impl Step {
             self.left.to_tex(),
             self.right
                 .clone()
-                .unwrap_or(Box::new(Variable::from_tex("0").unwrap()))
+                .unwrap_or(Box::new(0_i64.as_variable().as_math()))
                 .to_tex()
         ));
         for step in self.sub_steps.iter() {

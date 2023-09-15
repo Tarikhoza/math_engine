@@ -10,11 +10,13 @@ impl Descrete for Variable {
         if self.value <= dec!(1) {
             return false;
         }
-        let n = self.value.to_i64().expect("converting to i64 failed");
-        for i in 2..=(n as f64).sqrt() as i64 {
-            if n % i == 0 {
+        let n = self.value;
+        let mut i = dec!(2);
+        while (i < n) {
+            if (n % i).is_zero() {
                 return false;
             }
+            i += dec!(1);
         }
         true
     }
@@ -28,11 +30,14 @@ impl Descrete for Variable {
             primes.push(self.clone());
             return primes;
         }
-        for i in 2..self.value.to_i64().expect("converting to i64 failed") {
+        let n = self.value;
+        let mut i = dec!(2);
+        while (i < n) {
             let x = i.as_variable();
             if x.is_prime() {
                 primes.push(x);
             }
+            i += dec!(1);
         }
         primes
     }
@@ -63,15 +68,13 @@ impl Descrete for Variable {
                 }
             }
         }
-        return 1.as_variable();
+        1.as_variable()
     }
 
     fn is_divisable(&self, other: &Variable) -> bool {
-        if self.is_integer() && other.is_integer() {
-            if other.value != dec!(0) {
-                return self.value % other.value == dec!(0);
-            }
+        if self.is_integer() && other.is_integer() && other.value != dec!(0) {
+            return (self.value % other.value).is_zero();
         }
-        return false;
+        false
     }
 }
