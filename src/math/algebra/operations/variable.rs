@@ -400,18 +400,24 @@ impl AlgebraOperatons for Variable {
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         if self.get_all_suffixes().contains(&suffix.to_string()) {
             if self.suffix == suffix {
-                return Math::Polynom(Polynom {
+                return Polynom {
                     factors: vec![
                         self.value.as_variable().as_math(),
                         Math::Braces(Braces {
                             math: Box::new(math.clone()),
-                            exponent: Some(Box::new(self.get_exponent().substitute(suffix, math))),
+                            exponent: Some(Box::new(
+                                self.get_exponent()
+                                    .substitute(suffix, math)
+                                    .as_polynom()
+                                    .unpack(),
+                            )),
                         }),
                     ],
                     operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
                     #[cfg(feature = "step-tracking")]
                     step: None,
-                });
+                }
+                .unpack();
             } else {
                 let mut ret = self.clone();
                 ret.exponent = Some(Box::new(self.get_exponent().substitute(suffix, math)));

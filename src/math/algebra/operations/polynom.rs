@@ -20,8 +20,9 @@ impl Simplifiable for Polynom {
             .simplify_exp()
             .simplify_mul_div()
             .simplify_add_sub()
-            .as_math()
-        //    .morph_double_operator()
+            .unpack()
+            .as_polynom()
+            .morph_double_operator()
     }
 }
 impl AlgebraOperations for Polynom {

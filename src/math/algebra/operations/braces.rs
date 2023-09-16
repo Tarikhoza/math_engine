@@ -83,8 +83,17 @@ impl Operations for Braces {
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
-        let new_math = Box::new(self.math.substitute(suffix, math.clone()));
-        let new_exponent = self.get_exponent().substitute(suffix, math);
+        let new_math = Box::new(
+            self.math
+                .substitute(suffix, math.clone())
+                .as_polynom()
+                .unpack(),
+        );
+        let new_exponent = self
+            .get_exponent()
+            .substitute(suffix, math)
+            .as_polynom()
+            .unpack();
 
         Math::Braces(Braces {
             math: new_math,
