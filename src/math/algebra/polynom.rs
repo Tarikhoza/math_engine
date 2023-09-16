@@ -58,18 +58,17 @@ impl Polynom {
 
     pub fn morph_double_operator(&self) -> Math {
         //TODO this is a hack
-        todo!("morph double operator");
-        //       let ret = self
-        //           .to_tex()
-        //           .replace("++", "+")
-        //           .replace("--", "+")
-        //           .replace("+-", "-")
-        //           .replace("-+", "-");
-        //       if ret != self.to_tex() {
-        //           return ret
-        //               .parse_math()
-        //               .expect("an error happened while morphing double operators");
-        //       }
+        let ret = self
+            .to_tex()
+            .replace("++", "+")
+            .replace("--", "+")
+            .replace("+-", "-")
+            .replace("-+", "-");
+        if ret != self.to_tex() {
+            return ret
+                .parse_math()
+                .expect("an error happened while morphing double operators");
+        }
         self.unpack()
     }
 

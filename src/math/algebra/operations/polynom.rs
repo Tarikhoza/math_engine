@@ -16,13 +16,12 @@ use crate::solver::step::{DetailedOperator, Step};
 impl Simplifiable for Polynom {
     //  PEMDAS
     fn simplify(&self) -> Math {
-        dbg!(self.to_tex());
         self.simplify_par()
             .simplify_exp()
             .simplify_mul_div()
             .simplify_add_sub()
             .as_math()
-        //            .morph_double_operator()
+        //    .morph_double_operator()
     }
 }
 impl AlgebraOperations for Polynom {
@@ -167,8 +166,6 @@ impl AlgebraOperations for Polynom {
         let mut operators = self.operators.clone();
         operators.push(Operator::Algebra(AlgebraOperators::Addition));
         for (factor, operator) in self.factors.iter().zip(&operators) {
-            dbg!(factor.to_tex());
-            dbg!(factor.substitute(suffix, math.clone()).to_tex());
             new_poly.push(factor.substitute(suffix, math.clone()), operator.clone());
         }
         new_poly.unpack()
@@ -189,7 +186,6 @@ impl AlgebraOperations for Polynom {
 impl Polynom {
     //  P - Parentheses first
     pub fn simplify_par(&self) -> Polynom {
-        dbg!(self.to_tex());
         if self.factors.len() <= 1 {
             return Polynom {
                 factors: self.factors.clone(),
@@ -223,7 +219,7 @@ impl Polynom {
         }
     }
 
-    //  E - Exponents (ie Powers and Square Roots, etc.)
+    //  E - Exponents (Powers and Square Roots, etc.)
     pub fn simplify_exp(&self) -> Polynom {
         let mut factors: Vec<Math> = vec![];
         for i in self.factors.iter() {
@@ -243,7 +239,6 @@ impl Polynom {
 
     //  MD - Multiplication and Division (left-to-right)
     pub fn simplify_mul_div(&self) -> Polynom {
-        dbg!(self.to_tex());
         if self.factors.len() <= 1
             || (!self
                 .operators
@@ -324,15 +319,12 @@ impl Polynom {
     //  AS - Addition and Subtraction (left-to-right)
 
     pub fn simplify_add_sub(&self) -> Polynom {
-        dbg!(self.to_tex());
         let mut vec = self
             .to_vector()
             .to_based_matrix()
             .add_all()
             .as_polynom()
             .to_vector();
-
-        println!("{}", vec.to_tex());
 
         vec.factors.sort_by_key(|m| m.sorting_score());
         vec.add_all().as_polynom()

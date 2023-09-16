@@ -14,9 +14,11 @@ use rust_decimal_macros::dec;
 
 pub trait Exponentable {
     fn get_exponent(&self) -> Math;
+    fn set_exponent(&self, exponent: Math) -> Math;
     fn without_exponent(&self) -> Math;
     fn with_exponent(&self) -> Math;
     fn is_exponentiable(&self) -> bool;
+
     fn apply_exponent(&self) -> Math {
         if !self.is_exponentiable() {
             return self.with_exponent();
@@ -30,17 +32,19 @@ pub trait Exponentable {
             if exponent.is_integer() {
                 let orig = self.without_exponent().simplify();
                 let mut value = orig.clone();
-                let mut i = Decimal::new(1, 0);
                 if exponent.value.is_sign_positive() {
+                    let mut i = dec!(1);
                     while (i < exponent.value) {
                         value = value.mul(&orig);
                         i += dec!(1);
                     }
                 } else if exponent.value.is_sign_negative() {
-                    while (i < exponent.value) {
-                        value = value.div(&orig);
-                        i += dec!(1);
-                    }
+                    return self
+                        .set_exponent(self.get_exponent().negative())
+                        .as_fraction()
+                        .inverse()
+                        .simplify()
+                        .as_math();
                 }
 
                 return value;

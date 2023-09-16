@@ -21,8 +21,8 @@ pub trait Castable {
     fn as_fraction(&self) -> Fraction {
         Fraction {
             whole: None,
-            denominator: Box::new(self.as_math()),
-            numerator: Box::new(1_i64.as_variable().as_math()),
+            denominator: Box::new(1_i64.as_variable().as_math()),
+            numerator: Box::new(self.as_math()),
         }
     }
 

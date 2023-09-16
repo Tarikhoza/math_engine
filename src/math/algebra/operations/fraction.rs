@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperatons, Operator as AlgebraOperator,
@@ -37,8 +38,12 @@ impl Simplifiable for Fraction {
                 }
             }
         }
-
-        Math::Fraction(self.clone())
+        Fraction {
+            whole: self.whole,
+            numerator: Box::new(self.numerator.simplify()),
+            denominator: Box::new(self.denominator.simplify()),
+        }
+        .as_math()
     }
 }
 impl AlgebraOperatons for Fraction {

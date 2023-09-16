@@ -1,8 +1,9 @@
+use crate::castable::Castable;
 use crate::math::algebra::operations::{Operations, Operator};
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::Math;
-use crate::parser::Parsable;
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 use itertools::Itertools;
 use rust_decimal_macros::dec;
 use std::ops;
@@ -67,10 +68,14 @@ impl Vector {
         }
         let mut factors: Vec<Math> = self.factors.clone();
 
-        let mut result: Math = factors
-            .get(0)
-            .expect("failed getting first element of Vector")
-            .clone();
+        let mut result: Math;
+
+        if let Some(first) = factors.first() {
+            result = first.clone();
+        } else {
+            return 0_i64.as_variable().as_math();
+        }
+
         for factor in factors.iter().skip(1) {
             result = result.add(factor);
         }

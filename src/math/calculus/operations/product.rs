@@ -19,9 +19,7 @@ impl Simplifiable for Product {
         };
 
         while (n.to_tex() != end.to_tex()) {
-            dbg!(self.math.to_tex());
             let i_n = self.math.substitute(&self.iter_suffix, n.clone());
-            dbg!(i_n.to_tex());
             if new_poly.factors.is_empty() {
                 new_poly.factors.push(i_n.in_brackets());
             } else {

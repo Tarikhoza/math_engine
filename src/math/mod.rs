@@ -1,11 +1,9 @@
 pub mod algebra;
 pub mod calculus;
 pub mod descrete;
-pub mod geometry;
 pub mod linear_algebra;
 pub mod operator;
 pub mod simplifiable;
-pub mod trigonometry;
 
 use crate::castable::Castable;
 use crate::math::algebra::absolute::Absolute;

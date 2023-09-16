@@ -1,3 +1,4 @@
+use crate::castable::Castable;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::Math;
 use crate::math::Variable;
@@ -17,6 +18,12 @@ impl Exponentable for Variable {
             }),
             Some(e) => *e.clone(),
         }
+    }
+
+    fn set_exponent(&self, exponent: Math) -> Math {
+        let mut new_math = self.clone();
+        new_math.exponent = Some(Box::new(exponent));
+        new_math.as_math()
     }
 
     fn without_exponent(&self) -> Math {
