@@ -1,7 +1,6 @@
 use crate::math::algebra::undefined::Undefined;
-use crate::math::algebra::variable::Variable;
 use crate::math::Math;
-use crate::parser::{Parsable, Parser};
+use crate::parser::Parsable;
 
 use fancy_regex::Regex;
 
@@ -10,11 +9,11 @@ impl Parsable for Undefined {
         String::from(r"undefined")
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
+    fn from_tex(_tex: &str) -> Result<Math, &'static str> {
         todo!()
     }
 
-    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+    fn from_tex_len(_tex: &str) -> Result<(usize, Math), &'static str> {
         todo!()
     }
 

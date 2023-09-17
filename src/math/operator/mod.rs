@@ -1,8 +1,5 @@
 use crate::math::algebra::operations::Operator as AlgebraOperator;
-use crate::math::Math;
-use crate::parser::Parsable;
 use crate::solver::step::DetailedOperator;
-use std::default;
 
 #[derive(Debug, Clone, PartialEq, Default)]
 pub enum Operator {

@@ -4,7 +4,6 @@ use crate::parser::{Parsable, ParsablePrimitive, Parser};
 
 use fancy_regex::Regex;
 use rust_decimal::prelude::*;
-use rust_decimal_macros::dec;
 
 impl Parsable for Fraction {
     fn to_tex(&self) -> String {

@@ -3,10 +3,9 @@ pub mod operator;
 pub mod primitive;
 
 use crate::castable::Castable;
-use crate::math::algebra::operations::{
-    Operations as AlgebraOperations, Operator as AlgebraOperator,
-};
+use crate::math::algebra::operations::Operator as AlgebraOperator;
 
+use crate::math::algebra::polynom::PolynomPart;
 use crate::math::algebra::{
     absolute::Absolute, braces::Braces, fraction::Fraction, function::Function, polynom::Polynom,
     root::Root, variable::Variable,
@@ -17,15 +16,13 @@ use crate::math::calculus::{factorial::Factorial, product::Product, sum::Sum};
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use rust_decimal_macros::dec;
-
 pub struct Parser {
     input: String,
     pos: usize,
 }
 
 pub trait Parsable {
-    fn on_begining(tex: String) -> Option<String> {
+    fn on_begining(_tex: String) -> Option<String> {
         Some(String::new())
     }
 
@@ -34,7 +31,7 @@ pub trait Parsable {
     }
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
-        let (len, math) = Self::from_tex_len(tex)?;
+        let (_len, math) = Self::from_tex_len(tex)?;
         Ok(math)
     }
     fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str>;
@@ -139,8 +136,8 @@ impl Parser {
             Variable::parse,
         ];
 
-        let mut factors: Vec<Math> = vec![];
-        let mut operators: Vec<Operator> = vec![];
+        let mut parts: Vec<PolynomPart> = vec![];
+
         let mut op_search: bool = false;
 
         'outer: while self.pos < self.input.len() {
@@ -151,15 +148,14 @@ impl Parser {
             if op_search {
                 //Search for suffixes like factorial etc.
                 if Factorial::on_begining((*remaining_input).to_string()).is_some()
-                    && !factors.is_empty()
+                    && !parts.is_empty()
                 {
-                    if let Some(last) = factors.pop() {
-                        factors.push(
-                            Factorial {
-                                math: Box::new(last),
-                            }
-                            .as_math(),
-                        )
+                    if let Some(last) = parts.pop() {
+                        if let PolynomPart::Math(m) = last {
+                            parts.push(Factorial { math: Box::new(m) }.as_math().as_polynom_part())
+                        } else {
+                            return Err("Error because operator before factorial");
+                        }
                     } else {
                         return Err("Error while parsing factorial without Math in front");
                     }
@@ -170,39 +166,36 @@ impl Parser {
                 if let Some(tex) = Operator::on_begining((*remaining_input).to_string()) {
                     let o = Operator::from_tex(&tex)?;
                     self.pos += o.to_tex().len();
-                    operators.push(o);
+                    parts.push(o.as_polynom_part());
                 } else {
-                    operators.push(Operator::Algebra(AlgebraOperator::InvMulti));
+                    parts.push(Operator::Algebra(AlgebraOperator::InvMulti).as_polynom_part());
                 }
                 op_search = false;
             } else {
                 for parsing in to_parse.iter() {
                     if let Some(pair) = parsing(remaining_input) {
                         self.pos += pair.0;
-                        factors.push(pair.1);
+                        parts.push(pair.1.as_polynom_part());
                         op_search = true;
                         continue 'outer;
                     }
                 }
 
                 println!(
-                    "Invalid character at position {}: '{}'",
+                    "Invalid character at position {}: '{}' \n\n'{}'\n",
                     self.pos,
                     self.input.chars().nth(self.pos).unwrap_or(' '),
+                    self.input.get(self.pos..).unwrap_or("")
                 );
 
                 return Err("While parsing found invalid character");
             }
         }
-        if factors.len() <= operators.len() {
-            return Err("To many operators");
-        }
 
         Ok((
             self.pos,
             Polynom {
-                factors,
-                operators,
+                parts,
                 #[cfg(feature = "step-tracking")]
                 step: None,
             }

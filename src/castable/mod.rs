@@ -13,8 +13,7 @@ pub trait Castable {
 
     fn as_polynom(&self) -> Polynom {
         Polynom {
-            factors: vec![self.as_math()],
-            operators: Vec::new(),
+            parts: vec![self.as_math().as_polynom_part()],
         }
     }
 
@@ -26,12 +25,6 @@ pub trait Castable {
         }
     }
 
-    fn in_braces(&self) -> Math {
-        Math::Braces(Braces {
-            math: Box::new(self.as_math()),
-            exponent: None,
-        })
-    }
     fn as_braces(&self) -> Braces {
         Braces {
             math: Box::new(self.as_math()),

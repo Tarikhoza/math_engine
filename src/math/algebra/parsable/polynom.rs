@@ -1,27 +1,15 @@
-use crate::math::algebra::operations::Operator as AlgebraOperator;
-use crate::math::algebra::polynom::Polynom;
+use crate::math::algebra::polynom::{Polynom, PolynomPart};
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 
 impl Parsable for Polynom {
     fn to_tex(&self) -> String {
-        if !self.factors.is_empty() {
-            if self.factors.len() <= 1 && self.factors.len() != self.operators.len() + 1 {
-                return self.factors[0].to_tex();
-            }
-            let mut temp = self.factors[0].to_tex();
-            for (i, factor) in self.factors.iter().skip(1).enumerate() {
-                temp = format!(
-                    "{}{}{}",
-                    temp,
-                    Operator::to_tex(&self.operators[i]),
-                    factor.to_tex()
-                );
-            }
-            return temp;
+        let mut tex = String::new();
+        for part in self.parts.iter() {
+            tex = format!("{}{}", tex, part.to_tex());
         }
-        String::new()
+        tex
     }
 
     fn from_tex(tex: &str) -> Result<Math, &'static str> {
@@ -34,5 +22,33 @@ impl Parsable for Polynom {
 
     fn on_begining(_tex: String) -> Option<String> {
         None
+    }
+}
+
+impl Parsable for PolynomPart {
+    fn to_tex(&self) -> String {
+        match self {
+            PolynomPart::Math(math) => math.to_tex(),
+            PolynomPart::Operator(op) => op.to_tex(),
+        }
+    }
+
+    fn from_tex_len(_tex: &str) -> Result<(usize, Math), &'static str> {
+        unimplemented!();
+    }
+
+    fn on_begining(_tex: String) -> Option<String> {
+        unimplemented!()
+    }
+}
+
+impl Math {
+    pub fn as_polynom_part(&self) -> PolynomPart {
+        PolynomPart::Math(self.clone())
+    }
+}
+impl Operator {
+    pub fn as_polynom_part(&self) -> PolynomPart {
+        PolynomPart::Operator(self.clone())
     }
 }

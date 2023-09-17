@@ -1,17 +1,11 @@
 use crate::castable::Castable;
 use crate::math::algebra::fraction::Fraction;
-use crate::math::algebra::operations::{
-    Operations as AlgebraOperatons, Operator as AlgebraOperator,
-};
-use crate::math::algebra::polynom::Polynom;
-use crate::math::algebra::variable::Variable;
+use crate::math::algebra::operations::Operations as AlgebraOperatons;
 use crate::math::descrete::Descrete;
-use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
-use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
 impl Simplifiable for Fraction {

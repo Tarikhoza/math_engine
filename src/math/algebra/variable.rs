@@ -1,22 +1,16 @@
-use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
-use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
-use crate::math::algebra::polynom::Polynom;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
-use crate::castable::Castable;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
+use crate::parser::Parsable;
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
-use fancy_regex::Regex;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
-use std::default;
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Variable {
@@ -32,23 +26,6 @@ impl Variable {
         self.value.abs() - self.value.abs().round() == dec!(0)
             && self.suffix.is_empty()
             && self.get_exponent().to_tex() == "1"
-    }
-
-    pub fn as_polynom(&self) -> Polynom {
-        Polynom {
-            factors: vec![Math::Variable(self.clone())],
-            operators: vec![],
-            #[cfg(feature = "step-tracking")]
-            step: None,
-        }
-    }
-
-    pub fn as_fraction(&self) -> Fraction {
-        Fraction {
-            whole: None,
-            numerator: Box::new(Math::Variable(self.clone())),
-            denominator: Box::new(1.as_variable().as_math()),
-        }
     }
 
     pub fn split_operator(&self) -> (Operator, Math) {

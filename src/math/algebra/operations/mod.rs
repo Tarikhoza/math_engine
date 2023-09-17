@@ -6,11 +6,11 @@ pub mod root;
 pub mod undefined;
 pub mod variable;
 
+use crate::castable::Castable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 
-use crate::math::operator::Operator as MainOperator;
-use crate::parser::{Parsable, Parser};
+use crate::parser::ParsablePrimitiveAsVariable;
 use fancy_regex::Regex;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -29,7 +29,9 @@ pub trait Operations: Simplifiable {
     fn div_self(&self, other: &Self) -> Math;
     fn mul_self(&self, other: &Self) -> Math;
 
-    fn negative(&self) -> Math;
+    fn negative(&self) -> Math {
+        self.mul(&(-1_i64).as_variable().as_math())
+    }
     fn substitute(&self, suffix: &str, value: Math) -> Math;
 
     fn add(&self, other: &Math) -> Math;
@@ -52,7 +54,6 @@ impl Operator {
             Operator::Division => "/".to_owned(),
             Operator::InvMulti => String::new(),
             Operator::AddSub => "\\pm".to_owned(),
-            _ => panic!("Conversion from operator to string went wrong"),
         }
     }
 

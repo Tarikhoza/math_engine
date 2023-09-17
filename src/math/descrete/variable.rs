@@ -2,7 +2,6 @@ use crate::math::algebra::variable::Variable;
 use crate::math::descrete::Descrete;
 use crate::parser::ParsablePrimitiveAsVariable;
 
-use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
 impl Descrete for Variable {
@@ -12,7 +11,7 @@ impl Descrete for Variable {
         }
         let n = self.value;
         let mut i = dec!(2);
-        while (i < n) {
+        while i < n {
             if (n % i).is_zero() {
                 return false;
             }
@@ -32,7 +31,7 @@ impl Descrete for Variable {
         }
         let n = self.value;
         let mut i = dec!(2);
-        while (i < n) {
+        while i < n {
             let x = i.as_variable();
             if x.is_prime() {
                 primes.push(x);
@@ -52,7 +51,7 @@ impl Descrete for Variable {
             if math.value.is_zero() {
                 break;
             }
-            while ((math.value % i.value).is_zero()) {
+            while (math.value % i.value).is_zero() {
                 math.value /= i.value;
                 factorised.push(i.clone());
             }

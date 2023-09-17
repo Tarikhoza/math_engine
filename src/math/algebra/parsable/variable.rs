@@ -1,4 +1,3 @@
-use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};

@@ -5,28 +5,28 @@ use crate::math::calculus::product::Product;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Product {
     fn simplify(&self) -> Math {
         let mut n = *self.begining.clone();
         let end = self.end.clone().add(&1_i64.as_variable().as_math());
-        let mut factors: Vec<Math> = vec![];
 
-        let mut new_poly: Polynom = Polynom {
-            factors: Vec::new(),
-            operators: Vec::new(),
-        };
+        let mut new_poly: Polynom = Polynom { parts: Vec::new() };
 
-        while (n.to_tex() != end.to_tex()) {
+        while n.to_tex() != end.to_tex() {
             let i_n = self.math.substitute(&self.iter_suffix, n.clone());
-            if new_poly.factors.is_empty() {
-                new_poly.factors.push(i_n.in_brackets());
+            if new_poly.parts.is_empty() {
+                new_poly
+                    .parts
+                    .push(i_n.as_braces().as_math().as_polynom_part());
             } else {
-                new_poly.push(
-                    i_n.in_brackets(),
-                    Operator::Algebra(AlgebraOperator::Multiplication),
-                );
+                new_poly
+                    .parts
+                    .push(i_n.as_braces().as_math().as_polynom_part());
+                new_poly
+                    .parts
+                    .push(Operator::Algebra(AlgebraOperator::Multiplication).as_polynom_part())
             }
             n = n.add(&1_i64.as_variable().as_math()).simplify();
         }

@@ -6,9 +6,7 @@ use crate::castable::Castable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::AlgebraOperations;
 use crate::math::Math;
-use crate::math::Variable;
 use crate::parser::ParsablePrimitiveAsVariable;
-use crate::parser::{Parsable, ParsablePrimitive};
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
@@ -34,7 +32,7 @@ pub trait Exponentable {
                 let mut value = orig.clone();
                 if exponent.value.is_sign_positive() {
                     let mut i = dec!(1);
-                    while (i < exponent.value) {
+                    while i < exponent.value {
                         value = value.mul(&orig);
                         i += dec!(1);
                     }

@@ -1,10 +1,8 @@
 use crate::math::algebra::absolute::Absolute;
-use crate::math::algebra::variable::Variable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, Parser};
 
 use fancy_regex::Regex;
-use rust_decimal_macros::dec;
 
 impl Parsable for Absolute {
     fn to_tex(&self) -> String {

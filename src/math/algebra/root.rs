@@ -1,19 +1,13 @@
-use rust_decimal::prelude::*;
-use rust_decimal_macros::dec;
-use std::default;
-
 use crate::castable::Castable;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::variable::Variable;
-use crate::math::simplifiable::Simplifiable;
-use crate::math::AlgebraOperations;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
-//use crate::variable::Variable;
-//use std::ops;
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
+//use crate::math::simplifiable::Simplifiable;
+//
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Root {
     pub math: Box<Math>,
@@ -22,10 +16,11 @@ pub struct Root {
 
 impl Root {
     pub fn square_root(&self) -> Math {
-        let mut math = self.math.simplify();
-        let mut guess = math.clone();
-        let mut result = math.clone();
-        let mut last_result = Math::default();
+        todo!();
+        //       let mut math = self.math.simplify();
+        //       let mut guess = math.clone();
+        //       let mut result = math.clone();
+        //       let mut last_result = Math::default();
         //TODO implement division in all Math types
         //lazy_static! {
         //    static ref EXPRESSION: Math = "(g+r)/2".parse_math().unwrap();
@@ -53,7 +48,7 @@ impl Root {
         //           }
         //           last_result = result.clone();
         //       }
-        result
+        // result
     }
 
     pub fn take_root(&self) -> Math {

@@ -1,59 +1,65 @@
 use crate::castable::Castable;
-use crate::math::algebra::fraction::Fraction;
-use crate::math::algebra::operations::{
-    Operations as AlgebraOperations, Operator as AlgebraOperator,
-};
-use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
 use crate::math::Math;
 
 use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
 
-use rust_decimal_macros::dec;
-
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum PolynomPart {
+    Math(Math),
+    Operator(Operator),
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct Polynom {
-    pub factors: Vec<Math>,
-    pub operators: Vec<Operator>,
+    pub parts: Vec<PolynomPart>,
     #[cfg(feature = "step-tracking")]
     pub step: Option<Step>,
 }
 
 impl Polynom {
+    pub fn sort(&self) -> Polynom {
+        let mut vec = self.clone().to_vector();
+
+        for f in vec.factors.iter_mut() {
+            if let Math::Polynom(poly) = f {
+                *f = poly.sort().as_math()
+            }
+        }
+
+        vec.factors.sort_by_key(|m| m.sorting_score());
+        vec.add_all().as_polynom()
+    }
+
     pub fn unpack(&self) -> Math {
-        if self.factors.len() == 1 {
-            return self.factors[0].clone();
+        let maths = self.get_maths();
+        if maths.len() == 1 {
+            return maths[0].clone();
         }
         Math::Polynom(self.clone())
     }
 
-    pub fn push(&mut self, math: Math, op: Operator) {
-        match math {
-            Math::Polynom(poly) => {
-                let mut operators = poly.operators.clone();
-                operators.push(op);
-                for (factor, operator) in poly.factors.iter().zip(operators) {
-                    self.factors.push(factor.clone());
-                    self.operators.push(operator.clone());
-                }
-            }
-            _ => {
-                self.operators.push(op);
-                self.factors.push(math);
+    pub fn get_maths(&self) -> Vec<Math> {
+        let mut maths: Vec<Math> = Vec::new();
+        for part in self.parts.iter() {
+            if let PolynomPart::Math(m) = part {
+                maths.push(m.clone());
             }
         }
+        maths
     }
-
-    pub fn as_fraction(&self) -> Fraction {
-        Fraction {
-            whole: None,
-            numerator: Box::new(Math::Polynom(self.clone())),
-            denominator: Box::new(1_i64.as_variable().as_math()),
+    pub fn get_operators(&self) -> Vec<Operator> {
+        let mut ops: Vec<Operator> = Vec::new();
+        for part in self.parts.iter() {
+            if let PolynomPart::Operator(op) = part {
+                ops.push(op.clone());
+            }
         }
+        ops
     }
 
     pub fn morph_double_operator(&self) -> Math {
@@ -73,14 +79,13 @@ impl Polynom {
     }
 
     pub fn to_vector(&self) -> Vector {
-        let mut factors: Vec<Math> = self
-            .operators
+        let mut operators = self.get_operators();
+        operators.insert(0, Operator::Empty);
+        let factors: Vec<Math> = operators
             .iter()
-            .zip(self.factors.iter().skip(1))
+            .zip(self.get_maths().iter())
             .map(Math::morph_operator)
             .collect();
-
-        factors.insert(0, self.factors.get(0).cloned().unwrap_or_default());
 
         Vector {
             factors,

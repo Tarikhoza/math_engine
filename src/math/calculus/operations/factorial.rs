@@ -5,27 +5,27 @@ use crate::math::calculus::factorial::Factorial;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable};
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
 impl Simplifiable for Factorial {
     fn simplify(&self) -> Math {
         let mut n = 1_i64.as_variable().as_math();
         let end = self.math.clone().add(&1_i64.as_variable().as_math());
-        let mut factors: Vec<Math> = vec![];
 
-        let mut new_poly: Polynom = Polynom {
-            factors: Vec::new(),
-            operators: Vec::new(),
-        };
+        let mut new_poly: Polynom = Polynom { parts: Vec::new() };
 
-        while (n.to_tex() != end.to_tex()) {
-            if new_poly.factors.is_empty() {
-                new_poly.factors.push(n.in_brackets());
+        while n.to_tex() != end.to_tex() {
+            if new_poly.parts.is_empty() {
+                new_poly
+                    .parts
+                    .push(n.as_braces().as_math().as_polynom_part());
             } else {
-                new_poly.push(
-                    n.in_brackets(),
-                    Operator::Algebra(AlgebraOperator::Multiplication),
-                );
+                new_poly
+                    .parts
+                    .push(n.as_braces().as_math().as_polynom_part());
+                new_poly
+                    .parts
+                    .push(Operator::Algebra(AlgebraOperator::Multiplication).as_polynom_part())
             }
             n = n.add(&1_i64.as_variable().as_math()).simplify();
         }

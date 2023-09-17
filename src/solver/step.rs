@@ -1,10 +1,7 @@
 use crate::castable::Castable;
-use crate::math::algebra::operations::Operator as AlgebraOperator;
-use crate::math::algebra::variable::Variable;
 use crate::math::operator::Operator;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
-use std::default;
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Step {
@@ -30,7 +27,7 @@ pub enum DetailedOperator {
 }
 
 impl Step {
-    pub fn step(
+    pub fn new_step(
         left: Math,
         right: Option<Math>,
         operation: Operator,

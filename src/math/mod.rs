@@ -8,7 +8,6 @@ pub mod simplifiable;
 use crate::castable::Castable;
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
-use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::fraction::Fraction;
 use crate::math::algebra::function::Function;
 use crate::math::algebra::infinity::Infinity;
@@ -26,14 +25,10 @@ use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
 use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
+use crate::parser::Parsable;
 
 #[cfg(feature = "step-tracking")]
 use crate::solver::step::{DetailedOperator, Step};
-
-use fancy_regex::Regex;
-use std::default;
-use std::ops;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Math {
@@ -125,25 +120,6 @@ impl Math {
         }
     }
 
-    pub fn as_polynom(&self) -> Polynom {
-        match self {
-            Math::Polynom(s) => s.clone(),
-            _ => Polynom {
-                factors: vec![self.clone()],
-                operators: vec![],
-                #[cfg(feature = "step-tracking")]
-                step: None,
-            },
-        }
-    }
-
-    pub fn in_brackets(&self) -> Math {
-        Math::Braces(Braces {
-            math: Box::new(self.clone()),
-            exponent: None,
-        })
-    }
-
     //   pub fn equal_bruteforce(&self, other: Math) -> bool {
     //       let mut suffixes = self.get_all_suffixes();
     //       suffixes.extend(other.get_all_suffixes());
@@ -210,12 +186,23 @@ impl Simplifiable for Math {
             Math::Root(r) => Math::Root(r.clone()),
             Math::Absolute(a) => a.simplify(),
             Math::Fraction(a) => a.simplify(),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             Math::Infinity(i) => Math::Infinity(i.clone()),
             Math::Sum(s) => s.simplify(),
             Math::Product(p) => p.simplify(),
             Math::Factorial(f) => f.simplify(),
-            _ => todo!(),
+            Math::Function(f) => {
+                print!("function {}", f.to_tex());
+                return Math::Function(f.clone());
+            }
+            Math::Matrix(f) => {
+                print!("matrix {}", f.to_tex());
+                return Math::Matrix(f.clone());
+            }
+            Math::Vector(f) => {
+                print!("vector {}", f.to_tex());
+                return Math::Vector(f.clone());
+            }
         }
     }
 }
@@ -247,7 +234,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.add(rhs),
             Math::Fraction(f) => f.add(rhs),
             Math::Infinity(i) => i.add(rhs),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -262,7 +249,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.sub(rhs),
             Math::Fraction(f) => f.sub(rhs),
             Math::Infinity(i) => i.sub(rhs),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -274,7 +261,7 @@ impl AlgebraOperations for Math {
             Math::Braces(b) => b.mul(rhs),
             Math::Fraction(f) => f.mul(rhs),
             Math::Infinity(i) => i.mul(rhs),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -285,7 +272,7 @@ impl AlgebraOperations for Math {
             Math::Variable(v) => v.div(rhs),
             Math::Fraction(f) => f.div(rhs),
             Math::Infinity(i) => i.div(rhs),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -317,7 +304,7 @@ impl AlgebraOperations for Math {
             //Math::Absolute(a) => a.substitute(suffix, math),
             //Math::Vector(v) => v.substitute(suffix, math),
             //Math::Matrix(m) => m.substitute(suffix, math),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }

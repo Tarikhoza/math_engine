@@ -1,6 +1,6 @@
 use crate::math::calculus::factorial::Factorial;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsablePrimitive, Parser};
+use crate::parser::Parsable;
 use fancy_regex::Regex;
 
 impl Parsable for Factorial {
@@ -8,11 +8,12 @@ impl Parsable for Factorial {
         format!("{}!", self.math.to_tex())
     }
 
-    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+    fn from_tex_len(_tex: &str) -> Result<(usize, Math), &'static str> {
         todo!()
     }
 
     fn on_begining(tex: String) -> Option<String> {
+        //TODO use starts with instead of regex
         lazy_static! {
             static ref RE: Regex = Regex::new(r"^!").unwrap_or_else(|e| {
                 panic!("Failed to compile regex for factorial: {e}");

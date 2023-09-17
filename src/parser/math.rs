@@ -1,7 +1,7 @@
 use crate::math::{
     algebra::{
         absolute::Absolute, braces::Braces, fraction::Fraction, function::Function,
-        infinity::Infinity, polynom::Polynom, root::Root, undefined::Undefined, variable::Variable,
+        infinity::Infinity, polynom::Polynom, root::Root, undefined::Undefined,
     },
     calculus::product::Product,
     calculus::sum::Sum,
@@ -24,7 +24,8 @@ impl Parsable for Math {
             Math::Sum(s) => s.to_tex(),
             Math::Product(s) => s.to_tex(),
             Math::Factorial(s) => s.to_tex(),
-            _ => todo!("Parsing is not implemented"),
+            Math::Matrix(s) => s.to_tex(),
+            Math::Vector(s) => s.to_tex(),
         }
     }
 

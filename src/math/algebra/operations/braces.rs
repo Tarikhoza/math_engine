@@ -1,13 +1,11 @@
+use crate::castable::Castable;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::Operations;
 use crate::math::algebra::undefined::Undefined;
-use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
-use std::ops;
 
 use crate::math::Math;
-use rust_decimal_macros::dec;
 
 impl Simplifiable for Braces {
     fn simplify(&self) -> Math {
@@ -52,7 +50,7 @@ impl Operations for Braces {
             Math::Polynom(p) => self.simplify().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().add(&Math::Variable(v.clone())),
             Math::Braces(b) => self.add_self(b),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -72,7 +70,7 @@ impl Operations for Braces {
             Math::Polynom(p) => self.simplify().mul(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().mul(&Math::Variable(v.clone())),
             Math::Braces(b) => self.mul_self(b),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             Math::Fraction(f) => self.simplify().mul(&Math::Fraction(f.clone())),
             _ => todo!(),
         }

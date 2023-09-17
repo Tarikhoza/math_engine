@@ -1,6 +1,4 @@
 use crate::math::algebra::braces::Braces;
-use crate::math::algebra::exponentable::Exponentable;
-use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 use crate::parser::{Parsable, Parser};
 
@@ -44,8 +42,6 @@ impl Parsable for Braces {
             } else {
                 None
             };
-
-            dbg!(tex.get(0..len), tex);
 
             Ok((
                 len,

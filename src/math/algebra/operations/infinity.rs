@@ -1,11 +1,7 @@
-use crate::math::algebra::operations::{
-    Operations as AlgebraOperatons, Operator as AlgebraOperator,
-};
-use crate::math::operator::Operator;
+use crate::math::algebra::operations::Operations as AlgebraOperatons;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Infinity;
 use crate::math::Math;
-use crate::parser::Parsable;
 
 impl Simplifiable for Infinity {
     fn simplify(&self) -> Math {

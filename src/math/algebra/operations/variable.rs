@@ -12,10 +12,8 @@ use crate::math::Math;
 
 use crate::castable::Castable;
 use crate::math::simplifiable::Simplifiable;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
-use crate::solver::step::{DetailedOperator, Step};
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
-use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
 impl Simplifiable for Variable {
@@ -48,8 +46,11 @@ impl AlgebraOperatons for Variable {
             });
         }
         Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![Operator::Algebra(AlgebraOperator::Addition)],
+            parts: vec![
+                self.as_math().as_polynom_part(),
+                Operator::Algebra(AlgebraOperator::Addition).as_polynom_part(),
+                other.as_math().as_polynom_part(),
+            ],
             #[cfg(feature = "step-tracking")]
             step: None,
         })
@@ -74,8 +75,11 @@ impl AlgebraOperatons for Variable {
             });
         }
         Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![Operator::Algebra(AlgebraOperator::Subtraction)],
+            parts: vec![
+                self.as_math().as_polynom_part(),
+                Operator::Algebra(AlgebraOperator::Subtraction).as_polynom_part(),
+                other.as_math().as_polynom_part(),
+            ],
             #[cfg(feature = "step-tracking")]
             step: None,
         })
@@ -187,9 +191,12 @@ impl AlgebraOperatons for Variable {
         let sign = left.0.morph(right.0);
 
         if sign == Operator::Algebra(AlgebraOperator::Subtraction) {
-            return Math::Polynom(Polynom {
-                factors: vec![self.negative(), Math::Variable(other.clone())],
-                operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
+            return Polynom {
+                parts: vec![
+                    self.negative().as_polynom_part(),
+                    Operator::Algebra(AlgebraOperator::InvMulti).as_polynom_part(),
+                    other.as_math().as_polynom_part(),
+                ],
                 #[cfg(feature = "step-tracking")]
                 step: Step::step(
                     Math::Variable(self.clone()),
@@ -197,11 +204,16 @@ impl AlgebraOperatons for Variable {
                     Operator::Detail(DetailedOperator::GroupTogether),
                     String::from("Grouping two variables together"),
                 ),
-            });
+            }
+            .as_math();
         }
         Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![Operator::Algebra(AlgebraOperator::InvMulti)],
+            parts: vec![
+                self.as_math().as_polynom_part(),
+                Operator::Algebra(AlgebraOperator::InvMulti).as_polynom_part(),
+                other.as_math().as_polynom_part(),
+            ],
+
             #[cfg(feature = "step-tracking")]
             step: Step::step(
                 Math::Variable(self.clone()),
@@ -317,8 +329,11 @@ impl AlgebraOperatons for Variable {
             });
         }
         Math::Polynom(Polynom {
-            factors: vec![Math::Variable(self.clone()), Math::Variable(other.clone())],
-            operators: vec![Operator::Algebra(AlgebraOperator::Division)],
+            parts: vec![
+                self.as_math().as_polynom_part(),
+                Operator::Algebra(AlgebraOperator::Division).as_polynom_part(),
+                other.as_math().as_polynom_part(),
+            ],
             #[cfg(feature = "step-tracking")]
             step: None,
         })
@@ -330,7 +345,7 @@ impl AlgebraOperatons for Variable {
             Math::Variable(v) => self.add_self(v),
             Math::Braces(b) => self.add(&b.simplify()),
             Math::Fraction(f) => self.as_fraction().add_self(f),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -341,7 +356,7 @@ impl AlgebraOperatons for Variable {
             Math::Variable(v) => self.sub_self(v),
             Math::Braces(b) => self.sub(&b.simplify()),
             Math::Fraction(f) => self.as_fraction().sub_self(f),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -352,7 +367,7 @@ impl AlgebraOperatons for Variable {
             Math::Braces(b) => self.mul(&b.simplify()),
             Math::Variable(v) => self.mul_self(v),
             Math::Fraction(f) => self.as_fraction().mul_self(f),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -363,7 +378,7 @@ impl AlgebraOperatons for Variable {
             //
             Math::Fraction(f) => self.as_fraction().div_self(f),
             Math::Variable(v) => self.div_self(v),
-            Math::Undefined(u) => Math::Undefined(Undefined {}),
+            Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
         }
     }
@@ -401,8 +416,9 @@ impl AlgebraOperatons for Variable {
         if self.get_all_suffixes().contains(&suffix.to_string()) {
             if self.suffix == suffix {
                 return Polynom {
-                    factors: vec![
-                        self.value.as_variable().as_math(),
+                    parts: vec![
+                        self.value.as_variable().as_math().as_polynom_part(),
+                        Operator::Algebra(AlgebraOperator::Multiplication).as_polynom_part(),
                         Math::Braces(Braces {
                             math: Box::new(math.clone()),
                             exponent: Some(Box::new(
@@ -411,20 +427,25 @@ impl AlgebraOperatons for Variable {
                                     .as_polynom()
                                     .unpack(),
                             )),
-                        }),
+                        })
+                        .as_polynom_part(),
                     ],
-                    operators: vec![Operator::Algebra(AlgebraOperator::Multiplication)],
                     #[cfg(feature = "step-tracking")]
                     step: None,
                 }
                 .unpack();
             } else {
                 let mut ret = self.clone();
-                ret.exponent = Some(Box::new(self.get_exponent().substitute(suffix, math)));
-                return Math::Variable(ret);
+                ret.exponent = Some(Box::new(
+                    self.get_exponent()
+                        .substitute(suffix, math)
+                        .as_polynom()
+                        .unpack(),
+                ));
+                return ret.as_math();
             }
         }
-        Math::Variable(self.clone())
+        self.as_math()
     }
 
     fn get_all_suffixes(&self) -> Vec<String> {

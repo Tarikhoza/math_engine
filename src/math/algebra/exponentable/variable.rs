@@ -3,7 +3,6 @@ use crate::math::algebra::exponentable::Exponentable;
 use crate::math::Math;
 use crate::math::Variable;
 
-use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
 impl Exponentable for Variable {

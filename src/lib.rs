@@ -1,12 +1,5 @@
-#![warn(
-    clippy::all,
-    clippy::unwrap_used,
-    clippy::expect_used,
-    clippy::style,
-    clippy::panicking_unwrap
-)]
-#![allow(clippy::todo)]
-#![allow(unused)]
+#![warn(clippy::all, clippy::unwrap_used, clippy::expect_used, clippy::style)]
+#![allow(clippy::todo, unused)]
 
 #[macro_use]
 extern crate lazy_static;

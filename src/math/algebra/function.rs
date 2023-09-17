@@ -1,4 +1,3 @@
-use crate::math::algebra::variable::Variable;
 use crate::math::Math;
 
 #[derive(Debug, Clone, PartialEq)]

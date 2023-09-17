@@ -14,7 +14,7 @@ impl Parsable for Matrix {
         format!("[\n {}\n]", s)
     }
 
-    fn from_tex(tex: &str) -> Result<Math, &'static str> {
+    fn from_tex(_tex: &str) -> Result<Math, &'static str> {
         todo!()
     }
 
@@ -22,7 +22,7 @@ impl Parsable for Matrix {
         None
     }
 
-    fn from_tex_len(tex: &str) -> Result<(usize, Math), &'static str> {
+    fn from_tex_len(_tex: &str) -> Result<(usize, Math), &'static str> {
         todo!()
     }
 }

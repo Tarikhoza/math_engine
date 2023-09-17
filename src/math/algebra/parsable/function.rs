@@ -1,13 +1,12 @@
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::function::Function;
 use crate::math::Math;
-use crate::parser::{Parsable, ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
+use crate::parser::{Parsable, ParsablePrimitive, Parser};
 
 use fancy_regex::Regex;
 
 impl Parsable for Function {
     fn to_tex(&self) -> String {
-        let mut ret = "";
         let exponent = self.get_exponent();
 
         if exponent.to_tex() != *"1" && exponent.to_tex() != *"" {
@@ -49,7 +48,7 @@ impl Parsable for Function {
 
             len += arguments.len() + 2;
 
-            let mut exponent_braces = captures
+            let exponent_braces = captures
                 .get(2)
                 .map_or("", |m| m.as_str())
                 .get(label.len() + 2 + arguments.len() + 3..);
