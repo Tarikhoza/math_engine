@@ -20,9 +20,9 @@ impl Simplifiable for Polynom {
             .simplify_exp()
             .simplify_mul_div()
             .simplify_add_sub()
-            .unpack()
-            .as_polynom()
+            .flatten()
             .morph_double_operator()
+            .unpack()
     }
 }
 impl AlgebraOperations for Polynom {
@@ -158,12 +158,21 @@ impl AlgebraOperations for Polynom {
 impl Polynom {
     //  P - Parentheses
     pub fn simplify_par(&self) -> Polynom {
+        println!("before par: {}", self.to_tex());
         let mut parts: Vec<PolynomPart> = self.parts.clone();
         for part in parts.iter_mut() {
             if let PolynomPart::Math(Math::Braces(b)) = part {
                 *part = b.simplify().as_polynom_part();
             }
         }
+
+        println!(
+            "after par: {}",
+            Polynom {
+                parts: parts.clone()
+            }
+            .to_tex()
+        );
 
         Polynom {
             parts,
@@ -174,6 +183,7 @@ impl Polynom {
 
     //  E - Exponents (Powers and Square Roots, etc.)
     pub fn simplify_exp(&self) -> Polynom {
+        println!("before exp: {}", self.to_tex());
         let mut parts: Vec<PolynomPart> = self.parts.clone();
 
         for part in parts.iter_mut() {
@@ -187,6 +197,13 @@ impl Polynom {
                 _ => {}
             }
         }
+        println!(
+            "after exp: {}",
+            Polynom {
+                parts: parts.clone()
+            }
+            .to_tex()
+        );
 
         Polynom {
             parts,
@@ -197,6 +214,7 @@ impl Polynom {
 
     //  MD - Multiplication and Division (left-to-right)
     pub fn simplify_mul_div(&self) -> Polynom {
+        println!("before mul_div: {}", self.to_tex());
         let mut parts = Vec::new();
         let maths = self.get_maths();
         let operators = self.get_operators();
@@ -249,6 +267,13 @@ impl Polynom {
                 }
             }
         }
+        println!(
+            "after mul_div: {}",
+            Polynom {
+                parts: parts.clone()
+            }
+            .to_tex()
+        );
         let p = Polynom {
             parts,
             #[cfg(feature = "step-tracking")]
@@ -276,6 +301,7 @@ impl Polynom {
 
     //  AS - Addition and Subtraction (left-to-right)
     pub fn simplify_add_sub(&self) -> Polynom {
+        println!("before add_sub: {}", self.to_tex());
         let mut vec = self
             .to_vector()
             .to_based_matrix()
@@ -283,6 +309,10 @@ impl Polynom {
             .as_polynom()
             .to_vector();
 
+        println!(
+            "before add_sub: {}",
+            vec.add_all().as_polynom().sort().to_tex()
+        );
         vec.add_all().as_polynom().sort()
     }
 }

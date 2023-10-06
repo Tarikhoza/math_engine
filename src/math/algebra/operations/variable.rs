@@ -188,7 +188,7 @@ impl AlgebraOperatons for Variable {
         }
         let left = self.split_operator();
         let right = other.split_operator();
-        let sign = left.0.morph(right.0);
+        let sign = left.0.morph(&right.0.clone());
 
         if sign == Operator::Algebra(AlgebraOperator::Subtraction) {
             return Polynom {

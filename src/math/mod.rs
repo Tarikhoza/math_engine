@@ -193,15 +193,15 @@ impl Simplifiable for Math {
             Math::Factorial(f) => f.simplify(),
             Math::Function(f) => {
                 print!("function {}", f.to_tex());
-                return Math::Function(f.clone());
+                Math::Function(f.clone())
             }
             Math::Matrix(f) => {
                 print!("matrix {}", f.to_tex());
-                return Math::Matrix(f.clone());
+                Math::Matrix(f.clone())
             }
             Math::Vector(f) => {
                 print!("vector {}", f.to_tex());
-                return Math::Vector(f.clone());
+                Math::Vector(f.clone())
             }
         }
     }
