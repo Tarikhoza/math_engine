@@ -6,6 +6,7 @@ pub mod operator;
 pub mod simplifiable;
 
 use crate::castable::Castable;
+use crate::logging::env_info;
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::braces::Braces;
 use crate::math::algebra::fraction::Fraction;
@@ -23,12 +24,8 @@ use crate::math::calculus::product::Product;
 use crate::math::calculus::sum::Sum;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::linear_algebra::vector::Vector;
-use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
-use crate::parser::Parsable;
-
-#[cfg(feature = "step-tracking")]
-use crate::solver::step::{DetailedOperator, Step};
+use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Math {
@@ -65,16 +62,16 @@ impl Math {
         }
     }
 
-    pub fn split_operator(&self) -> (Operator, Math) {
+    pub fn split_operator(&self) -> (AlgebraOperator, Math) {
         match self {
             Math::Variable(s) => s.split_operator(),
-            _ => (Operator::Algebra(AlgebraOperator::Addition), self.clone()),
+            _ => (AlgebraOperator::Addition, self.clone()),
         }
     }
 
-    pub fn morph_operator(pair: (&Operator, &Math)) -> Math {
+    pub fn morph_operator(pair: (&AlgebraOperator, &Math)) -> Math {
         match pair.0 {
-            Operator::Algebra(AlgebraOperator::Subtraction) => pair.1.negative(),
+            AlgebraOperator::Subtraction => pair.1.negative(),
             _ => pair.1.clone(),
         }
     }
@@ -97,69 +94,24 @@ impl Math {
         }
     }
 
-    #[cfg(feature = "step-tracking")]
-    pub fn get_step(&self) -> Step {
-        match self {
-            Math::Variable(v) => v.step.clone().unwrap_or_default(),
-            Math::Polynom(p) => p.step.clone().unwrap_or(
-                Step::step(
-                    self.clone(),
-                    None,
-                    Operator::Detail(DetailedOperator::Nothing),
-                    String::from("Nothing to do"),
-                )
-                .unwrap_or_default(),
-            ),
-            s => Step::step(
-                self.clone(),
-                None,
-                Operator::Detail(DetailedOperator::Nothing),
-                format!("Not implemented yet for type: {}", stringify!(s)),
-            )
-            .unwrap_or_default(),
+    pub fn equal_bruteforce(&self, other: Math) -> bool {
+        let mut suffixes = self.get_all_suffixes();
+        suffixes.extend(other.get_all_suffixes());
+        suffixes.sort();
+        suffixes.dedup();
+        for i in (-10000..10000).step_by(30) {
+            let mut new_a = self.clone();
+            let mut new_b = other.clone();
+            for s in 0..suffixes.len() {
+                new_a = new_a.substitute(&suffixes[s], (s as i64 + i).as_variable().as_math());
+                new_b = new_b.substitute(&suffixes[s], (s as i64 + i).as_variable().as_math());
+            }
+            if new_a.simplify().to_tex() != new_b.simplify().to_tex() {
+                return false;
+            }
         }
+        true
     }
-
-    //   pub fn equal_bruteforce(&self, other: Math) -> bool {
-    //       let mut suffixes = self.get_all_suffixes();
-    //       suffixes.extend(other.get_all_suffixes());
-    //       suffixes.sort();
-    //       suffixes.dedup();
-    //       let mut rounds = 0;
-    //       let mut eq = 0;
-    //       for i in (-10000..10000).step_by(30) {
-    //           rounds += 1;
-    //           let mut new_a = self.clone();
-    //           let mut new_b = other.clone();
-    //
-    //           //       let mut substitutions: Vec<String> = vec![];
-    //
-    //           for s in 0..suffixes.len() {
-    //               new_a =
-    //                   new_a.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
-    //               new_b =
-    //                   new_b.substitute(suffixes[s].as_ref(), (s as i64 + i).as_variable().as_math());
-    //               //            substitutions.push(format!("{} = {}", suffixes[s], s as i64 + i));
-    //           }
-    //           //TODO remove reparsing
-    //           if new_a
-    //               .to_tex()
-    //               .parse_math()
-    //               .expect("failed parsing math for equal_bruteforce")
-    //               .simplify()
-    //               .to_tex()
-    //               == new_b
-    //                   .to_tex()
-    //                   .parse_math()
-    //                   .expect("failed parsing math for equal_bruteforce")
-    //                   .simplify()
-    //                   .to_tex()
-    //           {
-    //               eq += 1;
-    //           }
-    //       }
-    //       eq == rounds
-    //   }
 }
 
 fn or_zero(first: &Math, second: &Math) -> bool {
@@ -179,6 +131,7 @@ fn non_zero(first: &Math, second: &Math) -> Math {
 impl Simplifiable for Math {
     fn simplify(&self) -> Math {
         //TODO recursive simplify until no change
+        env_info("operations", format!("math simplify {}", self.to_tex()));
         match self {
             Math::Variable(v) => v.simplify(),
             Math::Polynom(p) => p.simplify(),
@@ -192,16 +145,13 @@ impl Simplifiable for Math {
             Math::Product(p) => p.simplify(),
             Math::Factorial(f) => f.simplify(),
             Math::Function(f) => {
-                print!("function {}", f.to_tex());
-                Math::Function(f.clone())
+                return Math::Function(f.clone());
             }
             Math::Matrix(f) => {
-                print!("matrix {}", f.to_tex());
-                Math::Matrix(f.clone())
+                return Math::Matrix(f.clone());
             }
             Math::Vector(f) => {
-                print!("vector {}", f.to_tex());
-                Math::Vector(f.clone())
+                return Math::Vector(f.clone());
             }
         }
     }
@@ -209,18 +159,22 @@ impl Simplifiable for Math {
 
 impl AlgebraOperations for Math {
     fn add_self(&self, other: &Math) -> Math {
+        env_info("operations", format!("math add_self {}", self.to_tex()));
         self.add(other)
     }
 
     fn sub_self(&self, other: &Math) -> Math {
+        env_info("operations", format!("math sub_self {}", self.to_tex()));
         self.sub(other)
     }
 
     fn mul_self(&self, other: &Math) -> Math {
+        env_info("operations", format!("math mul_self {}", self.to_tex()));
         self.mul(other)
     }
 
     fn div_self(&self, other: &Math) -> Math {
+        env_info("operations", format!("math div_self {}", self.to_tex()));
         self.div(other)
     }
 
@@ -278,6 +232,7 @@ impl AlgebraOperations for Math {
     }
 
     fn negative(&self) -> Math {
+        env_info("operations", format!("math negative {}", self.to_tex()));
         match self {
             Math::Polynom(p) => p.negative(),
             Math::Braces(b) => b.negative(),
@@ -294,12 +249,13 @@ impl AlgebraOperations for Math {
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
+        env_info("operations", format!("math substitute {}", self.to_tex()));
         match self {
-            Math::Variable(v) => v.substitute(suffix, math).as_polynom().unpack(),
-            Math::Polynom(p) => p.substitute(suffix, math).as_polynom().unpack(),
-            Math::Braces(b) => b.substitute(suffix, math).as_polynom().unpack(),
-            Math::Fraction(f) => f.substitute(suffix, math).as_polynom().unpack(),
-            Math::Infinity(i) => Math::Infinity(i.clone()).as_polynom().unpack(),
+            Math::Variable(v) => v.substitute(suffix, math).as_polynom().as_math(),
+            Math::Polynom(p) => p.substitute(suffix, math).as_polynom().as_math(),
+            Math::Braces(b) => b.substitute(suffix, math).as_polynom().as_math(),
+            Math::Fraction(f) => f.substitute(suffix, math).as_polynom().as_math(),
+            Math::Infinity(i) => Math::Infinity(i.clone()).as_polynom().as_math(),
             //Math::Root(r) => r.substitute(suffix, math),
             //Math::Absolute(a) => a.substitute(suffix, math),
             //Math::Vector(v) => v.substitute(suffix, math),
@@ -310,12 +266,18 @@ impl AlgebraOperations for Math {
     }
 
     fn get_all_suffixes(&self) -> Vec<String> {
-        match self {
+        let suf = match self {
             Math::Variable(v) => v.get_all_suffixes(),
             Math::Polynom(p) => p.get_all_suffixes(),
             Math::Braces(b) => b.get_all_suffixes(),
             Math::Fraction(f) => f.get_all_suffixes(),
-            _ => todo!(),
-        }
+            _ => Vec::new(),
+        };
+
+        env_info(
+            "helper",
+            format!("get_all_suffixes {} {:#?}", self.to_tex(), suf),
+        );
+        suf
     }
 }

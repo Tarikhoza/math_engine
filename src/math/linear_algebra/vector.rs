@@ -1,3 +1,4 @@
+use crate::logging::env_info;
 use crate::math::algebra::operations::Operations;
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
@@ -5,18 +6,14 @@ use crate::math::Math;
 use itertools::Itertools;
 use rust_decimal_macros::dec;
 
-#[cfg(feature = "step-tracking")]
-use crate::solver::step::Step;
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct Vector {
     pub factors: Vec<Math>,
-    #[cfg(feature = "step-tracking")]
-    pub step: Option<Step>,
 }
 
 impl Vector {
     fn get_bases(&self) -> Vec<String> {
+        env_info("helper", format!("get_bases vector {:#?}", self));
         self.factors
             .iter()
             .map(|m| m.add_sub_base())
@@ -36,32 +33,36 @@ impl Vector {
                         value: dec!(0),
                         suffix: String::new(),
                         exponent: None,
-                        #[cfg(feature = "step-tracking")]
-                        step: None,
                     })
                 }
             })
             .collect();
-        Vector {
-            factors,
-            #[cfg(feature = "step-tracking")]
-            step: None,
-        }
+        Vector { factors }
     }
 
     pub fn to_based_matrix(&self) -> Matrix {
-        Matrix {
+        env_info(
+            "helper",
+            format!("to_based_matrix vector before {:#?}", self),
+        );
+        let res = Matrix {
             factors: self
                 .get_bases()
                 .iter()
                 .map(|m| self.non_matching_to_zero(m))
                 .collect(),
-        }
+        };
+        env_info("helper", format!("to_based_matrix vector after {:#?}", res));
+        res
     }
 
     pub fn add_all(&self) -> Math {
-        self.factors
+        env_info("helper", format!("add_all vector before {:#?}", self));
+        let res = self
+            .factors
             .iter()
-            .fold(Math::default(), |acc, e| acc.add(e))
+            .fold(Math::default(), |acc, e| acc.add(e));
+        env_info("helper", format!("add_all vector after {:#?}", res));
+        res
     }
 }

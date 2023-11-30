@@ -12,8 +12,6 @@ impl Exponentable for Variable {
                 value: dec!(1),
                 suffix: String::new(),
                 exponent: None,
-                #[cfg(feature = "step-tracking")]
-                step: None,
             }),
             Some(e) => *e.clone(),
         }

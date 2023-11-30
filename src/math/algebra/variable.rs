@@ -2,12 +2,9 @@ use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::{
     Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
-use crate::math::operator::Operator;
 use crate::math::Math;
 
 use crate::parser::Parsable;
-#[cfg(feature = "step-tracking")]
-use crate::solver::step::{DetailedOperator, Step};
 
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
@@ -17,8 +14,6 @@ pub struct Variable {
     pub value: Decimal,
     pub suffix: String,
     pub exponent: Option<Box<Math>>,
-    #[cfg(feature = "step-tracking")]
-    pub step: Option<Step>,
 }
 
 impl Variable {
@@ -28,17 +23,11 @@ impl Variable {
             && self.get_exponent().to_tex() == "1"
     }
 
-    pub fn split_operator(&self) -> (Operator, Math) {
+    pub fn split_operator(&self) -> (AlgebraOperator, Math) {
         if self.value < dec!(0) {
-            return (
-                Operator::Algebra(AlgebraOperator::Subtraction),
-                self.negative(),
-            );
+            return (AlgebraOperator::Subtraction, self.negative());
         }
-        (
-            Operator::Algebra(AlgebraOperator::Addition),
-            Math::Variable(self.clone()),
-        )
+        (AlgebraOperator::Addition, Math::Variable(self.clone()))
     }
 
     pub fn add_sub_base(&self) -> String {

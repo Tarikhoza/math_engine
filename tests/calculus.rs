@@ -1,12 +1,13 @@
+use math_engine::lexer::Tokenisable;
 use math_engine::math::simplifiable::Simplifiable;
-use math_engine::parser::{Parsable, ParsablePrimitive};
+use math_engine::parser::{Parsable, Parser};
 
 macro_rules! parser_eq {
     ($input:expr, $expected:expr) => {
         assert_eq!(
             //TODO remove double simplify
-            $input
-                .parse_math()
+            Parser::new($input.tokenise().unwrap())
+                .parse()
                 .unwrap()
                 .simplify()
                 .simplify()

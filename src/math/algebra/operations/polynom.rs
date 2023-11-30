@@ -1,28 +1,44 @@
 use crate::castable::Castable;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::{
-    Operations as AlgebraOperations, Operator as AlgebraOperators,
+    Operations as AlgebraOperations, Operator as AlgebraOperator,
 };
 use crate::math::algebra::polynom::{Polynom, PolynomPart};
 use crate::math::algebra::undefined::Undefined;
-use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::Parsable;
 
-#[cfg(feature = "step-tracking")]
-use crate::solver::step::{DetailedOperator, Step};
+use crate::logging::{env_error, env_info, env_warn};
 
 impl Simplifiable for Polynom {
-    //  PEMDAS
     fn simplify(&self) -> Math {
-        self.simplify_par()
+        env_info(
+            "operations",
+            format!("### simplify polynom before {} ###", self.to_tex()),
+        );
+        if let Some(PolynomPart::Math(m)) = self.parts.first() {
+            if self.parts.len() == 1 {
+                return m.as_math();
+            }
+        }
+        let result = self
+            .morph_ops()
+            .simplify_par()
             .simplify_exp()
             .simplify_mul_div()
-            .simplify_add_sub()
-            .flatten()
-            .morph_double_operator()
-            .unpack()
+            .simplify_add_sub();
+
+        env_info(
+            "operations",
+            format!("###simplify polynom after {}###\n", result.to_tex()),
+        );
+        if let Some(PolynomPart::Math(m)) = result.parts.first() {
+            if result.parts.len() == 1 {
+                return m.as_math();
+            }
+        }
+        result.as_math()
     }
 }
 impl AlgebraOperations for Polynom {
@@ -30,65 +46,36 @@ impl AlgebraOperations for Polynom {
         Math::Polynom(Polynom {
             parts: {
                 let mut parts = self.parts.clone();
-                parts.push(Operator::Algebra(AlgebraOperators::Addition).as_polynom_part());
+                parts.push(AlgebraOperator::Addition.as_polynom_part());
                 parts.extend(other.parts.clone());
                 parts
             },
-            #[cfg(feature = "step-tracking")]
-            step: Step::step(
-                Math::Polynom(self.clone()),
-                Some(Math::Polynom(other.clone())),
-                Operator::Algebra(AlgebraOperators::Addition),
-                String::from("Grouping two polynoms"),
-            ),
         })
     }
+
     fn sub_self(&self, other: &Polynom) -> Math {
         Math::Polynom(Polynom {
             parts: {
                 let mut parts = self.parts.clone();
-                parts.push(Operator::Algebra(AlgebraOperators::Subtraction).as_polynom_part());
+                parts.push(AlgebraOperator::Subtraction.as_polynom_part());
                 parts.extend(other.parts.clone());
                 parts
             },
-
-            #[cfg(feature = "step-tracking")]
-            step: Step::step(
-                Math::Polynom(self.clone()),
-                Some(Math::Polynom(other.clone())),
-                Operator::Algebra(AlgebraOperators::Subtraction),
-                String::from("Grouping two polynoms"),
-            ),
         })
     }
 
     fn mul_self(&self, other: &Polynom) -> Math {
         let mut parts: Vec<PolynomPart> = vec![];
-        #[cfg(feature = "step-tracking")]
-        let mut steps: Vec<Step> = vec![];
         for i in self.to_vector().factors.iter() {
             for j in other.to_vector().factors.iter() {
                 let product = i.mul(j);
-                #[cfg(feature = "step-tracking")]
-                steps.push(product.get_step());
                 parts.push(product.as_polynom_part());
-                parts.push(Operator::Algebra(AlgebraOperators::Addition).as_polynom_part());
+                parts.push(AlgebraOperator::Addition.as_polynom_part());
             }
         }
         parts.pop();
 
-        Polynom {
-            parts,
-            #[cfg(feature = "step-tracking")]
-            step: Step::steps(
-                self.as_math(),
-                Some(other.as_math()),
-                Operator::Algebra(AlgebraOperators::Multiplication),
-                String::from("Multiply two polynoms"),
-                steps,
-            ),
-        }
-        .as_math()
+        Polynom { parts }.as_math()
     }
 
     fn div_self(&self, _other: &Polynom) -> Math {
@@ -144,8 +131,10 @@ impl AlgebraOperations for Polynom {
     }
     fn get_all_suffixes(&self) -> Vec<String> {
         let mut suf: Vec<String> = vec![];
-        for i in self.get_maths().iter() {
-            suf.extend(i.get_all_suffixes())
+        for i in self.parts.iter() {
+            if let PolynomPart::Math(m) = i {
+                suf.extend(m.get_all_suffixes())
+            }
         }
         suf.sort();
         suf.dedup();
@@ -154,11 +143,15 @@ impl AlgebraOperations for Polynom {
 }
 
 //  Simplify helper functions
-//  PEMDAS
 impl Polynom {
+    //  PEMDAS
     //  P - Parentheses
     pub fn simplify_par(&self) -> Polynom {
-        println!("before par: {}", self.to_tex());
+        env_info(
+            "operations",
+            format!("simplify_par before {}", self.to_tex()),
+        );
+
         let mut parts: Vec<PolynomPart> = self.parts.clone();
         for part in parts.iter_mut() {
             if let PolynomPart::Math(Math::Braces(b)) = part {
@@ -166,69 +159,74 @@ impl Polynom {
             }
         }
 
-        println!(
-            "after par: {}",
-            Polynom {
-                parts: parts.clone()
-            }
-            .to_tex()
+        env_info(
+            "operations",
+            format!("simplify_par after {}", self.to_tex()),
+        );
+        Polynom { parts }
+    }
+    //  E - Exponents (Powers and Square Roots, etc.)
+
+    pub fn simplify_exp(&self) -> Polynom {
+        env_info(
+            "operations",
+            format!("simplify_exp before {}", self.to_tex()),
         );
 
-        Polynom {
-            parts,
-            #[cfg(feature = "step-tracking")]
-            step: None,
-        }
-    }
-
-    //  E - Exponents (Powers and Square Roots, etc.)
-    pub fn simplify_exp(&self) -> Polynom {
-        println!("before exp: {}", self.to_tex());
         let mut parts: Vec<PolynomPart> = self.parts.clone();
 
         for part in parts.iter_mut() {
             match part {
                 PolynomPart::Math(Math::Braces(b)) => {
+                    env_info("operations", format!("applying exponent to {}", b.to_tex()));
                     *part = b.apply_exponent().as_polynom_part();
+                    env_info("operations", format!("after exponentiation to {:#?}", part));
                 }
                 PolynomPart::Math(Math::Variable(v)) => {
+                    env_info("operations", format!("applying exponent to {}", v.to_tex()));
                     *part = v.apply_exponent().as_polynom_part();
+                    env_info("operations", format!("after exponentiation to {:#?}", part));
                 }
                 _ => {}
             }
         }
-        println!(
-            "after exp: {}",
-            Polynom {
-                parts: parts.clone()
-            }
-            .to_tex()
+
+        env_info(
+            "operations",
+            format!("simplify_exp after {}", self.to_tex()),
         );
 
-        Polynom {
-            parts,
-            #[cfg(feature = "step-tracking")]
-            step: None,
-        }
+        Polynom { parts }
     }
 
     //  MD - Multiplication and Division (left-to-right)
     pub fn simplify_mul_div(&self) -> Polynom {
-        println!("before mul_div: {}", self.to_tex());
-        let mut parts = Vec::new();
-        let maths = self.get_maths();
-        let operators = self.get_operators();
-
-        if maths.len() == 1
-            || !operators.contains(&Operator::Algebra(AlgebraOperators::Multiplication))
-                && !operators.contains(&Operator::Algebra(AlgebraOperators::InvMulti))
-                && !operators.contains(&Operator::Algebra(AlgebraOperators::Division))
+        if !self
+            .parts
+            .contains(&PolynomPart::Operator(AlgebraOperator::Multiplication))
+            && !self
+                .parts
+                .contains(&PolynomPart::Operator(AlgebraOperator::InvMulti))
+            && !self
+                .parts
+                .contains(&PolynomPart::Operator(AlgebraOperator::Division))
         {
+            env_info(
+                "operations",
+                format!(
+                    "simplify_mul_div does not contain any mul or div ops {}",
+                    self.to_tex()
+                ),
+            );
             return self.clone();
         }
 
-        #[cfg(feature = "step-tracking")]
-        let mut steps: Vec<Step> = vec![];
+        env_info(
+            "operations",
+            format!("simplify_mul_div before {}", self.to_tex()),
+        );
+
+        let mut parts = Vec::new();
 
         for (i, window) in self.parts.windows(3).enumerate() {
             if let (
@@ -237,23 +235,17 @@ impl Polynom {
                 Some(PolynomPart::Math(rhs)),
             ) = (window.get(0), window.get(1), window.get(2))
             {
-                match op {
-                    Operator::Algebra(AlgebraOperators::Multiplication)
-                    | Operator::Algebra(AlgebraOperators::InvMulti) => {
+                match *op {
+                    AlgebraOperator::Multiplication | AlgebraOperator::InvMulti => {
                         let part = lhs.mul(rhs);
-                        #[cfg(feature = "step-tracking")]
-                        steps.push(p.get_step());
                         if part.to_tex() != "0" {
                             parts.push(part.as_polynom_part());
                         }
                         parts.extend_from_slice(self.parts.get(i + 3..).unwrap_or(&[]));
                         break;
                     }
-                    Operator::Algebra(AlgebraOperators::Division) => {
+                    AlgebraOperator::Division => {
                         let part = lhs.div(rhs);
-                        #[cfg(feature = "step-tracking")]
-                        steps.push(f.get_step());
-
                         if part.to_tex() != "0" {
                             parts.push(part.as_polynom_part());
                         }
@@ -267,41 +259,38 @@ impl Polynom {
                 }
             }
         }
-        println!(
-            "after mul_div: {}",
-            Polynom {
-                parts: parts.clone()
-            }
-            .to_tex()
-        );
-        let p = Polynom {
-            parts,
-            #[cfg(feature = "step-tracking")]
-            step: Step::steps(
-                Math::Polynom(self.clone()),
-                None,
-                Operator::Detail(DetailedOperator::SimplifyMultiplicationDivision),
-                String::from("Multiply every element in polynom"),
-                steps,
-            ),
-        };
-
-        let maths = p.get_maths();
-        let operators = p.get_operators();
-
-        if maths.len() >= 2
-            || (!operators.contains(&Operator::Algebra(AlgebraOperators::Multiplication))
-                && !operators.contains(&Operator::Algebra(AlgebraOperators::InvMulti))
-                && !operators.contains(&Operator::Algebra(AlgebraOperators::Division)))
+        let p = Polynom { parts };
+        if p.parts
+            .contains(&PolynomPart::Operator(AlgebraOperator::Multiplication))
+            || p.parts
+                .contains(&PolynomPart::Operator(AlgebraOperator::InvMulti))
+            || p.parts
+                .contains(&PolynomPart::Operator(AlgebraOperator::Division))
         {
+            env_info(
+                "operations",
+                format!(
+                    "simplify_mul_div does contain mul or div ops, doing an other iteration {}",
+                    p.to_tex()
+                ),
+            );
             return p.simplify_mul_div();
         }
+
+        env_info(
+            "operations",
+            format!("simplify_mut_div after {}", p.as_math().to_tex()),
+        );
         p
     }
 
     //  AS - Addition and Subtraction (left-to-right)
     pub fn simplify_add_sub(&self) -> Polynom {
-        println!("before add_sub: {}", self.to_tex());
+        env_info(
+            "operations",
+            format!("simplify_add_sub before {}", self.to_tex()),
+        );
+
         let mut vec = self
             .to_vector()
             .to_based_matrix()
@@ -309,10 +298,75 @@ impl Polynom {
             .as_polynom()
             .to_vector();
 
-        println!(
-            "before add_sub: {}",
-            vec.add_all().as_polynom().sort().to_tex()
+        let mut ret = vec.add_all().as_polynom();
+        ret.sort();
+
+        env_info(
+            "operations",
+            format!("simplify_add_sub after {}", ret.to_tex()),
         );
-        vec.add_all().as_polynom().sort()
+        ret
+    }
+    pub fn morph_ops(&self) -> Polynom {
+        env_info("operations", format!("morph_ops before {}", self.to_tex()));
+
+        let mut parts: Vec<PolynomPart> = Vec::new();
+
+        let mut skip = false;
+        let mut change = false;
+
+        for (i, win) in self.parts.windows(2).enumerate() {
+            if skip {
+                skip = false;
+                continue;
+            }
+            match win {
+                [PolynomPart::Operator(AlgebraOperator::Addition), PolynomPart::Operator(AlgebraOperator::Addition)]
+                | [PolynomPart::Operator(AlgebraOperator::Subtraction), PolynomPart::Operator(AlgebraOperator::Subtraction)] =>
+                {
+                    parts.push(PolynomPart::Operator(AlgebraOperator::Addition));
+                    skip = true;
+                    change = true;
+                }
+
+                [PolynomPart::Operator(AlgebraOperator::Subtraction), PolynomPart::Operator(AlgebraOperator::Addition)]
+                | [PolynomPart::Operator(AlgebraOperator::Addition), PolynomPart::Operator(AlgebraOperator::Subtraction)] =>
+                {
+                    parts.push(PolynomPart::Operator(AlgebraOperator::Subtraction));
+                    skip = true;
+                    change = true;
+                }
+                _ => {
+                    if i < self.parts.len() {
+                        parts.push(win[0].clone());
+                    } else {
+                        parts.push(win[0].clone());
+                        parts.push(win[1].clone());
+                    }
+                }
+            }
+        }
+        if let Some(m) = self.parts.last() {
+            parts.push(m.clone());
+        }
+
+        let p = Polynom { parts };
+
+        if change {
+            env_info(
+                "operations",
+                format!(
+                    "doing another iteration of morph_op after {}",
+                    p.as_math().to_tex()
+                ),
+            );
+
+            return p.morph_ops();
+        }
+        env_info(
+            "operations",
+            format!("morph_op after {}", p.as_math().to_tex()),
+        );
+        p
     }
 }

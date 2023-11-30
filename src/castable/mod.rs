@@ -27,7 +27,7 @@ pub trait Castable {
 
     fn as_braces(&self) -> Braces {
         Braces {
-            math: Box::new(self.as_math()),
+            inner: Box::new(self.as_math()),
             exponent: None,
         }
     }

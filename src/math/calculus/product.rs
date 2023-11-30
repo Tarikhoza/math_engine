@@ -2,8 +2,8 @@ use crate::math::Math;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Product {
-    pub begining: Box<Math>,
+    pub start: Box<Math>,
     pub end: Box<Math>,
-    pub iter_suffix: String,
-    pub math: Box<Math>,
+    pub iter: String,
+    pub inner: Box<Math>,
 }

@@ -2,7 +2,6 @@ use crate::castable::Castable;
 use crate::math::algebra::operations::{Operations, Operator as AlgebraOperator};
 use crate::math::algebra::polynom::Polynom;
 use crate::math::calculus::factorial::Factorial;
-use crate::math::operator::Operator;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
@@ -10,7 +9,7 @@ use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 impl Simplifiable for Factorial {
     fn simplify(&self) -> Math {
         let mut n = 1_i64.as_variable().as_math();
-        let end = self.math.clone().add(&1_i64.as_variable().as_math());
+        let end = self.inner.clone().add(&1_i64.as_variable().as_math());
 
         let mut new_poly: Polynom = Polynom { parts: Vec::new() };
 
@@ -25,11 +24,53 @@ impl Simplifiable for Factorial {
                     .push(n.as_braces().as_math().as_polynom_part());
                 new_poly
                     .parts
-                    .push(Operator::Algebra(AlgebraOperator::Multiplication).as_polynom_part())
+                    .push(AlgebraOperator::Multiplication.as_polynom_part())
             }
             n = n.add(&1_i64.as_variable().as_math()).simplify();
         }
 
-        new_poly.unpack()
+        new_poly.as_math()
+    }
+}
+
+impl Operations for Factorial {
+    fn add_self(&self, other: &Self) -> Math {
+        todo!()
+    }
+
+    fn sub_self(&self, other: &Self) -> Math {
+        todo!()
+    }
+
+    fn div_self(&self, other: &Self) -> Math {
+        todo!()
+    }
+
+    fn mul_self(&self, other: &Self) -> Math {
+        todo!()
+    }
+
+    fn substitute(&self, suffix: &str, value: Math) -> Math {
+        todo!()
+    }
+
+    fn add(&self, other: &Math) -> Math {
+        todo!()
+    }
+
+    fn sub(&self, other: &Math) -> Math {
+        todo!()
+    }
+
+    fn div(&self, other: &Math) -> Math {
+        todo!()
+    }
+
+    fn mul(&self, other: &Math) -> Math {
+        todo!()
+    }
+
+    fn get_all_suffixes(&self) -> Vec<String> {
+        todo!()
     }
 }

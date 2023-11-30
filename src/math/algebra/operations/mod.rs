@@ -11,7 +11,6 @@ use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 
 use crate::parser::ParsablePrimitiveAsVariable;
-use fancy_regex::Regex;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Operator {
@@ -23,7 +22,7 @@ pub enum Operator {
     AddSub,
 }
 
-pub trait Operations: Simplifiable {
+pub trait Operations {
     fn add_self(&self, other: &Self) -> Math;
     fn sub_self(&self, other: &Self) -> Math;
     fn div_self(&self, other: &Self) -> Math;
@@ -43,44 +42,4 @@ pub trait Operations: Simplifiable {
     }
 
     fn get_all_suffixes(&self) -> Vec<String>;
-}
-
-impl Operator {
-    pub fn to_tex(&self) -> String {
-        match self {
-            Operator::Addition => "+".to_owned(),
-            Operator::Subtraction => "-".to_owned(),
-            Operator::Multiplication => "*".to_owned(),
-            Operator::Division => "/".to_owned(),
-            Operator::InvMulti => String::new(),
-            Operator::AddSub => "\\pm".to_owned(),
-        }
-    }
-
-    pub fn from_tex(op: &str) -> Result<Operator, &'static str> {
-        match op {
-            x if x == "+" => Ok(Operator::Addition),
-            x if x == "-" => Ok(Operator::Subtraction),
-            x if x == "*" => Ok(Operator::Multiplication),
-            x if x == "/" => Ok(Operator::Division),
-            x if x.is_empty() => Ok(Operator::InvMulti),
-            x if x == "\\pm" => Ok(Operator::AddSub),
-            _ => Err("Conversion from string to operator went wrong"),
-        }
-    }
-
-    pub fn on_begining(tex: String) -> Option<String> {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"^[\-+\/*]|\\pm").unwrap_or_else(|e| {
-                panic!("Failed to compile regex for operators: {e}");
-            });
-        }
-        if let Ok(Some(f)) = RE.find(&tex) {
-            let f_str = f.as_str().to_string();
-            if !f_str.is_empty() {
-                return Some(f_str);
-            }
-        }
-        None
-    }
 }

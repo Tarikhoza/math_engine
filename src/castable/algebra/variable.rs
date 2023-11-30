@@ -14,7 +14,7 @@ impl Castable for Variable {
 
     fn as_braces(&self) -> Braces {
         Braces {
-            math: Box::new(self.without_exponent()),
+            inner: Box::new(self.without_exponent()),
             exponent: Some(Box::new(self.get_exponent())),
         }
     }

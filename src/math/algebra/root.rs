@@ -10,7 +10,7 @@ use crate::parser::{Parsable, ParsablePrimitiveAsVariable};
 //
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Root {
-    pub math: Box<Math>,
+    pub inner: Box<Math>,
     pub base: Option<Box<Math>>,
 }
 
@@ -63,14 +63,14 @@ impl Root {
     }
 
     pub fn exponential_form(&self) -> Math {
-        let exponent: Math = match *self.math.clone() {
+        let exponent: Math = match *self.inner.clone() {
             Math::Variable(v) => v.get_exponent(),
             Math::Braces(b) => b.get_exponent(),
             Math::Function(f) => f.get_exponent(),
             _ => 1_i64.as_variable().as_math(),
         };
 
-        match *self.math.clone() {
+        match *self.inner.clone() {
             Math::Variable(v) => Math::Variable(Variable {
                 value: v.value,
                 suffix: v.suffix,
@@ -79,11 +79,9 @@ impl Root {
                     denominator: Box::new(exponent),
                     numerator: Box::new(self.get_base()),
                 }))),
-                #[cfg(feature = "step-tracking")]
-                step: None,
             }),
             Math::Braces(b) => Math::Braces(Braces {
-                math: b.math,
+                inner: b.inner,
                 exponent: Some(Box::new(Math::Fraction(Fraction {
                     whole: None,
                     denominator: Box::new(exponent),
@@ -91,7 +89,7 @@ impl Root {
                 }))),
             }),
             other => Math::Braces(Braces {
-                math: Box::new(other),
+                inner: Box::new(other),
                 exponent: Some(Box::new(Math::Fraction(Fraction {
                     whole: None,
                     denominator: Box::new(exponent),

@@ -14,8 +14,6 @@ impl Exponentable for Braces {
                 value: dec!(1),
                 suffix: String::new(),
                 exponent: None,
-                #[cfg(feature = "step-tracking")]
-                step: None,
             }),
             Some(e) => *e.clone(),
         }
@@ -27,7 +25,7 @@ impl Exponentable for Braces {
     }
 
     fn without_exponent(&self) -> Math {
-        self.math.simplify()
+        self.inner.simplify()
     }
 
     fn with_exponent(&self) -> Math {

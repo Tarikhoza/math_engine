@@ -1,11 +1,17 @@
+use math_engine::lexer::Tokenisable;
 use math_engine::math::simplifiable::Simplifiable;
-use math_engine::parser::{Parsable, ParsablePrimitive};
+use math_engine::parser::{Parsable, Parser};
 
 macro_rules! parser_eq {
     ($input:expr, $expected:expr) => {
         assert_eq!(
-            //TODO remove double simplify
-            $input.parse_math().unwrap().simplify().simplify().to_tex(),
+            Parser::new($input.tokenise().unwrap())
+                .parse()
+                .unwrap()
+                .simplify()
+                .simplify()
+                .simplify()
+                .to_tex(),
             $expected
         );
     };
@@ -222,7 +228,7 @@ fn double_operator() {
 #[test]
 fn multi_operator() {
     parser_eq!("3x----1x", "4x");
-    parser_eq!("3x---1x", "3x");
+    parser_eq!("3x---1x", "2x");
 }
 
 #[test]
@@ -315,87 +321,87 @@ fn fractions() {
     );
 }
 //#[test]
-//   fn fractions_whole() {
-//       //mixed to basic
-//       parser_eq!("1\\frac{1}{2}", "\\frac{3}{2}");
-//       parser_eq!("3\\frac{1}{4}", "\\frac{13}{4}");
-//       parser_eq!("2\\frac{2}{5}", "\\frac{12}{5}");
-//       parser_eq!("6\\frac{7}{8}", "\\frac{55}{8}");
-//       parser_eq!("3\\frac{4}{7}", "\\frac{25}{7}");
-//       parser_eq!("8\\frac{2}{9}", "\\frac{74}{9}");
-//       parser_eq!("4\\frac{6}{7}", "\\frac{30}{7}");
-//       parser_eq!("2\\frac{3}{4}", "\\frac{11}{4}");
-//       parser_eq!("7\\frac{7}{8}", "\\frac{63}{8}");
-//       parser_eq!("3\\frac{11}{12}", "\\frac{47}{12}");
-//       parser_eq!("4\\frac{9}{14}", "\\frac{65}{14}");
-//       parser_eq!("6\\frac{7}{11}", "\\frac{73}{11}");
-//       parser_eq!("12\\frac{3}{8}", "\\frac{96}{8}");
-//       parser_eq!("45\\frac{2}{15}", "\\frac{677}{15}");
-//       parser_eq!("73\\frac{41}{83}", "\\frac{6063}{83}");
-//       parser_eq!("0\\frac{573}{991}", "\\frac{573}{991}");
-//       //basic to mixed
-//       parser_eq!("\\frac{5}{4}", "1\\frac{1}{4}");
-//       parser_eq!("\\frac{7}{6}", "1\\frac{1}{6}");
-//       parser_eq!("\\frac{9}{5}", "1\\frac{4}{5}");
-//       parser_eq!("\\frac{12}{10}", "1\\frac{2}{10}");
-//       parser_eq!("\\frac{35}{6}", "5\\frac{5}{6}");
-//       parser_eq!("\\frac{44}{9}", "4\\frac{8}{9}");
-//       parser_eq!("\\frac{52}{5}", "10\\frac{2}{5}");
-//       parser_eq!("\\frac{11}{3}", "3\\frac{2}{3}");
-//       parser_eq!("\\frac{73}{8}", "9\\frac{1}{8}");
-//       parser_eq!("\\frac{65}{4}", "16\\frac{1}{4}");
-//       parser_eq!("\\frac{82}{11}", "7\\frac{5}{11}");
-//       parser_eq!("\\frac{74}{13}", "5\\frac{9}{13}");
-//       parser_eq!("\\frac{93}{4}", "23\\frac{1}{4}");
-//       parser_eq!("\\frac{425}{15}", "28\\frac{5}{15}");
-//       parser_eq!("\\frac{291}{16}", "18\\frac{3}{16}");
-//       parser_eq!("\\frac{2455}{48}", "51\\frac{7}{2448}");
-//   }
+fn fractions_whole() {
+    //mixed to basic
+    parser_eq!("1\\frac{1}{2}", "\\frac{3}{2}");
+    parser_eq!("3\\frac{1}{4}", "\\frac{13}{4}");
+    parser_eq!("2\\frac{2}{5}", "\\frac{12}{5}");
+    parser_eq!("6\\frac{7}{8}", "\\frac{55}{8}");
+    parser_eq!("3\\frac{4}{7}", "\\frac{25}{7}");
+    parser_eq!("8\\frac{2}{9}", "\\frac{74}{9}");
+    parser_eq!("4\\frac{6}{7}", "\\frac{30}{7}");
+    parser_eq!("2\\frac{3}{4}", "\\frac{11}{4}");
+    parser_eq!("7\\frac{7}{8}", "\\frac{63}{8}");
+    parser_eq!("3\\frac{11}{12}", "\\frac{47}{12}");
+    parser_eq!("4\\frac{9}{14}", "\\frac{65}{14}");
+    parser_eq!("6\\frac{7}{11}", "\\frac{73}{11}");
+    parser_eq!("12\\frac{3}{8}", "\\frac{96}{8}");
+    parser_eq!("45\\frac{2}{15}", "\\frac{677}{15}");
+    parser_eq!("73\\frac{41}{83}", "\\frac{6063}{83}");
+    parser_eq!("0\\frac{573}{991}", "\\frac{573}{991}");
+    //basic to mixed
+    parser_eq!("\\frac{5}{4}", "1\\frac{1}{4}");
+    parser_eq!("\\frac{7}{6}", "1\\frac{1}{6}");
+    parser_eq!("\\frac{9}{5}", "1\\frac{4}{5}");
+    parser_eq!("\\frac{12}{10}", "1\\frac{2}{10}");
+    parser_eq!("\\frac{35}{6}", "5\\frac{5}{6}");
+    parser_eq!("\\frac{44}{9}", "4\\frac{8}{9}");
+    parser_eq!("\\frac{52}{5}", "10\\frac{2}{5}");
+    parser_eq!("\\frac{11}{3}", "3\\frac{2}{3}");
+    parser_eq!("\\frac{73}{8}", "9\\frac{1}{8}");
+    parser_eq!("\\frac{65}{4}", "16\\frac{1}{4}");
+    parser_eq!("\\frac{82}{11}", "7\\frac{5}{11}");
+    parser_eq!("\\frac{74}{13}", "5\\frac{9}{13}");
+    parser_eq!("\\frac{93}{4}", "23\\frac{1}{4}");
+    parser_eq!("\\frac{425}{15}", "28\\frac{5}{15}");
+    parser_eq!("\\frac{291}{16}", "18\\frac{3}{16}");
+    parser_eq!("\\frac{2455}{48}", "51\\frac{7}{2448}");
+}
 
-//   //#[test]
-//   fn fraction_as_decimal() {
-//       parser_eq!("\\frac{1}{2}", "0.5");
-//       parser_eq!("\\frac{1}{3}", "0.33");
-//       parser_eq!("\\frac{1}{5}", "0.2");
-//       parser_eq!("\\frac{1}{8}", "0.125");
-//       parser_eq!("\\frac{1}{4}", "0.25");
-//       parser_eq!("\\frac{1}{16}", "0.0625");
-//       parser_eq!("\\frac{3}{4}", "0.75");
-//       parser_eq!("\\frac{4}{5}", "0.8");
-//       parser_eq!("\\frac{4}{5}", "0.8");
-//       parser_eq!("\\frac{2}{3}", "0.66");
-//       parser_eq!("\\frac{6}{7}", "0.8571");
-//       parser_eq!("\\frac{1}{12}", "0.833");
-//       parser_eq!("\\frac{19}{5}", "3.8");
-//       parser_eq!("\\frac{5}{9}", "0.555");
-//       parser_eq!("\\frac{11}{6}", "1.833");
-//       parser_eq!("\\frac{5}{3}", "1.666");
-//       parser_eq!("\\frac{43}{5}", "8.6");
-//       parser_eq!("\\frac{55}{2}", "27.5");
-//       parser_eq!("\\frac{17}{8}", "2.125");
-//       parser_eq!("\\frac{67}{7}", "9.5714");
-//       parser_eq!("\\frac{81}{3}", "27");
-//       parser_eq!("\\frac{55}{7}", "7.857");
-//       parser_eq!("\\frac{1}{10}", "0.1");
-//       parser_eq!("\\frac{1}{10}", "0.1");
-//       parser_eq!("\\frac{1}{100}", "0.01");
-//       parser_eq!("\\frac{1}{1000}", "0.001");
-//   }
-//
 //#[test]
-//   fn log() {
-//       parser_eq!("\\log_{2}{16}", "4");
-//       parser_eq!("\\lg{1000}", "3");
-//       parser_eq!("\\log_{5}{125}", "2");
-//       parser_eq!("\\lb_{5}{512}", "9");
-//       parser_eq!("\\ln{e^{9}}", "9");
-//       parser_eq!("\\log_{5}{125}", "3");
-//       parser_eq!("\\log_{25}{125}", "\\frac{3}{2}");
-//       parser_eq!("\\log_{17}{1}", "0");
-//       parser_eq!("\\log_{3}{81}", "4");
-//       parser_eq!("\\log_{4}{64}", "3");
-//       parser_eq!("\\log_{15}{225}", "2");
-//   }
+fn fraction_as_decimal() {
+    parser_eq!("\\frac{1}{2}", "0.5");
+    parser_eq!("\\frac{1}{3}", "0.33");
+    parser_eq!("\\frac{1}{5}", "0.2");
+    parser_eq!("\\frac{1}{8}", "0.125");
+    parser_eq!("\\frac{1}{4}", "0.25");
+    parser_eq!("\\frac{1}{16}", "0.0625");
+    parser_eq!("\\frac{3}{4}", "0.75");
+    parser_eq!("\\frac{4}{5}", "0.8");
+    parser_eq!("\\frac{4}{5}", "0.8");
+    parser_eq!("\\frac{2}{3}", "0.66");
+    parser_eq!("\\frac{6}{7}", "0.8571");
+    parser_eq!("\\frac{1}{12}", "0.833");
+    parser_eq!("\\frac{19}{5}", "3.8");
+    parser_eq!("\\frac{5}{9}", "0.555");
+    parser_eq!("\\frac{11}{6}", "1.833");
+    parser_eq!("\\frac{5}{3}", "1.666");
+    parser_eq!("\\frac{43}{5}", "8.6");
+    parser_eq!("\\frac{55}{2}", "27.5");
+    parser_eq!("\\frac{17}{8}", "2.125");
+    parser_eq!("\\frac{67}{7}", "9.5714");
+    parser_eq!("\\frac{81}{3}", "27");
+    parser_eq!("\\frac{55}{7}", "7.857");
+    parser_eq!("\\frac{1}{10}", "0.1");
+    parser_eq!("\\frac{1}{10}", "0.1");
+    parser_eq!("\\frac{1}{100}", "0.01");
+    parser_eq!("\\frac{1}{1000}", "0.001");
+}
+
+//#[test]
+fn log() {
+    parser_eq!("\\log_{2}{16}", "4");
+    parser_eq!("\\lg{1000}", "3");
+    parser_eq!("\\log_{5}{125}", "2");
+    parser_eq!("\\lb_{5}{512}", "9");
+    parser_eq!("\\ln{e^{9}}", "9");
+    parser_eq!("\\log_{5}{125}", "3");
+    parser_eq!("\\log_{25}{125}", "\\frac{3}{2}");
+    parser_eq!("\\log_{17}{1}", "0");
+    parser_eq!("\\log_{3}{81}", "4");
+    parser_eq!("\\log_{4}{64}", "3");
+    parser_eq!("\\log_{15}{225}", "2");
+}
 
 #[test]
 fn simple_exponents() {

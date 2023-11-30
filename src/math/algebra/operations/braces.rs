@@ -35,11 +35,11 @@ impl Operations for Braces {
     fn negative(&self) -> Math {
         match &self.exponent {
             Some(_has_exp) => Math::Braces(Braces {
-                math: Box::new(self.math.negative()),
+                inner: Box::new(self.inner.negative()),
                 exponent: Some(Box::new(self.get_exponent())),
             }),
             _no_exp => Math::Braces(Braces {
-                math: Box::new(self.math.negative()),
+                inner: Box::new(self.inner.negative()),
                 exponent: None,
             }),
         }
@@ -82,26 +82,26 @@ impl Operations for Braces {
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {
         let new_math = Box::new(
-            self.math
+            self.inner
                 .substitute(suffix, math.clone())
                 .as_polynom()
-                .unpack(),
+                .as_math(),
         );
         let new_exponent = self
             .get_exponent()
             .substitute(suffix, math)
             .as_polynom()
-            .unpack();
+            .as_math();
 
         Math::Braces(Braces {
-            math: new_math,
+            inner: new_math,
             exponent: Some(Box::new(new_exponent)),
         })
     }
 
     fn get_all_suffixes(&self) -> Vec<String> {
         let mut suf: Vec<String> = vec![];
-        suf.extend_from_slice(&self.math.get_all_suffixes());
+        suf.extend_from_slice(&self.inner.get_all_suffixes());
         if let Some(exp) = self.exponent.clone() {
             suf.extend_from_slice(&exp.get_all_suffixes());
         }
