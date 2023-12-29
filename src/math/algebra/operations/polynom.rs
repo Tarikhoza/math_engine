@@ -86,7 +86,7 @@ impl AlgebraOperations for Polynom {
         match rhs {
             Math::Polynom(p) => self.add_self(p),
             Math::Variable(v) => self.add_self(&v.as_polynom()),
-            Math::Braces(b) => self.add(&b.simplify()),
+            Math::Braces(b) => self.add_self(&b.as_polynom()),
             Math::Fraction(f) => self.as_fraction().add_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!(),
@@ -97,7 +97,7 @@ impl AlgebraOperations for Polynom {
         match rhs {
             Math::Polynom(p) => self.sub_self(p),
             Math::Variable(v) => self.sub_self(&v.as_polynom()),
-            Math::Braces(b) => self.sub(&b.simplify()),
+            Math::Braces(b) => self.sub_self(&b.as_polynom()),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
             Math::Fraction(f) => self.as_fraction().sub_self(f),
             _ => todo!(),
@@ -107,7 +107,7 @@ impl AlgebraOperations for Polynom {
         match rhs {
             Math::Polynom(p) => self.mul_self(p),
             Math::Variable(v) => self.mul_self(&v.as_polynom()),
-            Math::Braces(b) => self.mul(&b.simplify()),
+            Math::Braces(b) => self.mul_self(&b.as_polynom()),
             Math::Fraction(f) => self.as_fraction().mul_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
             _ => todo!("did not implement mul with polynom"),
@@ -184,7 +184,7 @@ impl Polynom {
                 }
                 PolynomPart::Math(Math::Variable(v)) => {
                     env_info("operations", format!("applying exponent to {}", v.to_tex()));
-                    *part = v.apply_exponent().as_polynom_part();
+                    *part = v.simplify().as_polynom_part();
                     env_info("operations", format!("after exponentiation to {:#?}", part));
                 }
                 _ => {}
@@ -308,15 +308,19 @@ impl Polynom {
         ret
     }
     pub fn morph_ops(&self) -> Polynom {
-        env_info("operations", format!("morph_ops before {}", self.to_tex()));
+        env_info("ops", format!("morph_ops before {}", self.to_tex()));
 
         let mut parts: Vec<PolynomPart> = Vec::new();
+        let windows = self.parts.windows(2);
+        let len = windows.len();
 
         let mut skip = false;
         let mut change = false;
 
-        for (i, win) in self.parts.windows(2).enumerate() {
+        for (i, win) in windows.enumerate() {
+            env_info("ops", format!("morph_ops checking {:#?}", win));
             if skip {
+                env_info("ops", format!("morph_ops skipping this loop {:#?}", win));
                 skip = false;
                 continue;
             }
@@ -324,26 +328,29 @@ impl Polynom {
                 [PolynomPart::Operator(AlgebraOperator::Addition), PolynomPart::Operator(AlgebraOperator::Addition)]
                 | [PolynomPart::Operator(AlgebraOperator::Subtraction), PolynomPart::Operator(AlgebraOperator::Subtraction)] =>
                 {
+                    env_info("ops", format!("morph_ops morphing {:#?}  to +", win));
                     parts.push(PolynomPart::Operator(AlgebraOperator::Addition));
                     skip = true;
                     change = true;
+                    continue;
                 }
-
-                [PolynomPart::Operator(AlgebraOperator::Subtraction), PolynomPart::Operator(AlgebraOperator::Addition)]
-                | [PolynomPart::Operator(AlgebraOperator::Addition), PolynomPart::Operator(AlgebraOperator::Subtraction)] =>
+                [PolynomPart::Operator(AlgebraOperator::Addition), PolynomPart::Operator(AlgebraOperator::Subtraction)]
+                | [PolynomPart::Operator(AlgebraOperator::Subtraction), PolynomPart::Operator(AlgebraOperator::Addition)] =>
                 {
+                    env_info("ops", format!("morph_ops morphing {:#?}  to -", win));
                     parts.push(PolynomPart::Operator(AlgebraOperator::Subtraction));
                     skip = true;
                     change = true;
+                    continue;
                 }
-                _ => {
-                    if i < self.parts.len() {
-                        parts.push(win[0].clone());
-                    } else {
-                        parts.push(win[0].clone());
-                        parts.push(win[1].clone());
-                    }
-                }
+                _ => {}
+            }
+            env_info(
+                "ops",
+                format!("morph_ops no ops, just adding {:#?}", win[0]),
+            );
+            if i != len {
+                parts.push(win[0].clone());
             }
         }
         if let Some(m) = self.parts.last() {
@@ -354,7 +361,7 @@ impl Polynom {
 
         if change {
             env_info(
-                "operations",
+                "ops",
                 format!(
                     "doing another iteration of morph_op after {}",
                     p.as_math().to_tex()

@@ -1,5 +1,6 @@
 use crate::logging::env_info;
 use crate::math::algebra::operations::Operations;
+use crate::math::algebra::polynom::{Polynom, PolynomPart};
 use crate::math::algebra::variable::Variable;
 use crate::math::linear_algebra::matrix::Matrix;
 use crate::math::Math;
@@ -21,7 +22,7 @@ impl Vector {
             .collect()
     }
 
-    fn non_matching_to_zero(&self, base: &str) -> Vector {
+    fn not_matching_to_zero(&self, base: &str) -> Vector {
         let factors = self
             .factors
             .iter()
@@ -49,7 +50,7 @@ impl Vector {
             factors: self
                 .get_bases()
                 .iter()
-                .map(|m| self.non_matching_to_zero(m))
+                .map(|m| self.not_matching_to_zero(m))
                 .collect(),
         };
         env_info("helper", format!("to_based_matrix vector after {:#?}", res));
@@ -58,11 +59,21 @@ impl Vector {
 
     pub fn add_all(&self) -> Math {
         env_info("helper", format!("add_all vector before {:#?}", self));
-        let res = self
+
+        let mut parts = Vec::<PolynomPart>::new();
+
+        let result = self
             .factors
             .iter()
             .fold(Math::default(), |acc, e| acc.add(e));
-        env_info("helper", format!("add_all vector after {:#?}", res));
-        res
+
+        if let Math::Polynom(r) = result {
+            let morphed = r.morph_ops();
+            env_info("helper", format!("add_all vector after {:#?}", morphed));
+            return Math::Polynom(morphed.morph_ops());
+        }
+
+        env_info("helper", format!("add_all vector after {:#?}", result));
+        result
     }
 }

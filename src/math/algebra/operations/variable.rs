@@ -21,6 +21,12 @@ impl Simplifiable for Variable {
         if let Some(exp) = self.exponent.clone() {
             new.exponent = Some(Box::new(exp.simplify()));
         }
+        if new.value.is_sign_negative() {
+            let (sign, var) = new.split_operator();
+            return Math::Polynom(Polynom {
+                parts: vec![sign.as_polynom_part(), var.as_math().as_polynom_part()],
+            });
+        }
         new.apply_exponent()
     }
 }
@@ -297,18 +303,11 @@ impl AlgebraOperatons for Variable {
     }
 
     fn negative(&self) -> Math {
-        match &self.exponent {
-            Some(_e) => Math::Variable(Variable {
-                value: -self.value,
-                suffix: self.suffix.clone(),
-                exponent: Some(Box::new(self.get_exponent())),
-            }),
-            _no_exp => Math::Variable(Variable {
-                value: -self.value,
-                suffix: self.suffix.clone(),
-                exponent: None,
-            }),
-        }
+        Math::Variable(Variable {
+            value: -self.value,
+            suffix: self.suffix.clone(),
+            exponent: Some(Box::new(self.get_exponent())),
+        })
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {

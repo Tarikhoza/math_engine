@@ -31,6 +31,7 @@ pub trait Operations {
     fn negative(&self) -> Math {
         self.mul(&(-1_i64).as_variable().as_math())
     }
+
     fn substitute(&self, suffix: &str, value: Math) -> Math;
 
     fn add(&self, other: &Math) -> Math;
