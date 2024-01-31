@@ -15,7 +15,7 @@ impl Simplifiable for Polynom {
     fn simplify(&self) -> Math {
         env_info(
             "operations",
-            format!("### simplify polynom before {} ###", self.to_tex()),
+            format!("### simplify polynom *before {} ###", self.to_tex()),
         );
         if let Some(PolynomPart::Math(m)) = self.parts.first() {
             if self.parts.len() == 1 {
@@ -31,7 +31,7 @@ impl Simplifiable for Polynom {
 
         env_info(
             "operations",
-            format!("###simplify polynom after {}###\n", result.to_tex()),
+            format!("### simplify polynom *after {} ###\n", result.to_tex()),
         );
         if let Some(PolynomPart::Math(m)) = result.parts.first() {
             if result.parts.len() == 1 {
@@ -79,7 +79,7 @@ impl AlgebraOperations for Polynom {
     }
 
     fn div_self(&self, _other: &Polynom) -> Math {
-        todo!("you have to implement division between polynomes")
+        todo!("division between polynomes")
     }
 
     fn add(&self, rhs: &Math) -> Math {
@@ -89,7 +89,11 @@ impl AlgebraOperations for Polynom {
             Math::Braces(b) => self.add_self(&b.as_polynom()),
             Math::Fraction(f) => self.as_fraction().add_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "add not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -100,7 +104,11 @@ impl AlgebraOperations for Polynom {
             Math::Braces(b) => self.sub_self(&b.as_polynom()),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
             Math::Fraction(f) => self.as_fraction().sub_self(f),
-            _ => todo!(),
+            _ => todo!(
+                "sub not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
     fn mul(&self, rhs: &Math) -> Math {
@@ -110,13 +118,21 @@ impl AlgebraOperations for Polynom {
             Math::Braces(b) => self.mul_self(&b.as_polynom()),
             Math::Fraction(f) => self.as_fraction().mul_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!("did not implement mul with polynom"),
+            _ => todo!(
+                "mul not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
     fn div(&self, rhs: &Math) -> Math {
         match rhs {
             Math::Fraction(f) => self.as_fraction().div_self(f),
-            _ => todo!("did not implement div with polynom"),
+            _ => todo!(
+                "div not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -299,7 +315,6 @@ impl Polynom {
             .to_vector();
 
         let mut ret = vec.add_all().as_polynom();
-        ret.sort();
 
         env_info(
             "operations",

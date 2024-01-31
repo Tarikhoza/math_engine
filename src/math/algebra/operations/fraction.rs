@@ -90,8 +90,13 @@ impl AlgebraOperatons for Fraction {
         match rhs {
             Math::Fraction(f) => self.add_self(f),
             Math::Variable(v) => self.add_self(&v.as_fraction()),
+            Math::Braces(b) => self.add_self(&b.as_fraction()),
             Math::Polynom(p) => self.add_self(&p.as_fraction()),
-            _ => todo!(),
+            _ => todo!(
+                "add not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -99,8 +104,13 @@ impl AlgebraOperatons for Fraction {
         match rhs {
             Math::Fraction(f) => self.sub_self(f),
             Math::Variable(v) => self.sub_self(&v.as_fraction()),
+            Math::Braces(b) => self.sub_self(&b.as_fraction()),
             Math::Polynom(p) => self.sub_self(&p.as_fraction()),
-            _ => todo!(),
+            _ => todo!(
+                "sub not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -108,8 +118,13 @@ impl AlgebraOperatons for Fraction {
         match rhs {
             Math::Fraction(f) => self.mul_self(f),
             Math::Variable(v) => self.mul_self(&v.as_fraction()),
+            Math::Braces(b) => self.mul_self(&b.as_fraction()),
             Math::Polynom(p) => self.mul_self(&p.as_fraction()),
-            _ => todo!(),
+            _ => todo!(
+                "mul not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -118,7 +133,12 @@ impl AlgebraOperatons for Fraction {
             Math::Fraction(f) => self.div_self(f),
             Math::Variable(v) => self.div_self(&v.as_fraction()),
             Math::Polynom(p) => self.div_self(&p.as_fraction()),
-            _ => todo!(),
+            Math::Braces(b) => self.div_self(&b.as_fraction()),
+            _ => todo!(
+                "div not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 

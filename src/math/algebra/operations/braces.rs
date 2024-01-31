@@ -4,6 +4,7 @@ use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::Operations;
 use crate::math::algebra::undefined::Undefined;
 use crate::math::simplifiable::Simplifiable;
+use crate::parser::Parsable;
 
 use crate::math::Math;
 
@@ -50,8 +51,13 @@ impl Operations for Braces {
             Math::Polynom(p) => self.simplify().add(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().add(&Math::Variable(v.clone())),
             Math::Braces(b) => self.add_self(b),
+            Math::Fraction(f) => self.as_fraction().add_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "add not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -60,8 +66,12 @@ impl Operations for Braces {
             Math::Polynom(p) => self.simplify().sub(&Math::Polynom(p.clone())),
             Math::Variable(v) => self.simplify().sub(&Math::Variable(v.clone())),
             Math::Braces(b) => self.sub_self(b),
-            //           Math::Undefined(u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            Math::Fraction(f) => self.as_fraction().sub_self(f),
+            _ => todo!(
+                "sub not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -71,13 +81,24 @@ impl Operations for Braces {
             Math::Variable(v) => self.simplify().mul(&Math::Variable(v.clone())),
             Math::Braces(b) => self.mul_self(b),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            Math::Fraction(f) => self.simplify().mul(&Math::Fraction(f.clone())),
-            _ => todo!(),
+            Math::Fraction(f) => self.as_fraction().mul_self(f),
+            _ => todo!(
+                "mul not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
-    fn div(&self, _rhs: &Math) -> Math {
-        todo!()
+    fn div(&self, rhs: &Math) -> Math {
+        match rhs {
+            Math::Fraction(f) => self.as_fraction().div_self(f),
+            _ => todo!(
+                "mul not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
+        }
     }
 
     fn substitute(&self, suffix: &str, math: Math) -> Math {

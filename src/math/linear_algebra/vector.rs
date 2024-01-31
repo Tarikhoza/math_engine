@@ -46,6 +46,7 @@ impl Vector {
             "helper",
             format!("to_based_matrix vector before {:#?}", self),
         );
+
         let res = Matrix {
             factors: self
                 .get_bases()

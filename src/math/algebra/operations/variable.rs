@@ -265,7 +265,11 @@ impl AlgebraOperatons for Variable {
             Math::Braces(b) => self.add(&b.simplify()),
             Math::Fraction(f) => self.as_fraction().add_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "add not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -276,7 +280,11 @@ impl AlgebraOperatons for Variable {
             Math::Braces(b) => self.sub(&b.simplify()),
             Math::Fraction(f) => self.as_fraction().sub_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "sub not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -287,7 +295,11 @@ impl AlgebraOperatons for Variable {
             Math::Variable(v) => self.mul_self(v),
             Math::Fraction(f) => self.as_fraction().mul_self(f),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "mul not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -298,7 +310,11 @@ impl AlgebraOperatons for Variable {
             Math::Fraction(f) => self.as_fraction().div_self(f),
             Math::Variable(v) => self.div_self(v),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "div not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 

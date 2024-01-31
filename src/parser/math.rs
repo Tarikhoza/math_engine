@@ -28,10 +28,8 @@ impl Parsable for Math {
             Math::Sum(s) => s.to_tex(),
             Math::Product(s) => s.to_tex(),
             Math::Factorial(s) => s.to_tex(),
-            _ => todo!("{:#?}", self), /*
-                                       Math::Matrix(s) => s.to_tex(),
-                                       Math::Vector(s) => s.to_tex(),
-                                       */
+            Math::Vector(s) => s.to_tex(),
+            Math::Matrix(s) => s.to_tex(),
         }
     }
 
@@ -40,6 +38,24 @@ impl Parsable for Math {
             return Ok((math.as_polynom_part(), 0));
         } else {
             return Err("Failed parsing math".to_string());
+        }
+    }
+    fn get_type(&self) -> String {
+        match self {
+            Math::Variable(s) => format!("Math::{}", s.get_type()),
+            Math::Absolute(s) => format!("Math::{}", s.get_type()),
+            Math::Braces(s) => format!("Math::{}", s.get_type()),
+            Math::Polynom(s) => format!("Math::{}", s.get_type()),
+            Math::Fraction(s) => format!("Math::{}", s.get_type()),
+            Math::Function(s) => format!("Math::{}", s.get_type()),
+            Math::Root(s) => format!("Math::{}", s.get_type()),
+            Math::Undefined(s) => format!("Math::{}", s.get_type()),
+            Math::Infinity(s) => format!("Math::{}", s.get_type()),
+            Math::Sum(s) => format!("Math::{}", s.get_type()),
+            Math::Product(s) => format!("Math::{}", s.get_type()),
+            Math::Factorial(s) => format!("Math::{}", s.get_type()),
+            Math::Matrix(s) => format!("Math::{}", s.get_type()),
+            Math::Vector(s) => format!("Math::{}", s.get_type()),
         }
     }
 }

@@ -153,6 +153,10 @@ impl Simplifiable for Math {
             Math::Vector(f) => {
                 return Math::Vector(f.clone());
             }
+            _ => todo!(
+                "Math::Simplifiable::simplify not implemented for {}",
+                self.get_type(),
+            ),
         }
     }
 }
@@ -189,7 +193,11 @@ impl AlgebraOperations for Math {
             Math::Fraction(f) => f.add(rhs),
             Math::Infinity(i) => i.add(rhs),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "sub not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -204,7 +212,11 @@ impl AlgebraOperations for Math {
             Math::Fraction(f) => f.sub(rhs),
             Math::Infinity(i) => i.sub(rhs),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "sub not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -216,7 +228,11 @@ impl AlgebraOperations for Math {
             Math::Fraction(f) => f.mul(rhs),
             Math::Infinity(i) => i.mul(rhs),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "mul not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -227,7 +243,11 @@ impl AlgebraOperations for Math {
             Math::Fraction(f) => f.div(rhs),
             Math::Infinity(i) => i.div(rhs),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!(
+                "div not implemented for {} and {}",
+                self.get_type(),
+                rhs.get_type()
+            ),
         }
     }
 
@@ -244,7 +264,7 @@ impl AlgebraOperations for Math {
             //Math::Matrix(m) => m.negative(),
             //Math::Undefined(u) => u.negative(),
             Math::Infinity(i) => i.negative(),
-            _ => todo!(),
+            _ => todo!("negative not implemented for {}", self.get_type()),
         }
     }
 
@@ -261,7 +281,7 @@ impl AlgebraOperations for Math {
             //Math::Vector(v) => v.substitute(suffix, math),
             //Math::Matrix(m) => m.substitute(suffix, math),
             Math::Undefined(_u) => Math::Undefined(Undefined {}),
-            _ => todo!(),
+            _ => todo!("substitute not implemented for {}", self.get_type()),
         }
     }
 
@@ -271,7 +291,7 @@ impl AlgebraOperations for Math {
             Math::Polynom(p) => p.get_all_suffixes(),
             Math::Braces(b) => b.get_all_suffixes(),
             Math::Fraction(f) => f.get_all_suffixes(),
-            _ => Vec::new(),
+            _ => todo!("get_all_suffixes not implemented for {}", self.get_type()),
         };
 
         env_info(

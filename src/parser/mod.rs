@@ -1,5 +1,6 @@
 pub mod algebra;
 pub mod calculus;
+pub mod linear_algebra;
 pub mod math;
 pub mod primitive;
 
@@ -30,6 +31,9 @@ pub struct Parser {
     token_stream: Vec<Token>,
     pos: usize,
 }
+fn type_of<T>(_: T) -> String {
+    std::any::type_name::<T>().to_string()
+}
 
 pub trait Parsable {
     fn to_tex(&self) -> String;
@@ -51,6 +55,9 @@ pub trait Parsable {
         }
     }
     fn from_token_stream(token_stream: Vec<Token>) -> Result<(PolynomPart, usize), String>;
+    fn get_type(&self) -> String {
+        type_of(self).to_string()
+    }
 }
 
 pub trait ParsablePrimitive {

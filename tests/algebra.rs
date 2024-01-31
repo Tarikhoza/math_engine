@@ -11,6 +11,7 @@ macro_rules! parser_eq {
                 .simplify()
                 .simplify()
                 .simplify()
+                .simplify()
                 .to_tex(),
             $expected
         );

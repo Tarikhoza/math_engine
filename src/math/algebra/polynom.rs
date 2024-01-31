@@ -19,19 +19,6 @@ pub struct Polynom {
 }
 
 impl Polynom {
-    pub fn sort(&self) -> Polynom {
-        let mut vec = self.clone().to_vector();
-
-        for f in vec.factors.iter_mut() {
-            if let Math::Polynom(poly) = f {
-                *f = poly.sort().as_math()
-            }
-        }
-
-        vec.factors.sort_by_key(|m| m.sorting_score());
-        vec.add_all().as_polynom()
-    }
-
     pub fn to_vector(&self) -> Vector {
         let mut factors: Vec<Math> = Vec::new();
         let mut skip = false;
