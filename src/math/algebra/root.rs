@@ -66,7 +66,7 @@ impl Root {
         let exponent: Math = match *self.inner.clone() {
             Math::Variable(v) => v.get_exponent(),
             Math::Braces(b) => b.get_exponent(),
-            Math::Function(f) => f.get_exponent(),
+            //Math::Function(f) => f.get_exponent(),
             _ => 1_i64.as_variable().as_math(),
         };
 

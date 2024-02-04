@@ -3,7 +3,7 @@
 ## Goal of the project
   - make a debugger for math
   - make template solutions for most math problems
-  - make collaborative math solving for schools/univerity
+  - make collaborative math solving for schools/university
   - make a sandbox where math is easy to learn, where there is not fear to tryout/break stuff
   - make practicing math easy/trivial
 
@@ -65,4 +65,4 @@
 ## Components of the project
     - math-engine   - the solver written in rust
     - math-web      - a web frontend written in leptos
-    - maybe? - math-plotter  - a ploting engine to plot math functions written in bevy/threejs
+    - maybe? - math-plotter  - a ploting engine to plot math functions written in bevy/threejs/wgpu

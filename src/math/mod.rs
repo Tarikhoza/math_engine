@@ -144,9 +144,7 @@ impl Simplifiable for Math {
             Math::Sum(s) => s.simplify(),
             Math::Product(p) => p.simplify(),
             Math::Factorial(f) => f.simplify(),
-            Math::Function(f) => {
-                return Math::Function(f.clone());
-            }
+            Math::Function(f) => f.simplify(),
             Math::Matrix(f) => {
                 return Math::Matrix(f.clone());
             }

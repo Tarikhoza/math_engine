@@ -31,6 +31,7 @@ pub struct Parser {
     token_stream: Vec<Token>,
     pos: usize,
 }
+
 fn type_of<T>(_: T) -> String {
     std::any::type_name::<T>().to_string()
 }
@@ -86,12 +87,31 @@ enum ParsableType {
     None,
 }
 
+#[derive(PartialEq)]
+enum ParsedState {
+    Certain,
+    Ambiguous,
+    None,
+}
+
+#[derive(PartialEq)]
+enum ParsingContext {
+    General,
+    Logic,
+    Algebra,
+    LinearAlgebra,
+    Calculus,
+}
+
 impl Parser {
     pub fn new(token_stream: Vec<Token>) -> Parser {
         Parser {
             token_stream,
             pos: 0,
         }
+    }
+    pub fn new_offset(token_stream: Vec<Token>, pos: usize) -> Parser {
+        Parser { token_stream, pos }
     }
 
     pub fn extract_between(
@@ -266,6 +286,12 @@ impl Parser {
             ));
         }
         env_info("parser", format!("Succesfuly parsed {:#?}", parts));
+
+        if parts.len() == 1 {
+            if let Some(PolynomPart::Math(math)) = parts.first() {
+                return Ok(math.clone());
+            }
+        }
 
         Ok(Polynom { parts }.as_math())
     }

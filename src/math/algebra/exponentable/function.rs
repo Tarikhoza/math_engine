@@ -1,19 +1,18 @@
 use crate::math::algebra::exponentable::Exponentable;
-use crate::math::Function;
+use crate::math::algebra::function::Function;
+use crate::math::algebra::function::FunctionInstance;
 use crate::math::Math;
 use crate::math::Variable;
 
 use rust_decimal_macros::dec;
 
-impl Exponentable for Function {
+impl Exponentable for FunctionInstance {
     fn get_exponent(&self) -> Math {
         match &self.exponent {
             None => Math::Variable(Variable {
                 value: dec!(1),
                 suffix: String::new(),
                 exponent: None,
-                #[cfg(feature = "step-tracking")]
-                step: None,
             }),
             Some(e) => *e.clone(),
         }
@@ -28,11 +27,11 @@ impl Exponentable for Function {
     fn without_exponent(&self) -> Math {
         let mut value = self.clone();
         value.exponent = None;
-        Math::Function(value)
+        Math::Function(Function::FunctionInstance(value))
     }
 
     fn with_exponent(&self) -> Math {
-        Math::Function(self.clone())
+        Math::Function(Function::FunctionInstance(self.clone()))
     }
 
     fn is_exponentiable(&self) -> bool {

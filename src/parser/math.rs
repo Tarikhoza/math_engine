@@ -40,6 +40,7 @@ impl Parsable for Math {
             return Err("Failed parsing math".to_string());
         }
     }
+
     fn get_type(&self) -> String {
         match self {
             Math::Variable(s) => format!("Math::{}", s.get_type()),
