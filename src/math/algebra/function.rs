@@ -62,7 +62,7 @@ impl FunctionInstance {
                 if let Some(exp) = &self.exponent {
                     return result.as_braces().set_exponent(*exp.clone());
                 }
-                return result.as_braces().as_math();
+                return result;
             }
         }
         Math::Function(Function::FunctionInstance(self.clone()))

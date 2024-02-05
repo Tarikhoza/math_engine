@@ -82,8 +82,8 @@ impl Parsable for Function {
         if let Some(args_stream) = token_stream.get(len..) {
             if let Some(args_inner) = Parser::extract_between(
                 &args_stream.to_vec(),
-                TokenType::CurlyOpen,
-                TokenType::CurlyClose,
+                TokenType::BraceOpen,
+                TokenType::BraceClose,
             ) {
                 args = args_inner;
                 len += args.len() + 2;
