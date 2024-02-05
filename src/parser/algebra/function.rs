@@ -7,7 +7,7 @@ use crate::castable::Castable;
 use crate::lexer::{Token, TokenType, Tokenisable};
 use crate::math::algebra::absolute::Absolute;
 use crate::math::algebra::exponentable::Exponentable;
-use crate::math::algebra::function::{Function, FunctionInstance};
+use crate::math::algebra::function::{Function, FunctionDefinition, FunctionInstance};
 use crate::math::algebra::polynom::PolynomPart;
 use crate::math::Math;
 use crate::parser::{
@@ -33,7 +33,10 @@ impl Parsable for Function {
                     f.args.iter().map(|a| a.to_tex()).join(",")
                 )
             }
-            Function::FunctionDefinition(f) => {
+            Function::FunctionDefinition(FunctionDefinition::FunctionalDefinition(f)) => {
+                return format!("\\mathrm{{{}}}({})", f.label, f.args.join(","),);
+            }
+            Function::FunctionDefinition(FunctionDefinition::MappingDefinition(f)) => {
                 return format!("\\mathrm{{{}}}({})", f.label, f.args.join(","),);
             }
         }

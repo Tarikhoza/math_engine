@@ -1,7 +1,8 @@
-use crate::math::algebra::function::FunctionDefinition;
+use crate::math::algebra::function::{FunctionDefinition, FunctionalDefinition, MappingDefinition};
 use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
+use crate::parser::ParsablePrimitive;
 use once_cell::sync::Lazy;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
@@ -9,8 +10,7 @@ use rust_decimal_macros::dec;
 pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
     //TODO make this constant
     let func_defs: Vec<FunctionDefinition> = vec![
-        //sin
-        FunctionDefinition {
+        FunctionDefinition::FunctionalDefinition(FunctionalDefinition {
             label: "sin".to_string(),
             args: vec!["x".to_string()],
             definition: |args| {
@@ -34,8 +34,8 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
                 }
                 None
             },
-        },
-        FunctionDefinition {
+        }),
+        FunctionDefinition::FunctionalDefinition(FunctionalDefinition {
             label: "cos".to_string(),
             args: vec!["x".to_string()],
             definition: |args| {
@@ -59,8 +59,8 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
                 }
                 None
             },
-        },
-        FunctionDefinition {
+        }),
+        FunctionDefinition::FunctionalDefinition(FunctionalDefinition {
             label: "tan".to_string(),
             args: vec!["x".to_string()],
             definition: |args| {
@@ -84,11 +84,16 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
                 }
                 None
             },
-        },
+        }),
+        FunctionDefinition::MappingDefinition(MappingDefinition {
+            args: vec!["x".to_string()],
+            label: "f".to_string(),
+            definition: Box::new("3x*2".parse_math().unwrap()),
+        }),
     ];
 
     for func in func_defs {
-        if func.label == label {
+        if func.label() == label {
             return Some(func);
         }
     }
