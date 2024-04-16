@@ -1,8 +1,10 @@
 use crate::castable::Castable;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::Operations;
+use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
+use rust_decimal_macros::dec;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionalDefinition {
@@ -45,6 +47,32 @@ impl FunctionDefinition {
             FunctionDefinition::MappingDefinition(f) => f.label.clone(),
         }
     }
+    pub fn args(&self) -> Vec<Math> {
+        match self {
+            FunctionDefinition::FunctionalDefinition(f) => {
+                let mut args = Vec::new();
+                for i in f.args.iter() {
+                    args.push(Math::Variable(Variable {
+                        suffix: i.clone(),
+                        value: dec!(0),
+                        exponent: None,
+                    }));
+                }
+                return args;
+            }
+            FunctionDefinition::MappingDefinition(f) => {
+                let mut args = Vec::new();
+                for i in f.args.iter() {
+                    args.push(Math::Variable(Variable {
+                        suffix: i.clone(),
+                        value: dec!(0),
+                        exponent: None,
+                    }));
+                }
+                return args;
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -66,6 +94,22 @@ impl FunctionInstance {
             }
         }
         Math::Function(Function::FunctionInstance(self.clone()))
+    }
+    pub fn new(definition: FunctionDefinition, args: Vec<Math>) -> FunctionInstance {
+        FunctionInstance {
+            label: definition.label(),
+            args,
+            definition: Some(definition),
+            exponent: None,
+        }
+    }
+    pub fn new_with_label(label: String, args: Vec<Math>) -> FunctionInstance {
+        FunctionInstance {
+            label,
+            args,
+            definition: None,
+            exponent: None,
+        }
     }
 }
 

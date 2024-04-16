@@ -3,7 +3,6 @@ use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::ParsablePrimitive;
-use once_cell::sync::Lazy;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
