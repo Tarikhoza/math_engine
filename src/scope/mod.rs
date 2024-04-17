@@ -149,7 +149,7 @@ impl Scope {
                 return Ok(math.simplify());
             }
         }
-        return Err("could not find last".to_string());
+        return Err("Could not find last. Maybe file is empty?".to_string());
     }
 
     pub fn merge(&self, other: &Scope) -> Scope {

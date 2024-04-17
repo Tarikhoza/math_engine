@@ -6,8 +6,9 @@ extern crate rust_decimal;
 
 pub mod castable;
 pub mod definitions;
+pub mod file;
 pub mod lexer;
-pub mod scope;
 pub mod logging;
 pub mod math;
 pub mod parser;
+pub mod scope;
