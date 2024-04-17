@@ -6,13 +6,13 @@ use crate::parser::{ParsablePrimitive, ParsablePrimitiveAsVariable, Parser};
 use rust_decimal::Decimal;
 
 impl ParsablePrimitive for String {
-    fn parse_math(&self) -> Result<Math, String> {
+    fn parse_math(&self) -> Result<(Math, usize), String> {
         Parser::new(self.tokenise()?).parse()
     }
 }
 
 impl ParsablePrimitive for str {
-    fn parse_math(&self) -> Result<Math, String> {
+    fn parse_math(&self) -> Result<(Math, usize), String> {
         Parser::new(self.tokenise()?).parse()
     }
 }

@@ -87,7 +87,7 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
         FunctionDefinition::MappingDefinition(MappingDefinition {
             args: vec!["x".to_string()],
             label: "f".to_string(),
-            definition: Box::new("x^{2}".parse_math().unwrap()),
+            definition: Box::new("x^{2}".parse_math().unwrap().0),
         }),
     ];
 

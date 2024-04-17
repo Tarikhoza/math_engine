@@ -62,7 +62,7 @@ pub trait Parsable {
 }
 
 pub trait ParsablePrimitive {
-    fn parse_math(&self) -> Result<Math, String>;
+    fn parse_math(&self) -> Result<(Math, usize), String>;
 }
 
 pub trait ParsablePrimitiveAsVariable {
@@ -186,7 +186,7 @@ impl Parser {
         }
     }
 
-    pub fn parse(&mut self) -> Result<Math, String> {
+    pub fn parse(&mut self) -> Result<(Math, usize), String> {
         let math_prasing_functions = vec![
             Variable::from_token_stream,
             Braces::from_token_stream,
@@ -289,10 +289,10 @@ impl Parser {
 
         if parts.len() == 1 {
             if let Some(PolynomPart::Math(math)) = parts.first() {
-                return Ok(math.clone());
+                return Ok((math.clone(), self.pos));
             }
         }
 
-        Ok(Polynom { parts }.as_math())
+        Ok((Polynom { parts }.as_math(), self.pos))
     }
 }

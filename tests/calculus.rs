@@ -9,6 +9,7 @@ macro_rules! parser_eq {
             Parser::new($input.tokenise().unwrap())
                 .parse()
                 .unwrap()
+                .0
                 .simplify()
                 .simplify()
                 .simplify()

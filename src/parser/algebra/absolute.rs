@@ -25,7 +25,7 @@ impl Parsable for Absolute {
 
             return Ok((
                 PolynomPart::Math(Math::Absolute(Absolute {
-                    inner: Box::new(Parser::new(inner).parse()?),
+                    inner: Box::new(Parser::new(inner).parse()?.0),
                 })),
                 len,
             ));

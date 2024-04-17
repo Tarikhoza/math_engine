@@ -55,7 +55,7 @@ impl Parsable for Sum {
 
                 if let Some((first, second)) = inner_str.split_once("=") {
                     iter = first.to_string();
-                    start = Box::new(Parser::new(second.tokenise()?).parse()?);
+                    start = Box::new(Parser::new(second.tokenise()?).parse()?.0);
                 } else {
                     env_info("parser", "Failed extracting iter and start.".into());
                     return Err("Failed extracting iter and start".into());
@@ -72,7 +72,7 @@ impl Parsable for Sum {
         if let Some(end_tokens) = token_stream.get(len..) {
             if let Some(ext_end_tokens) = Parser::extract_exponent(end_tokens.to_vec()) {
                 len += ext_end_tokens.len() + 3;
-                end = Box::new(Parser::new(ext_end_tokens).parse()?);
+                end = Box::new(Parser::new(ext_end_tokens).parse()?.0);
             } else {
                 env_info("parser", "Failed extracting end.".into());
                 return Err("Failed extracting end".into());
@@ -90,7 +90,7 @@ impl Parsable for Sum {
                 TokenType::CurlyClose,
             ) {
                 len += inner_math_inner.len() + 2;
-                inner = Box::new(Parser::new(inner_math_inner.to_vec()).parse()?);
+                inner = Box::new(Parser::new(inner_math_inner.to_vec()).parse()?.0);
             } else {
                 env_info("parser", "Failed extracting inner math.".into());
                 return Err("Failed extracting inner math".into());
