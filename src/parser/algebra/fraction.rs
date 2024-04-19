@@ -75,8 +75,8 @@ impl Parsable for Fraction {
             PolynomPart::Math(
                 Fraction {
                     whole: None,
-                    numerator: Box::new(Parser::new(numerator).parse()?.0),
-                    denominator: Box::new(Parser::new(denominator).parse()?.0),
+                    numerator: Box::new(Parser::new(numerator).parse()?),
+                    denominator: Box::new(Parser::new(denominator).parse()?),
                 }
                 .as_math(),
             ),

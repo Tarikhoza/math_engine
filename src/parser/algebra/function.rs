@@ -116,7 +116,7 @@ impl Parsable for Function {
         if let Some(exponent_tokens) = token_stream.get(len..) {
             if let Some(ext_exp_tokens) = Parser::extract_exponent(exponent_tokens.to_vec()) {
                 len += ext_exp_tokens.len() + 3;
-                exponent = Some(Box::new(Parser::new(ext_exp_tokens).parse()?.0));
+                exponent = Some(Box::new(Parser::new(ext_exp_tokens).parse()?));
             }
         }
 
@@ -142,7 +142,7 @@ impl Parsable for Function {
             }
 
             if let Ok((definition, def_len)) =
-                Parser::new(token_stream.get(len..).unwrap().to_vec()).parse()
+                Parser::new(token_stream.get(len..).unwrap().to_vec()).parse_len()
             {
                 return Ok((
                     PolynomPart::Math(Math::Function(Function::FunctionDefinition(

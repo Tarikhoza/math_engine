@@ -138,7 +138,7 @@ impl Parsable for Variable {
         if let Some(exponent_tokens) = token_stream.get(len..) {
             if let Some(ext_exp_tokens) = Parser::extract_exponent(exponent_tokens.to_vec()) {
                 len += ext_exp_tokens.len() + 3;
-                exponent = Some(Box::new(Parser::new(ext_exp_tokens).parse()?.0));
+                exponent = Some(Box::new(Parser::new(ext_exp_tokens).parse()?));
             }
         }
 

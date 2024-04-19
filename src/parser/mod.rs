@@ -186,7 +186,7 @@ impl Parser {
         }
     }
 
-    pub fn parse(&mut self) -> Result<(Math, usize), String> {
+    pub fn parse_len(&mut self) -> Result<(Math, usize), String> {
         let math_prasing_functions = vec![
             Variable::from_token_stream,
             Braces::from_token_stream,
@@ -294,5 +294,9 @@ impl Parser {
         }
 
         Ok((Polynom { parts }.as_math(), self.pos))
+    }
+
+    pub fn parse(&mut self) -> Result<Math, String> {
+        Ok(self.parse_len()?.0)
     }
 }

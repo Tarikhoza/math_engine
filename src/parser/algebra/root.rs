@@ -40,7 +40,7 @@ impl Parsable for Root {
                 TokenType::SquareClose,
             ) {
                 len += base_inner.len() + 2;
-                base = Some(Box::new(Parser::new(base_inner).parse()?.0));
+                base = Some(Box::new(Parser::new(base_inner).parse()?));
             } else {
                 base = None;
             }
@@ -68,7 +68,7 @@ impl Parsable for Root {
             PolynomPart::Math(
                 Root {
                     base,
-                    inner: Box::new(Parser::new(math).parse()?.0),
+                    inner: Box::new(Parser::new(math).parse()?),
                 }
                 .as_math(),
             ),

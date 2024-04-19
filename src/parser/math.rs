@@ -34,7 +34,7 @@ impl Parsable for Math {
     }
 
     fn from_token_stream(token_stream: Vec<Token>) -> Result<(PolynomPart, usize), String> {
-        if let Ok((math, len)) = Parser::new(token_stream).parse() {
+        if let Ok((math, len)) = Parser::new(token_stream).parse_len() {
             return Ok((math.as_polynom_part(), len));
         } else {
             return Err("Failed parsing math".to_string());
