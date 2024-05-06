@@ -97,11 +97,6 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
                 None
             },
         }),
-        FunctionDefinition::MappingDefinition(MappingDefinition {
-            args: vec!["x".to_string(), "y".to_string()],
-            label: "f".to_string(),
-            definition: Box::new("x^{y}".parse_math().unwrap().0),
-        }),
     ];
 
     for func in func_defs {
@@ -109,6 +104,5 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
             return Some(func);
         }
     }
-    //TODO define a new function on the fly and add to implicit scope
     None
 }

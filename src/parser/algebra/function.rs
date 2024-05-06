@@ -73,7 +73,7 @@ impl Parsable for Function {
             [TokenType::FuncStart, ..] => {
                 len += 1;
             }
-            _ => return Err("Expected mathrm or def at begining".into()),
+            _ => return Err("Expected mathrm or def at beginning".into()),
         }
 
         if let Some(label_stream) = token_stream.get(len..) {
@@ -138,7 +138,7 @@ impl Parsable for Function {
                 {
                     len += 3;
                 }
-                _ => return Err("Expected mathrm or def at begining".into()),
+                _ => return Err("Expected mathrm or def at beginning".into()),
             }
 
             if let Ok((definition, def_len)) =
@@ -176,7 +176,7 @@ impl Parsable for Function {
                             .collect::<Vec<String>>()
                             .concat()
                             .split(",")
-                            .map(|str| str.parse_math().unwrap().0)
+                            .map(|str| str.parse_math().unwrap())
                             .collect::<Vec<Math>>(),
                         //TODO remove the unwrap above
                         exponent,

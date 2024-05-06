@@ -33,10 +33,10 @@ impl Parsable for Fraction {
         env_info("parser", "Looking for FracStart token".into());
         if let Some(token) = token_stream.first() {
             if token.token_type != TokenType::FracStart {
-                return Err("No fraction token on begining".into());
+                return Err("No fraction token on beginning".into());
             }
         } else {
-            return Err("No fraction token on begining".into());
+            return Err("No fraction token on beginning".into());
         }
 
         env_info("parser", "Extracting numerator...".into());

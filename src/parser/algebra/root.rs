@@ -26,10 +26,10 @@ impl Parsable for Root {
         env_info("parser", "Looking for SqrtStart token".into());
         if let Some(token) = token_stream.first() {
             if token.token_type != TokenType::SqrtStart {
-                return Err("No sqrt token on begining".into());
+                return Err("No sqrt token on beginning".into());
             }
         } else {
-            return Err("No sqrt token on begining".into());
+            return Err("No sqrt token on beginning".into());
         }
 
         env_info("parser", "Extracting base...".into());

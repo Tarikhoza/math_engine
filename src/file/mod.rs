@@ -22,7 +22,7 @@ impl File {
             if line.trim().is_empty() {
                 continue;
             }
-            let math = line.parse_math().unwrap().0;
+            let math = line.parse_math().unwrap();
             self.scope.add_and_inject(math);
         }
     }

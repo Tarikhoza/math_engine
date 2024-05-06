@@ -62,7 +62,8 @@ pub trait Parsable {
 }
 
 pub trait ParsablePrimitive {
-    fn parse_math(&self) -> Result<(Math, usize), String>;
+    fn parse_math_len(&self) -> Result<(Math, usize), String>;
+    fn parse_math(&self) -> Result<Math, String>;
 }
 
 pub trait ParsablePrimitiveAsVariable {
@@ -285,7 +286,7 @@ impl Parser {
                 error_stream.concat()
             ));
         }
-        env_info("parser", format!("Succesfuly parsed {:#?}", parts));
+        env_info("parser", format!("Successfully parsed {:#?}", parts));
 
         if parts.len() == 1 {
             if let Some(PolynomPart::Math(math)) = parts.first() {
