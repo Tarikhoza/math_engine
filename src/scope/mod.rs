@@ -8,6 +8,7 @@ use crate::math::Math;
 pub enum ScopeContent {
     Scope(Scope),
     Math(Math),
+    //TODO Write logic parser
     //Logic(Logic)...
 }
 
@@ -59,6 +60,7 @@ impl Scope {
                 }
 
                 // Find in predefined function library
+                // TODO maybe just push all the functions to the scope, or make a standard scope
                 if let Some(definition) = find_function_definition(&f.label(), self) {
                     // Inject definition to function
                     env_info(
@@ -88,6 +90,9 @@ impl Scope {
         env_info("scope", "did not find any definition".into());
         self.content.push(ScopeContent::Math(content.clone()));
     }
+    // TODO Think about what is executed and not, how to determine what should be executed
+    // Maybe #$some math$ should be executed and $some math$ should just fly around
+    // Or sys / inbuild functions like print should be always be executed
 
     pub fn simplify_last(&self) -> Result<Math, String> {
         if let Some(content) = self.content.last() {
