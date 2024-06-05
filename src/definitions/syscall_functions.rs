@@ -1,9 +1,10 @@
-use crate::math::algebra::function::{FunctionDefinition, FunctionalDefinition, MappingDefinition};
+use crate::math::algebra::function::{
+    Function, FunctionDefinition, FunctionalDefinition, MappingDefinition,
+};
 use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
 use crate::parser::{Parsable, ParsablePrimitive};
-use once_cell::sync::Lazy;
 use rust_decimal::prelude::*;
 use rust_decimal_macros::dec;
 
@@ -41,7 +42,6 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
                         }
                         return None;
                     }
-
                     _ => {}
                 }
                 None
@@ -51,15 +51,13 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
             label: "cos".to_string(),
             args: vec!["x".to_string()],
             definition: |args| {
-                if args.len() != 1 {
-                    panic!("sin takes exactly 1 argument");
-                }
-                match &args[0].simplify().simplify() {
+                match &args[0].simplify() {
                     // TODO This is just for testing purposes, rewrite this when possible
                     Math::Variable(v) => {
                         if v.is_integer() {
                             return Some(Math::Variable(Variable {
                                 value: Decimal::from_f64(v.value.to_f64().unwrap().cos()).unwrap(),
+
                                 suffix: String::from(""),
                                 exponent: None,
                             }));
@@ -76,9 +74,6 @@ pub fn find_function_definition(label: &str) -> Option<FunctionDefinition> {
             label: "tan".to_string(),
             args: vec!["x".to_string()],
             definition: |args| {
-                if args.len() != 1 {
-                    panic!("sin takes exactly 1 argument");
-                }
                 match &args[0].simplify() {
                     // TODO This is just for testing purposes, rewrite this when possible
                     Math::Variable(v) => {

@@ -1,5 +1,4 @@
-use crate::definitions::math_functions::find_function_definition as find_math_function_definition;
-use crate::definitions::syscall_functions::find_function_definition as find_syscall_function_definition;
+use crate::definitions::find_function_definition;
 use crate::logging::env_info;
 use crate::math::algebra::function::{Function, FunctionDefinition, FunctionInstance};
 use crate::math::simplifiable::Simplifiable;
@@ -27,80 +26,19 @@ impl Scope {
         self.content.push(ScopeContent::Math(content));
     }
 
-    pub fn add_and_inject(&mut self, content: Math) {
+    pub fn add_and_inject(&mut self, content: &Math) {
         match &content {
-            Math::Function(Function::FunctionInstance(f)) => {
-                for content in &self.content {
-                    if let ScopeContent::Math(Math::Function(Function::FunctionDefinition(
-                        function_definition,
-                    ))) = content
-                    {
-                        if f.label == function_definition.label() {
-                            // inject definition to function
-                            env_info(
-                                "scope",
-                                format!(
-                                    "found definition to function: {:#?} in scope",
-                                    function_definition
-                                ),
-                            );
-                            let mut function_instance =
-                                FunctionInstance::new(function_definition.clone(), f.args.clone());
-                            self.content.push(ScopeContent::Math(Math::Function(
-                                Function::FunctionInstance(function_instance),
-                            )));
-                            return;
-                        }
-                    }
-                }
-
-                if let Some(definition) = find_math_function_definition(&f.label) {
-                    // inject definition to function
-                    env_info(
-                        "scope",
-                        format!(
-                            "found definition to function: {:#?} in math_function_definitions",
-                            definition
-                        ),
-                    );
-
-                    let mut function_instance =
-                        FunctionInstance::new(definition.clone(), f.args.clone());
-                    function_instance.definition = Some(definition);
-                    self.content.push(ScopeContent::Math(Math::Function(
-                        Function::FunctionInstance(function_instance),
-                    )));
-                    return;
-                }
-
-                if let Some(definition) = find_syscall_function_definition(&f.label) {
-                    env_info(
-                        "scope",
-                        format!(
-                            "found definition to function: {:#?} in syscall_function_definitions",
-                            definition
-                        ),
-                    );
-                    let mut function_instance =
-                        FunctionInstance::new(definition.clone(), f.args.clone());
-                    function_instance.definition = Some(definition);
-
-                    self.content.push(ScopeContent::Math(Math::Function(
-                        Function::FunctionInstance(function_instance),
-                    )));
-                    return;
-                }
-            }
-
-            Math::Function(Function::FunctionDefinition(f)) => {
+            // TODO Inject Other Math, not just functions
+            // TODO Solve Recursive function injection(function in a function, sin(sin(3)) does not work yet)
+            Math::Function(f) => {
+                // Find definition in scope
                 for content in &self.content {
                     if let ScopeContent::Math(Math::Function(Function::FunctionDefinition(
                         function_definition,
                     ))) = content
                     {
                         if f.label() == function_definition.label() {
-                            // inject definition to function
-
+                            // Inject definition to function
                             env_info(
                                 "scope",
                                 format!(
@@ -108,8 +46,10 @@ impl Scope {
                                     function_definition
                                 ),
                             );
-                            let mut function_instance =
-                                FunctionInstance::new(function_definition.clone(), f.args());
+                            let mut function_instance = FunctionInstance::new(
+                                function_definition.clone(),
+                                f.args().clone(),
+                            );
                             self.content.push(ScopeContent::Math(Math::Function(
                                 Function::FunctionInstance(function_instance),
                             )));
@@ -118,8 +58,9 @@ impl Scope {
                     }
                 }
 
-                if let Some(definition) = find_math_function_definition(&f.label()) {
-                    // inject definition to function
+                // Find in predefined function library
+                if let Some(definition) = find_function_definition(&f.label(), self) {
+                    // Inject definition to function
                     env_info(
                         "scope",
                         format!(
@@ -128,25 +69,9 @@ impl Scope {
                         ),
                     );
 
-                    let mut function_instance = FunctionInstance::new(definition.clone(), f.args());
+                    let mut function_instance =
+                        FunctionInstance::new(definition.clone(), f.args().clone());
                     function_instance.definition = Some(definition);
-                    self.content.push(ScopeContent::Math(Math::Function(
-                        Function::FunctionInstance(function_instance),
-                    )));
-                    return;
-                }
-
-                if let Some(definition) = find_syscall_function_definition(&f.label()) {
-                    env_info(
-                        "scope",
-                        format!(
-                            "found definition to function: {:#?} in syscall_function_definitions",
-                            definition
-                        ),
-                    );
-                    let mut function_instance = FunctionInstance::new(definition.clone(), f.args());
-                    function_instance.definition = Some(definition);
-
                     self.content.push(ScopeContent::Math(Math::Function(
                         Function::FunctionInstance(function_instance),
                     )));

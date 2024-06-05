@@ -1,9 +1,12 @@
 use crate::castable::Castable;
+use crate::definitions::syscall_functions::find_function_definition;
 use crate::math::algebra::exponentable::Exponentable;
 use crate::math::algebra::operations::Operations;
 use crate::math::algebra::variable::Variable;
 use crate::math::simplifiable::Simplifiable;
 use crate::math::Math;
+use crate::parser::Parsable;
+
 use rust_decimal_macros::dec;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -20,7 +23,6 @@ pub struct MappingDefinition {
     pub definition: Box<Math>,
 }
 
-// TODO remove FunctionalDefinitions when lib is evolved enough
 #[derive(Debug, Clone, PartialEq)]
 pub enum FunctionDefinition {
     MappingDefinition(MappingDefinition),
@@ -29,6 +31,18 @@ pub enum FunctionDefinition {
 
 impl FunctionDefinition {
     fn apply_definition(&self, args: Vec<Math>) -> Option<Math> {
+        if args.len() != self.args().len() {
+            panic!(
+                "\n Expected {} arguments for function {}, got {} arguments ({})\n",
+                self.args().len(),
+                self.to_tex(),
+                args.len(),
+                args.iter()
+                    .map(|m| m.to_tex())
+                    .collect::<Vec<String>>()
+                    .join(", ")
+            )
+        }
         match self {
             FunctionDefinition::MappingDefinition(f) => {
                 let mut new_math = *f.definition.clone();
@@ -37,7 +51,23 @@ impl FunctionDefinition {
                 }
                 return Some(new_math);
             }
-            FunctionDefinition::FunctionalDefinition(f) => (f.definition)(args.clone()),
+            FunctionDefinition::FunctionalDefinition(f) => {
+                let sim = args
+                    .clone()
+                    .iter_mut()
+                    .map(|a| {
+                        if let Math::Function(Function::FunctionInstance(i)) = a {
+                            println!("Def{:#?}", i.definition);
+                            i.definition = find_function_definition(&i.label);
+                            println!("Def{:#?}", i);
+                            return i.apply_definition();
+                        } else {
+                            return a.clone();
+                        }
+                    })
+                    .collect::<Vec<Math>>();
+                (f.definition)(sim)
+            }
         }
     }
 
@@ -92,6 +122,8 @@ impl FunctionInstance {
                 }
                 return result;
             }
+        } else {
+            panic!("Tried to execute function without definition {:#?}", self);
         }
         Math::Function(Function::FunctionInstance(self.clone()))
     }
@@ -111,10 +143,34 @@ impl FunctionInstance {
             exponent: None,
         }
     }
+    pub fn label(&self) -> String {
+        return self.label.clone();
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Function {
     FunctionDefinition(FunctionDefinition),
     FunctionInstance(FunctionInstance),
+}
+
+impl Function {
+    pub fn label(&self) -> String {
+        match self {
+            Function::FunctionDefinition(f) => f.label(),
+            Function::FunctionInstance(f) => f.label(),
+        }
+    }
+    pub fn args(&self) -> Vec<Math> {
+        match self {
+            Function::FunctionDefinition(f) => f.args(),
+            Function::FunctionInstance(f) => f.args.clone(),
+        }
+    }
+    pub fn set_definition(&mut self, definition: Option<FunctionDefinition>) {
+        match self {
+            Function::FunctionDefinition(f) => *f = definition.unwrap(),
+            Function::FunctionInstance(f) => f.definition = definition,
+        }
+    }
 }

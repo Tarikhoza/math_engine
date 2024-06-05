@@ -23,7 +23,7 @@ impl File {
                 continue;
             }
             let math = line.parse_math().unwrap();
-            self.scope.add_and_inject(math);
+            self.scope.add_and_inject(&math);
         }
     }
 

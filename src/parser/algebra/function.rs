@@ -188,3 +188,25 @@ impl Parsable for Function {
         }
     }
 }
+
+impl Parsable for FunctionDefinition {
+    fn to_tex(&self) -> String {
+        match self {
+            FunctionDefinition::FunctionalDefinition(f) => {
+                return format!("def \\mathrm{{{}}}({})", f.label, f.args.join(","),);
+            }
+            FunctionDefinition::MappingDefinition(f) => {
+                return format!(
+                    "def \\mathrm{{{}}}({}) -> {}",
+                    f.label,
+                    f.args.join(","),
+                    f.definition.to_tex()
+                );
+            }
+        }
+    }
+
+    fn from_token_stream(token_stream: Vec<Token>) -> Result<(PolynomPart, usize), String> {
+        unimplemented!()
+    }
+}
